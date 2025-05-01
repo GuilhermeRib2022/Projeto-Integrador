@@ -4,7 +4,7 @@
 
   De acordo com Richard Mayer, a aprendizagem é mais eficaz quando se é utilizado imagens e palavras em conjunto, pois os canais são processados em canais separados, mas "interligam na memória". Ou seja, os vídeos são uma ferramenta muito importante para serem usados no estudo, pois facilita a compreensão dos alunos. A informação torna-se mais acessível e visual o que permite criar e entender aulas interativas e tutoriais de conceitos muito mais complexos. Uma plataforma de educação em vídeo ajudará na facilidade do acesso à informação (pois permite o aluno rever, pausar e adaptar-se ao ritmo da aprendizagem) como também no aumento do estimulo visual e auditivo de imagens e letras pode despertar mais o interesse dos alunos e ajudar a clarear os vários conceitos dados nas aulas.
   
-  Mesmo assim, há uma ausência de uma plataforma institucional dedicada à publicação de conteúdos educativos de docentes para alunos. O que pode comprometer o aprendizado dos discentes. Atualmente, os docentes utilizam plataformas como o Youtube, Google Classroom, Moodle, etc, para compartilhar conteúdos educativos. Mesmo que sejan funcionais, os conteúdos dentro destas plataformas podem não seguir o plano pedagógico da instituição, alémde apresentar limitações quanto à interface, conteúdo e organização das disciplinas, como também da personalização e feedback do conteúdo de aprendizagem.
+  Mesmo assim, há uma ausência de uma plataforma institucional dedicada à publicação de conteúdos educativos de docentes para alunos. O que pode comprometer o aprendizado dos discentes. Atualmente, os docentes utilizam plataformas como o Youtube, Google Classroom, Moodle, etc, para compartilhar conteúdos educativos. Mesmo que sejmn funcionais, os conteúdos dentro destas plataformas podem não seguir o plano pedagógico da instituição, alémde apresentar limitações quanto à interface, conteúdo e organização das disciplinas, como também da personalização e feedback do conteúdo de aprendizagem.
 
   O objetivo é criar uma plataforma que tenha como finalidade de facilitar o processo de aprendizagem dos alunos e oferecer acesso direto a materiais que sigam o plano de ensino das disciplinas. Os materiais incluem vídeo-aulas, tutoriais ou outro conteúdos informativos que os docentes podem achar úteis para os alunos.
 
@@ -26,13 +26,21 @@ Como dito anteriormente, o AVA permite deixar a informação mais acessível e o
 
 ## Outros projetos relacionados de Ambientes de E-learning
 
-- Google Classroom
+- Google Classroom:
   Sistema Ambiente de sala virtual com suporte a envio de arquivos e gerenciamento de conteúdo. Esta plataforma é voltada na simplificação da criação de turmas, envio de tarefas e compartilhamento de materiais. O Classroom é usado na avaliação dos alunos sem usar o papel, onde as tarefas são feitas por computador e possam se comunicar diretamente com o professor para tirar dúvidas
 
   Mesmo assim, esta plataforma é feita apenas para alunos de uma turma específica que sejam convidados pelo docente, não foi feito para ser usado públicamente. Isto implica que a turma tenha uma validade e fique inútil pois poderá não ter novos alunos após os antigos.
   
-- Moodle
-- Youtube Edu
+- Moodle:
+  Acrónimo de "Modular Object-Oriented Dynamic Learning Environment" é um software de aprendizagem utilizada no envio de arquivos, testes online. O Moodle é principalmente usado na criação de cursos online e disciplinas altamente configuráveis e com código aberto, o que faz o Moodle altamente costumizável.
+
+  Pelo mesmo motivo, o Moodle exige muita configuração e manutenção para que seja usável com uma boa *User Experience*. Por fim, o software tem apenas como foco a gestão do curso em si e não no acesso livre para toda a instituição aos vídeos institucionais.
+  
+- Youtube Edu:
+  O próprio youtube possui uma iniciativa chamada *Youtube Edu*, que é conhecido como um reposítorio de vídeos mais voltada à curadoria de conteúdo educativo. O Youtbe Edu é voltado a vários conteúdos de várias instituições e grupos como PBS, Khan Academy, Numberphile, etc... que são públicados e acessíveis para todo o público global.
+
+  No entanto, a grande variedade de conteúdos do Youtube Edu também é um problema: Há um excesso de material que pode ser considerado irrelevante e que pode não se alinhar com o plano pedagógico das disciplinas instituição. A recomendação dos vídeos fora do plano e o fato dos alunos podem se distrair por estarem no youtube são outros pontos fracos que podem prejudicar a experiência de aprendizado dos estudantes.
+  
 - Khan Academy
 - Coursera
 
