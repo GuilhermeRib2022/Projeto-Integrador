@@ -26,23 +26,28 @@ Como dito anteriormente, o AVA permite deixar a informação mais acessível e o
 
 ## Outros projetos relacionados de Ambientes de E-learning
 
-- Google Classroom:
+- **Google Classroom**:
   Sistema Ambiente de sala virtual com suporte a envio de arquivos e gerenciamento de conteúdo. Esta plataforma é voltada na simplificação da criação de turmas, envio de tarefas e compartilhamento de materiais. O Classroom é usado na avaliação dos alunos sem usar o papel, onde as tarefas são feitas por computador e possam se comunicar diretamente com o professor para tirar dúvidas
 
   Mesmo assim, esta plataforma é feita apenas para alunos de uma turma específica que sejam convidados pelo docente, não foi feito para ser usado públicamente. Isto implica que a turma tenha uma validade e fique inútil pois poderá não ter novos alunos após os antigos.
   
-- Moodle:
+- **Moodle**:
   Acrónimo de "Modular Object-Oriented Dynamic Learning Environment" é um software de aprendizagem utilizada no envio de arquivos, testes online. O Moodle é principalmente usado na criação de cursos online e disciplinas altamente configuráveis e com código aberto, o que faz o Moodle altamente costumizável.
 
   Pelo mesmo motivo, o Moodle exige muita configuração e manutenção para que seja usável com uma boa *User Experience*. Por fim, o software tem apenas como foco a gestão do curso em si e não no acesso livre para toda a instituição aos vídeos institucionais.
   
-- Youtube Edu:
+- **Youtube Edu**:
   O próprio youtube possui uma iniciativa chamada *Youtube Edu*, que é conhecido como um reposítorio de vídeos mais voltada à curadoria de conteúdo educativo. O Youtbe Edu é voltado a vários conteúdos de várias instituições e grupos como PBS, Khan Academy, Numberphile, etc... que são públicados e acessíveis para todo o público global.
 
   No entanto, a grande variedade de conteúdos do Youtube Edu também é um problema: Há um excesso de material que pode ser considerado irrelevante e que pode não se alinhar com o plano pedagógico das disciplinas instituição. A recomendação dos vídeos fora do plano e o fato dos alunos podem se distrair por estarem no youtube são outros pontos fracos que podem prejudicar a experiência de aprendizado dos estudantes.
   
-- Khan Academy
-- Coursera
+- **Khan Academy**:
+  Khan Academy é uma plataforma com objetivo de proporcionar educação gratuita e estruturada para toda a gente de qualquer lugar do mundo. Esta plataforma oferece videoaulas e exercicios de matemática, medicina, economia, física, entre outros produzidos cuidadosamente e de qualidade.
+  A sua maior fraqueza é não ser customizável para o conteúdo de faculdade de uma instituição em específico, ele foca-se mais nas áreas fundamentais como matemática e ciência, como também não há a possibilidade de docentes publicarem os seus próprios vídeos, o que limita o conteúdo da plataforma.
+  
+- **Coursera**:
+  Coursera é uma empresa educacional, parceira com mais de 300 universidades e 7000 cursos voltados para o público em geral, esta plataforma oferece cursos pagos e gratuitos de vários temas diferentes. Os cursos incluem vídeos, avaliações e fóruns.
+  Esta plataforma tem uma abordagem comercial e os cursos são feitos por instrutores selecionados ou empresas parceiras. Por isso, o seu conteúdo serve para tirar um curso específico e não como suporte a um curso que o aluno esteja a tirar dentro da própria instituição. 
 
 - # Tecnologias Utilizadas
 
