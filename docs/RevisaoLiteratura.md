@@ -52,15 +52,25 @@ Como dito anteriormente, o AVA permite deixar a informação mais acessível e o
 - # Tecnologias Utilizadas
 
 - **React.js**
+  : Bibolioteca de front-end JavaScript Opensource com foco de criar *user interfaces* dinâmicas e responsivas em páginas web.
 - **Vite**
+  : é um servidor de desenvolvimento local usado pelo React, o Vite monitora ficheiros enquanto estão a ser editados.
 - **Bootstrap**
-- **Tailwind**
+  : é um framework web OpenSource usado para desenvolvimento de componentes de interface para sites de modo a melhorar a *UX* do user
+- **TailwindCSS**
+  : É um framework de CSS, diferente do Bootstrap, não fornece elementos ou classes predefinidos como botões ou tabelas. Na verdade, cria uma lista de classes de utilidade que podem ser misturadas.
 - **Node.js**
+  : É um ambiente de desenvolvimento OpenSource em JavaScript que executada código Javascript fora do web browser. O Node permite o desenvolvimento de scripts em server-side.
+
 - **Mysql**
+  : Ambiente de gerenciamento de bancos de dados (SGBD) muito popular que utiliza SQL  como interface.
 
 - **HTML**
+  : Abreviação de HyperText Markup Language, utilizada na construção de páginas web.
 - **CSS**
+  : Abreviação de Cascading Style Sheets, é um mecanismo usado para adicionar estilos a uma página web, como cores, fontes, estrutura, etc...
 - **Javascript**
+  : Linguagem de programação interpretada estruturada de alto nível, usado em conjunto com o HTML e o CSS na criação de sites. Esta linguagem permite a criação de páginas web interativas.
 
 # Conclusão
 
