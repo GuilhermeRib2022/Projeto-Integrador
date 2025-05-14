@@ -21,7 +21,7 @@ Para melhor entendimento, em cada categoria, quanto mais em cima, mais important
 
 ## Administrador 
 - Como admnistrador, quero gerir utilizadores, videos e estatísticas no backoffice para garantir o funcionamento interno da aplicação *?
-- Como administrador, quero adicionar categorias de modo a organizar vídeos de forma eficiente
+- Como administrador, quero adicionar categorias de disciplinas de modo a organizar vídeos de forma eficiente
 - Como admnistrador, gostaria de uma área de estatística, incluindo estatísticas de acesso e visualização por disciplina, pois pode ser um grande valor para ajustar o conteúdo.
 - Como admnistrador, gostaria de gerir todas as perguntas que alunos fazem ao LLM, com tipo de pergunta e tempo que foi perguntado, de forma a coletar informações importantes.
 
