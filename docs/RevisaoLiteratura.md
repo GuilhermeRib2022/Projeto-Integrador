@@ -47,7 +47,11 @@ Como dito anteriormente, o AVA permite deixar a informação mais acessível e o
   
 - **Coursera**:
   Coursera é uma empresa educacional, parceira com mais de 300 universidades e 7000 cursos voltados para o público em geral, esta plataforma oferece cursos pagos e gratuitos de vários temas diferentes. Os cursos incluem vídeos, avaliações e fóruns.
-  Esta plataforma tem uma abordagem comercial e os cursos são feitos por instrutores selecionados ou empresas parceiras. Por isso, o seu conteúdo serve para tirar um curso específico e não como suporte a um curso que o aluno esteja a tirar dentro da própria instituição. 
+  Esta plataforma tem uma abordagem comercial e os cursos são feitos por instrutores selecionados ou empresas parceiras. Por isso, o seu conteúdo serve para tirar um curso específico e não como suporte a um curso que o aluno esteja a tirar dentro da própria instituição.
+
+- **Bilibili**:
+    Plataforma chinesa de compartilhamento de vídeos que aborda uma grande variedade de conteúdos, dentre os quais conteúdos educativos. Semelhante à ao nosso projeto, esta plataforma permite que criadores publiquem vídeos com suporte a uma IA ao lado dos vídeos, como também de  anotações que os utilizadores podem fazer.
+    Embora esta plataforma tenha vários recursos que suportam a criação de vídeos educacionais de forma aberta, o site não existe em português e não é focado em conteúdos curriculares e alinhados. O que pode prejudicar o aprendizado devido ao 'bloating' de informação. 
 
 - # Tecnologias Utilizadas
 
