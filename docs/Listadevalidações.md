@@ -36,10 +36,10 @@
 ## Validações de Comentários e Feedback
 - Apenas utilizadores autenticados podem comentar nos vídeos.
 - Comentários tem um limite mínimo e máximo de caracteres.
-- Comentários ofensivos ou com palavras-chave proibidas devem ser bloqueados ou sinalizados.
+- Comentários ofensivos ou com palavras proibidas devem ser bloqueados ou notificados.
 - Os alunos devem poder avaliar o conteúdo (ex: 1 a 5 estrelas).
 
 ## Validações Administrativas e de Moderação
-- O admin pode aprovar ou remover conteúdos que não estejam em conformidade com o plano pedagógico.
+- O admin pode aprovar ou remover conteúdos que não estejam em conformidade com as regras.
 - O admin tem acesso a um painel para gestão de usuários, conteúdos e estatísticas.
 - Estatísticas (número de visualizações, interações) devem ser atualizadas em tempo real.
