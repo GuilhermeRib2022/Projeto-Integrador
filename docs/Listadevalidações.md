@@ -41,5 +41,5 @@
 
 ## Validações Administrativas e de Moderação
 - O admin pode aprovar ou remover conteúdos que não estejam em conformidade com as regras.
-- O admin tem acesso a um painel para gestão de usuários, conteúdos e estatísticas.
+- O admin tem acesso a um painel para gestão de contas (definir/aceitar se é aluno ou professor, assim como remover), gestão de conteúdos (cria e edita disciplinas e cursos) e estatísticas.
 - Estatísticas (número de visualizações, interações) devem ser atualizadas em tempo real.
