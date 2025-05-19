@@ -1,4 +1,4 @@
-#LISTA DE VALIDAÇÕES
+# LISTA DE VALIDAÇÕES
 
 #Validações de Registo e login
 - O sistema deve validar se o e-mail informado é institucional (ex: termina com @instituicao.edu).
