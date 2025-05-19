@@ -8,7 +8,7 @@
 - Deve haver confirmação por e-mail ou aprovação administrativa antes do primeiro acesso.
 
 ## Validações de Perfil
-- Apenas docentes podem publicar vídeos.
+- Apenas professores podem publicar vídeos.
 - Alunos têm acesso apenas como visualizadores.
 - Perfis devem conter dados mínimos obrigatórios: nome completo, e-mail, cargo (docente/aluno), e curso associado.
 
