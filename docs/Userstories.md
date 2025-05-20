@@ -11,6 +11,7 @@ Para melhor entendimento, em cada categoria, quanto mais em cima, mais important
 - Como aluno, quero um botão de "classificação" para mostrar o meu feedback sobre o video.
 - Como aluno, gostaria de organizar os vídeos por disciplina para ver conteúdos da disciplina que estou a estudar agora.
 - Como aluno, gostaria de ter um chatbot ao lado do vídeo para que consiga responder a dúvidas em tempo real sem sair do ecrâ.
+- Como aluno, gostaria de que todos os vídeos tenham um bloco de notas que permita-me fácilmente anotar todos os aspetos importantes do vídeo.
 - Como aluno, gostaria de ter uma plataforma acessível, compatível com legendas nos vídeos, contraste adequado e que funcione em diferentes dispositivos, especialmente mobile, para melhorar a minha experiência no website.
 
 
