@@ -1,1 +1,1 @@
-//mano explodi
+//voltou ao normal
