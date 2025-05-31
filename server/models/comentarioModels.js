@@ -7,12 +7,15 @@ export async function getComentarios(){
 
 export async function getComentario(id){
     const [rows] = await pool.query('SELECT * FROM comentario where ID = ?',[id])
+    if(!rows[0]) {
+        throw new Error(`Comentario with ID ${id} not found`);
+    }
     return rows[0]
 }
 
 export async function deleteComentario(id){
-    const [rows] = await pool.query('DELETE FROM comentario where ID = ?',[id])
-    return rows
+    const [result] = await pool.query('DELETE FROM comentario where ID = ?',[id])
+    return result.affectedRows > 0;
 }
 
 export async function createComentario(videoID, utilizadorID, Texto) {
@@ -22,16 +25,16 @@ export async function createComentario(videoID, utilizadorID, Texto) {
 }
 
 export async function editComentario(ID, videoID, utilizadorID, Texto) {
-    const current = await getAnotacao(ID);
+    const current = await getComentario(ID);
 
     const updatedVideoID = videoID ?? current.VideoID;
     const updatedUtilizadorID = utilizadorID ?? current.UtilizadorID;
     const updatedTexto = Texto ?? current.Texto;
 
-    const [result] = await pool.query('UPDATE anotacao SET VideoID = ?, utilizadorID = ?, Texto = ? WHERE ID = ?', [updatedVideoID, updatedUtilizadorID, updatedTexto, ID]);
+    const [result] = await pool.query('UPDATE comentario SET VideoID = ?, utilizadorID = ?, Texto = ? WHERE ID = ?', [updatedVideoID, updatedUtilizadorID, updatedTexto, ID]);
     
     if (result.affectedRows === 0) {
-        throw new Error(`No anotacao found with ID ${ID}`);
+        throw new Error(`No comentario found with ID ${ID}`);
     }
     
     return getAnotacao(ID);

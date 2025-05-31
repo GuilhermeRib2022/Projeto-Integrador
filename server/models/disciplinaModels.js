@@ -11,7 +11,7 @@ export async function getDisciplina(id){
 }
 
 export async function createDisciplina(Nome, descricao, cor) {
-    const [result] = await pool.query('INSERT INTO disciplina (Nome, descricao, cor) VALUES (?, ?, ?)', [Nome, descricao, cor]); ""
+    const [result] = await pool.query('INSERT INTO disciplina (Nome, descricao, cor) VALUES (?, ?, ?)', [Nome, descricao, cor]);
     const id = result.insertId;
     return getDisciplina(id);
 }
@@ -23,7 +23,9 @@ export async function deleteDisciplina(id){
 
 export async function editDisciplina(id, nome, descricao, cor) {
     const current = await getDisciplina(id);
-
+    if (!current) {
+        throw new Error(`Disciplina com ID ${id} não encontrado`);
+    }
         const updatedNome = nome ?? current.Nome;
         const updatedDescricao = descricao ?? current.Descricao;
         const updatedCor = cor ?? current.Cor;

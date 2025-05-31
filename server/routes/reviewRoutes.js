@@ -14,6 +14,9 @@ router.get("/lista", permit("quam"), async (req, res) => { // Rota de pesquisa d
 router.get("/:id", async (req, res) => { // Obter uma review pelo seu ID
     const id = req.params.id
     const reviews = await getReview(id);
+    if(!reviews) {
+        return res.status(404).send({ message: "Review não encontrada" });
+    }
     res.send(reviews);
 });
 
@@ -28,6 +31,7 @@ router.post("", async (req, res) => { // Rota de criação de review
         res.status(201).send(review);
     }
     catch (error) {
+        console.error("Erro ao criar review:", error);
         res.status(500).send({ message: "Erro ao criar review" });
     }
 });

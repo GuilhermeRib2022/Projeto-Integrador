@@ -1,22 +1,34 @@
 import { Router } from 'express';
-import { getAnotacoes, getAnotacao, deleteAnotacao, createAnotacao, editAnotacao } from '../models/anotacaoModels.js';
-const router = Router();
+ import { getAnotacoes, getAnotacao, deleteAnotacao, createAnotacao, editAnotacao } from '../models/anotacaoModels.js';
+import authenticateToken from '../services/Autenticacao.js';
+ const router = Router();
 
-router.get("/lista", async (req, res) => { // Rota de pesquisa de Disciplinas
+// Apply authentication to all routes
+router.use(authenticateToken);
+
+ router.get("/lista", async (req, res) => { // Rota de pesquisa de Anotações
     const anotacoes = await getAnotacoes();
     res.send(anotacoes);
 });
 
-router.get("/:id", async (req, res) => { // Rota de pesquisa de Disciplinas
+router.get("/:id", async (req, res) => { // Rota de obter de Anotações por ID
     const id = req.params.id;
+    try{
     const anotacoes = await getAnotacao(id);
     res.send(anotacoes);
+    } catch (error) {
+        res.status(404).send({ message: "Anotação não encontrada" });
+    }
 });
 
-router.delete("/:id", async (req, res) => { // Rota de pesquisa de Disciplinas
+router.delete("/:id", async (req, res) => { // Rota de apagar Anotação
     const id = req.params.id;
-    const anotacoes = await deleteAnotacao(id);
-    res.send(anotacoes);
+    const success = await deleteAnotacao(id);
+    if(success){
+        res.status(200).send({ message: "Anotação apagada com sucesso" });
+    } else {
+        res.status(404).send({ message: "Anotação não encontrada" });
+    }
 });
 
 router.post("", async (req, res) => { // Rota de criação de Anotação
