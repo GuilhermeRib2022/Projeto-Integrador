@@ -1,44 +1,45 @@
 import bcrypt from 'bcryptjs';
 import pool from "../database.js";
 
-export async function getUsers(){
-    const [rows] = await pool.query('SELECT * FROM utilizador where ID>0')
+export async function getUtilizadores(){
+    const [rows] = await pool.query('SELECT * FROM Utilizador where ID>0')
     return rows
 }
 
-export async function getUser(id){
-    const [rows] = await pool.query('SELECT * FROM utilizador where ID = ?',[id])
+export async function getUtilizador(id){
+    const [rows] = await pool.query('SELECT * FROM Utilizador where ID = ?',[id])
     return rows
 }
 
-export async function createUser(name, password, email) {
+export async function createUtilizador(name, password, email) {
     const hashedPassword = await bcrypt.hash(password, 10);
-    const [result] = await pool.query('INSERT INTO utilizador (nome, email, password, descricao) VALUES (?, ?, ?)', [name, email, hashedPassword]); ""
+    const [result] = await pool.query('INSERT INTO Utilizador (nome, email, password) VALUES (?, ?, ?)', [name, email, hashedPassword]);
     const id = result.insertId;
-    return getUser(id);
+    return getUtilizador(id);
 }
 
-export async function deleteUser(id){
-    const [rows] = await pool.query('DELETE FROM utilizador where ID = ?',[id])
+export async function deleteUtilizador(id){
+    const [rows] = await pool.query('DELETE FROM Utilizador where ID = ?',[id])
     return rows
 }
 
-export async function updateUser(id, name, email, password, descricao) {
-    const [rows] = await pool.query('UPDATE utilizador SET nome = ?, email = ?, password = ? WHERE id = ? WHERE descricao = ?',[name, email, password, id, descricao])
+export async function updateUtilizador(id, name, email, password) {
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const [rows] = await pool.query('UPDATE Utilizador SET nome = ?, email = ?, password = ? WHERE id = ? ',[name, email, hashedPassword, id])
     return rows
 }
 
-export async function countUsers(){
-    const [rows] = await pool.query('SELECT COUNT(*) AS total_users FROM users')
+export async function countUtilizador(){
+    const [rows] = await pool.query('SELECT COUNT(*) AS total_Utilizadores FROM Utilizador')
     return rows[0]
 }
 
-export async function getUserByNickname(nome) { //Verifica se o utilizador existe 
-    const [rows] = await pool.query('SELECT * FROM utilizador WHERE nome= ?', [nome]);
+export async function getUtilizadorByNickname(nome) { //Verifica se o Utilizador existe 
+    const [rows] = await pool.query('SELECT * FROM Utilizador WHERE nome= ?', [nome]);
     return rows[0];
 }
 
-export async function VerifyPassword(userPassword, storedPassword){ //Verifica se a password está correta
-    return await bcrypt.compare(userPassword, storedPassword);
+export async function VerifyPassword(utilizadorPassword, storedPassword){ //Verifica se a password está correta
+    return await bcrypt.compare(utilizadorPassword, storedPassword);
 }
 

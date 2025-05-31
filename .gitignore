@@ -24,3 +24,8 @@ Thumbs.db
 # Optional: ignore build/output folders if present
 dist/
 build/
+
+#Media files
+*.png
+*.jpg
+*.mp4

@@ -1,1 +1,0 @@
-//voltou ao normal
