@@ -1,0 +1,184 @@
+.sidebar {
+  position: fixed;
+  top: 56px; /* Ajuste se tiver header fixo */
+  left: 0;
+  width: 240px;
+  height: calc(100vh - 56px);
+  background-color: #f8f8f8; /* seu pedido */
+  color: #000;
+  padding: 20px;
+  box-sizing: border-box;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  transition: width 0.3s ease;
+  border-right: 1px solid #fff;
+  z-index: 5;
+    padding: 0; /* remove padding lateral */
+  box-sizing: border-box;
+}
+
+hr{
+  color:#aaaaaa;
+}
+
+.sidebar.collapsed {
+  width: 60px;
+}
+
+.sidebar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.btn-toggle {
+  background: none;
+  border: none;
+  font-size: 1.8em;
+  cursor: pointer;
+  color: #000;
+  padding: 0;
+  line-height: 1;
+  user-select: none;
+  margin-left: 12px;
+  margin-top: 20px; 
+}
+
+.sidebar-nav {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  margin: 0;
+}
+
+.sidebar .nav-link {
+  padding: 10px 20px 10px 16px; /* Ajuste aqui: 16px à esquerda */
+  margin: 0;
+  width: 100%;
+  border-radius: 0;
+  box-sizing: border-box;
+}
+
+.sidebar-header h2 {
+  margin: 0;
+  font-size: 1.5em;
+  font-weight: bold;
+}
+
+
+.btn-toggle {
+  background: none;
+  border: none;
+  font-size: 1.8em;
+  cursor: pointer;
+  color: #000;
+  padding: 0;
+  line-height: 1;
+  user-select: none;
+}
+
+.sidebar .nav-link {
+  color: #000000;
+  font-weight: bold;
+  white-space: nowrap;
+  transition: background-color 0.2s ease, color 0.2s ease;
+  border-bottom: 2px solid transparent;
+}
+
+.sidebar .nav-link:hover {
+  color: rgb(255, 255, 255) !important;
+  background-color: #606d7a !important;
+  text-decoration: none;
+}
+
+.sidebar .nav-link.active {
+  color: black !important;
+  border-bottom: 2px solid black;
+  background-color: transparent !important;
+}
+
+.sidebar .nav-link.hover.active {
+  color: rgb(255, 255, 255) !important;
+  background-color: #606d7a !important;
+  text-decoration: none;
+}
+
+.sidebar .nav-link .icon {
+  margin: 0 12px 0 0;
+  min-width: 24px;
+  text-align: center;
+}
+
+
+.sidebar.collapsed .label {
+  display: none;
+}
+
+/* Botão 3 pontos fixo no topo direito */
+
+.sidebar .nav-link:hover,
+.sidebar .nav-link.active {
+  background-color: #606d7a !important;
+  color: white !important;
+}
+
+.sidebar-footer {
+  padding-top: 15px;
+  font-size: 0.85em;
+  color: #666;
+  border-top: 1px solid #ccc;
+  text-align: center;
+}
+
+.sidebar.collapsed .sidebar-footer {
+  display: none;
+}
+
+.sidebar .nav-link .icon {
+  font-size: 1.3em;
+  margin-right: 12px;
+
+  min-width: 24px;
+  text-align: center;
+}
+
+
+.sidebar .nav-link .link-text {
+  flex: 1;
+}
+
+.sidebar .nav-link:hover,
+.sidebar nav-link.active {
+  background-color: #606d7a !important;
+  color: white !important;
+}
+
+.sidebar.collapsed .nav-link .link-text {
+  display: none;
+}
+
+/*
+.sidebar.collapsed .nav-link {
+  flex-direction: column;      
+  align-items: center;         
+  padding: 8px 0;              
+  white-space: normal;         
+}
+
+.sidebar.collapsed .nav-link .icon {
+  margin: 0 0 4px 0;          
+  font-size: 1.5em;            
+  min-width: unset;           
+}
+
+.sidebar.collapsed .nav-link .link-text {
+  font-size: 0.75em;           
+  text-align: center;
+  margin: 0;
+  padding: 0;
+}
+
+*/

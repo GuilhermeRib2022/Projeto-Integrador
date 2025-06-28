@@ -1,0 +1,17 @@
+.contactos{
+    background-color: #ffffff;
+}
+
+.pag{
+    padding-top: 40px;
+}
+
+.lista{
+    background-color: #eeeeee;
+    padding-left: 10px;
+}
+
+.nav-link-contactos{
+  color: blue !important;
+  text-decoration: underline;
+}

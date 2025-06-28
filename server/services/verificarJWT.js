@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken';
 
-function verifyAccessToken(token) {
+function verificarJWT(token) {
   const secret = process.env.JWT_SECRET;
 
   try {
@@ -11,4 +11,4 @@ function verifyAccessToken(token) {
   }
 }
 
-export default verifyAccessToken;
+export default verificarJWT;

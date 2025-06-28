@@ -1,36 +1,78 @@
 import { Router } from 'express';
- import { getAnotacoes, getAnotacao, deleteAnotacao, createAnotacao, editAnotacao } from '../models/anotacaoModels.js';
+import {Anotacao} from '../models/anotacaoModels.js';
 import authenticateToken from '../services/Autenticacao.js';
- const router = Router();
+const router = Router();
 
 // Apply authentication to all routes
 router.use(authenticateToken);
 
- router.get("/lista", async (req, res) => { // Rota de pesquisa de Anotações
-    const anotacoes = await getAnotacoes();
+
+//OBTER TODAS AS ANOTAÇÕES
+router.get("/", async (req, res) => {
+    const anotacoes = await Anotacao.getAnotacoes();
     res.send(anotacoes);
 });
 
-router.get("/:id", async (req, res) => { // Rota de obter de Anotações por ID
+//OBTER ANOTAÇÃO POR ID
+router.get("/:id", async (req, res) => {
     const id = req.params.id;
-    try{
-    const anotacoes = await getAnotacao(id);
-    res.send(anotacoes);
+    try {
+        const anotacao = await Anotacao.getAnotacaoID(id);
+        res.send(anotacao);
     } catch (error) {
         res.status(404).send({ message: "Anotação não encontrada" });
     }
 });
 
+//APAGAR ANOTAÇÃO POR ID
 router.delete("/:id", async (req, res) => { // Rota de apagar Anotação
     const id = req.params.id;
-    const success = await deleteAnotacao(id);
-    if(success){
+    const success = await Anotacao.deleteAnotacao(id);
+    if (success) {
         res.status(200).send({ message: "Anotação apagada com sucesso" });
     } else {
         res.status(404).send({ message: "Anotação não encontrada" });
     }
 });
 
+//OBTER ANOTAÇÃO POR VIDEOID & UTILIZADORID
+router.get("/video/:id", authenticateToken, async (req, res) => { // Rota de criação de review
+    try {
+        const UtilizadorID = req.user.id; // Assumindo que o ID do utilizador está disponível no token JWT
+        const VideoID = req.params.id; // O ID do vídeo é passado como parâmetro na rota
+        if (!VideoID || !   UtilizadorID) {
+            return res.status(400).send({ message: "Comentário Inválido" });
+        }
+
+        const comentario = await Anotacao.getAnotacao(VideoID, UtilizadorID);
+        res.status(201).send(comentario);
+    }
+    catch (error) {
+        console.error('Erro ao criar review:', error);
+        res.status(500).send({ message: "Erro ao criar review" });
+    }
+});
+
+//ATUALIZAR/CRIAR ANOTAÇÃO POR VIDEOID & UTILIZADORID
+router.put("/video/:id", authenticateToken, async (req, res) => {
+    try {
+        const UtilizadorID = req.user.id;
+        const VideoID = req.params.id; // O ID do vídeo é passado como parâmetro na rota
+        const { Texto } = req.body;
+
+        if (!VideoID || !UtilizadorID || typeof Texto !== 'string') {
+            return res.status(400).send({ message: "Input Inválido" });
+        }
+        const anotacao = await Anotacao.adicionarAnotacao(VideoID, UtilizadorID, Texto);
+        res.status(200).send(anotacao);
+    } catch (error) {
+        console.error('Erro ao salvar anotação:', error);
+        res.status(500).send({ message: "Erro ao salvar anotação" });
+    }
+});
+
+
+/*
 router.post("", async (req, res) => { // Rota de criação de Anotação
     try {
         const { VideoID, UtilizadorID, Texto } = req.body;
@@ -59,5 +101,5 @@ router.patch("/:id", async (req, res) => { // Rota de edição de Anotação
         res.status(500).send({ message: "Erro ao editar anotação" });
     }
 });
-
+*/
 export default router;

@@ -1,0 +1,102 @@
+ul.navbar-nav a {
+  text-decoration: none;
+  margin: 0 10px 0 0;
+  color: #000000;
+  font-weight: bold;
+}
+
+ul.navbar-nav a:hover {
+  color: rgb(255, 255, 255);
+   background-color: #606d7a !important
+}
+
+.bg-vini {
+  background-color: #FFFFFF !important;
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+}
+
+
+
+.navbar .dropdown-menu {
+  background-color: #343a40; /* Match your navbar background */
+}
+
+ul.navbar-nav .nav-link.active {
+  background-color: transparent !important;
+  color: black !important;
+  border-bottom: 2px solid black;
+}
+
+.navbar .dropdown-menu .dropdown-item.active {
+  color: black !important;
+  background-color: lightgray !important;
+}
+
+.nav-link.dropdown-toggle.show {
+  color: rgb(0, 0, 0) !important; /* ou a cor que quiser */
+}
+
+/* Ajusta o fundo e cor dos itens no dropdown aberto */
+.dropdown-menu.show .dropdown-item {
+  color: white !important;
+}
+
+.nav-link.dropdown-toggle {
+  color: black !important; /* cor padrão quando não está aberto */
+}
+
+.pesquisar{
+  background-color: #D9D9D9;
+  font-size: 18px;
+  background: linear-gradient(175deg,rgba(230, 232, 246, 0.2) 25%, rgba(245, 223, 245, 0.2) 64%, rgba(247, 245, 233, 0.3) 100%);
+}
+
+.btn-pesquisar{
+  background: #cac8c8;
+  transition: 0.5s ease;
+  margin-left: -30px;
+}
+
+.btn-pesquisar:hover{
+  /*background: linear-gradient(175deg,rgba(55, 50, 70, 0.8) 25%, rgba(71, 54, 71, 0.5) 64%, rgba(68, 66, 57, 0.46) 100%);*/
+  background:#333333;
+}
+
+.btn-pesquisar img {
+  filter: invert(0);
+  transition: filter 0.3s ease;
+}
+
+.btn-pesquisar:hover img {
+  filter: invert(1); 
+}
+
+/* MOSTRAR DEPOIS xd
+html{
+    filter: invert(1); 
+}
+*/
+
+/*
+
+html{
+filter: invert(1) hue-rotate(180deg);
+}
+
+video {
+  filter: invert(1) hue-rotate(180deg);
+}
+
+
+img {
+  filter: invert(1) hue-rotate(180deg);
+}
+
+*/
+
+
+/*
+html{
+filter: invert(0.95) hue-rotate(180deg);
+}
+

@@ -1,0 +1,21 @@
+.teste{
+ color: blue; 
+}
+
+.admin-sidebar {
+  width: 30vh;
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+}
+
+
+.admin-content {
+  margin-left: 120px; 
+  width: 80rem;
+  height: 200%;
+  padding: 20px;
+  table-layout: fixed;
+  margin-top:-40px;
+}

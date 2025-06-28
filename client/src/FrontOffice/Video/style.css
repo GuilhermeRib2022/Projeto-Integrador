@@ -1,0 +1,375 @@
+.react-player {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.custom-video-container {
+  max-width: 800px;
+  margin: 40px auto;
+  background: #1e1e1e;
+  padding: 20px;
+  border-radius: 12px;
+  color: #fff;
+  box-shadow: 0 0 10px #000;
+  font-family: Arial, sans-serif;
+}
+
+.video-wrapper {
+  position: relative;
+  width: 100%;
+  max-width: 1280px;
+  margin: 30px auto 30px 0;
+  background-color: #000;
+  border-radius: 10px;
+  overflow: hidden;
+  aspect-ratio: 16 / 9;
+   min-width: 1280px;
+
+}
+
+@media (max-width: 600px) {
+  .video-wrapper {
+    margin: 10px;
+  }
+}
+
+.custom-video {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+.video-title {
+  margin-top: 12px;
+  text-align: center;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.video-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.control-button {
+  background: #333;
+  color: #fff;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.control-button:hover {
+  background: #555;
+}
+
+.speed-select {
+  background: #222;
+  color: #fff;
+  border: none;
+  padding: 6px;
+  border-radius: 6px;
+}
+
+.time-bar,
+.video-controls input[type="range"] {
+  flex-grow: 1;
+}
+
+.time-bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.controls-overlay {
+  position: absolute;
+  bottom: 10px;
+  left: 0;
+  right: 0;
+  padding: 8px;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  color: #fff;
+  font-size: 16px;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.video-wrapper:hover .controls-overlay {
+  opacity: 1;
+}
+
+.controls-overlay button,
+.controls-overlay select {
+  background: transparent;
+  border: none;
+  color: white;
+  font-size: 18px;
+  cursor: pointer;
+  padding: 4px 6px;
+}
+
+.controls-overlay button:hover,
+.controls-overlay select:hover {
+  color: #0ff;
+}
+
+.progress-container {
+  flex: 1;
+  position: relative;
+  height: 8px;
+  border-radius: 4px;
+  background-color: rgba(255, 255, 255, 0.15);
+  overflow: hidden;
+}
+
+.buffered-bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  background-color: rgba(0, 149, 255, 0.144);
+  border-radius: 4px;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.progressing-bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  background-color: rgba(38, 0, 255, 0.719);
+  border-radius: 4px;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.progress-bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: transparent;
+  appearance: none;
+  border: none;
+  cursor: pointer;
+  z-index: 2;
+}
+
+.progress-bar::-webkit-slider-thumb,
+.progress-bar::-moz-range-thumb {
+  height: 14px;
+  width: 14px;
+  background: #0ff;
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 0 4px #00ffff88;
+  border: none;
+  margin-top: -3px;
+}
+
+.time {
+  white-space: nowrap;
+  color: #fff;
+  font-size: 14px;
+  min-width: 100px;
+  text-align: center;
+}
+
+.volume-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.volume-slider {
+  position: absolute;
+  bottom: 150%;
+  left: 50%;
+  transform: translateX(-50%) rotate(-90deg);
+  width: 80px;
+  height: 6px;
+  appearance: none;
+  background: rgb(30, 30, 30);
+  border-radius: 4px;
+  cursor: pointer;
+  box-shadow: 0 0 5px rgba(0,0,0,0.8);
+  display: none;
+  z-index: 20;
+}
+
+.volume-wrapper:hover .volume-slider {
+  display: block;
+}
+
+.volume-slider::-webkit-slider-thumb {
+  width: 12px;
+  height: 12px;
+  background: #007bff;
+  border-radius: 50%;
+  cursor: pointer;
+  border: none;
+}
+
+button,
+select {
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+}
+
+.velocidade option{
+    background-color: black;
+}
+
+.video-page {
+  transition: 0.3s;
+  width: 160%;
+}
+
+
+.video-page.expanded {
+  margin-left: -300px; /* alinhado ao layout com sidebar cheio */
+}
+
+.video-page.collapsed {
+  margin-left: -500px; /* puxa mais pra esquerda com sidebar colapsado */
+}
+
+/*
+===============================
+*/
+
+.video-info-box {
+  background: #1e1e1e;
+  color: white;
+  padding: 20px;
+  margin: 20px auto;
+  max-width: 700px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px #000;
+  transition: all 0.3s ease;
+}
+
+.video-info-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.video-title {
+  margin: 0;
+  font-size: 22px;
+}
+
+.dots-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  gap: 6px;
+  transition: transform 0.3s;
+}
+
+.dots-button.rotated {
+  transform: rotate(90deg);
+}
+
+.dots-button .dot {
+  width: 6px;
+  height: 6px;
+  background: #fff;
+  border-radius: 50%;
+  transition: background 0.3s;
+}
+
+.creator-info {
+  display: flex;
+  align-items: center;
+  margin-top: 15px;
+  gap: 12px;
+}
+
+.creator-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+}
+
+.creator-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.disciplina {
+  font-size: 14px;
+}
+
+.rating-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 15px;
+}
+
+.stars {
+  display: flex;
+  gap: 6px;
+}
+
+.star {
+  font-size: 22px;
+  color: #ccc;
+  transition: color 0.2s ease;
+  cursor: pointer;
+}
+
+.star:hover {
+  color: #ffd700;
+}
+
+.video-date {
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.description-section {
+  margin-top: 20px;
+}
+
+.description-section strong {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 16px;
+}
+
+.star {
+  font-size: 22px;
+  color: #aaa;
+  cursor: pointer;
+  transition: color 0.2s;
+  margin-right: 5px;
+}
+
+.star:hover,
+.star:hover ~ .star {
+  color: #ffc107; /* amarelo claro */
+}
+
+/* Estrelas preenchidas */
+.star.filled {
+  color: #ffcc00;
+}

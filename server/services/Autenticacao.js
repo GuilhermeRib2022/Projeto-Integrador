@@ -1,5 +1,5 @@
 
-import verifyAccessToken from './verifyAccessToken.js'; // Import the function to verify access tokens
+import verificarJWT from './verificarJWT.js'; // Import the function to verify access tokens
  // Keep this secret and secure
 
 export default function authenticateToken(req, res, next) {
@@ -10,7 +10,7 @@ export default function authenticateToken(req, res, next) {
         return res.sendStatus(401); // Sem token, não autorizado
     }
 
-    const result = verifyAccessToken(token); //Verificar validade do token 
+    const result = verificarJWT(token); //Verificar validade do token 
 
 
     if (!result.success) {

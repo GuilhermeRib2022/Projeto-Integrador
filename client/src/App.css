@@ -1,0 +1,110 @@
+#root {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  text-align: initial; /* or center, but only if you want it everywhere */
+}
+
+.logo {
+  height: 6em;
+  padding: 1.5em;
+  will-change: filter;
+  transition: filter 300ms;
+}
+.logo:hover {
+  filter: drop-shadow(0 0 2em #646cffaa);
+}
+.logo.react:hover {
+  filter: drop-shadow(0 0 2em #61dafbaa);
+}
+
+@keyframes logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  a:nth-of-type(2) .logo {
+    animation: logo-spin infinite 20s linear;
+  }
+}
+
+.card {
+  padding: 2em;
+}
+
+.read-the-docs {
+  color: #888;
+}
+
+
+/* Make sure html and body take full height */
+
+/* Your root div should be flex container */
+#root {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* The app wrapper (could be body or root) */
+.App {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1; /* take full height */
+}
+
+/* Make main grow to push footer down */
+main {
+  flex: 1 0 auto;     
+  max-width: 1600px;   
+  min-width: 600px;     
+  margin: 0 auto;   
+  box-sizing: border-box; 
+}
+
+#root {
+  display: flex;
+  justify-content: center; 
+  align-items: center;     
+  min-height: 100vh;
+  padding: 0;
+  margin: 0;
+  flex-direction: column;  
+}
+
+/* Footer styling */
+footer {
+  flex-shrink: 0; /* don’t let footer shrink */
+  background-color: #242424;
+  color: rgba(255, 255, 255, 0.87);
+  padding: 1rem 0;
+  text-align: center;
+}
+
+.main-expanded {
+  margin-left: 240px;
+  width: calc(100% - 240px);
+  transition: margin-left 0.3s ease, width 0.3s ease;
+}
+
+.main-collapsed {
+  margin-left: 60px;
+  width: calc(100% - 60px);
+  transition: margin-left 0.3s ease, width 0.3s ease;
+}
+
+.video-collapsed {
+  margin-left: -180px;
+  width: calc(100% - 60px);
+  transition: margin-left 0.3s ease, width 0.3s ease;
+}
+
+

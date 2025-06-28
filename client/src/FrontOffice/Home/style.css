@@ -1,0 +1,98 @@
+
+
+.Pagetop{
+display: flex;
+  align-items: center;
+  gap: 20px; 
+  margin: 20px 0;
+}
+
+
+
+.video-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  justify-content: flex-start; 
+  width: 100%;
+}
+
+.video-card {
+  width: 500px;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #f0f0f0;
+  font-family: sans-serif;
+  /*box-shadow: 0 2px 5px rgba(0,0,0,0.1);*/
+}
+
+.video-header {
+  display: flex;
+  justify-content: space-between;
+  background: #d0e3ff;
+  padding: 8px 12px;
+  font-weight: bold;
+  align-items: center;
+}
+
+.rating {
+  color: #ffcc00;
+  background-color: rgba(0,0,0,0.3);
+
+}
+
+.disciplina{
+  font-weight: bold;
+  font-size: 18px;
+}
+
+.video-thumbnail {
+  position: relative;
+  background: #e0e0e0;
+  
+}
+
+.video-thumbnail img {
+  width: 100%;
+  height: 278px;
+  border-radius: 10px;
+}
+
+.duration {
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+ background: linear-gradient(90deg,rgba(255, 255, 255, 0) 0%, rgba(0, 0, 0, 0.5) 100%);
+  color: white;
+  padding: 4px 10px;
+  padding-left: 80%; 
+  border-radius: 6px;
+  font-size: 16px;
+  text-align: right; 
+  white-space: nowrap;
+}
+
+.video-info {
+  padding: 10px;
+  background-color: white;
+}
+
+.video-info .title {
+  margin: 0;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.video-info .title:hover {
+text-decoration: underline;
+}
+
+.video-info .meta {
+  font-size: 16px;
+  color: gray;
+  margin-top:0px;
+}
+
+.video-top{
+  max-width: 800px;
+}

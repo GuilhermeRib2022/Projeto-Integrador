@@ -1,43 +1,48 @@
 import { Router } from 'express';
-import { getDisciplinas, getDisciplina, deleteDisciplina, createDisciplina, editDisciplina} from '../models/disciplinaModels.js';
+import {Disciplina} from '../models/disciplinaModels.js';
 const router = Router();
 
-router.get("/lista", async (req, res) => { // Rota de pesquisa de Disciplinas
-    const disciplinas = await getDisciplinas();
-    res.send(disciplinas);
+//OBTEM TODAS AS DISCIPLINAS
+router.get("", async (req, res) => {
+    const result = await Disciplina.getDisciplinas();
+    res.send(result);
 });
 
-router.get("/:id", async (req, res) => { // Obter uma disciplina pelo seu ID
+//OBTER DISCIPLINA POR ID
+router.get("/:id", async (req, res) => {
     const id = req.params.id
-    const disciplinas = await getDisciplina(id);
+    const disciplinas = await Disciplina.getDisciplina(id);
     res.send(disciplinas);
 });
 
-router.delete("/:id", async (req, res) => { // Apagar uma disicplina pelo seu ID
+//APAGAR DISCIPLINA POR ID
+router.delete("/:id", async (req, res) => {
     const id = req.params.id
-    const disciplinas = await deleteDisciplina(id);
+    const disciplinas = await Disciplina.deleteDisciplina(id);
     res.send(disciplinas);
 });
 
-router.post("/", async (req, res) => { // Criar uma disciplina
+//ADICIONAR DISCIPLINA
+router.post("/", async (req, res) => {
     const { Nome, Descricao, Cor } = req.body;
-        if (!Nome || !Descricao || !Cor) {
+    if (!Nome || !Descricao || !Cor) {
         return res.status(400).send({ message: "Nome, Descrição e Cor necessários." });
     }
-    const disciplinas = await createDisciplina(Nome, Descricao, Cor);
+    const disciplinas = await Disciplina.createDisciplina(Nome, Descricao, Cor);
     res.send(disciplinas);
 });
 
-router.patch("/:id", async (req, res) => { // Editar uma disciplina
+//EDITAR DISCIPLINA
+router.patch("/:id", async (req, res) => {
     const id = req.params.id;
     const { Nome, Descricao, Cor } = req.body;
 
-        if (!Nome && !Descricao && !Cor) {
+    if (!Nome && !Descricao && !Cor) {
         return res.status(400).send({ message: "Valores necessários." });
     }
 
     try {
-        const disciplina = await editDisciplina(id, Nome, Descricao, Cor);
+        const disciplina = await Disciplina.editDisciplina(id, Nome, Descricao, Cor);
         res.send(disciplina);
     } catch (error) {
         res.status(404).send({ message: error.message });

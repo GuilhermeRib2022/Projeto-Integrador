@@ -1,0 +1,178 @@
+.video-info-box {
+  background: #1e1e1e;
+  color: #fff;
+  border-radius: 12px;
+  padding: 20px;
+  margin: 20px auto;
+  max-width: 800px;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.4);
+  font-family: Arial, sans-serif;
+  transition: all 0.3s ease;
+  translate: 0px -20px;
+  width: 100%;
+
+}
+
+.video-info-box .header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+
+.creator-info {
+  display: flex;
+  align-items: center;
+  margin-top: 15px;
+}
+
+.creator-photo {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  margin-right: 12px;
+  object-fit: cover;
+  border: 2px solid #444;
+}
+
+.creator-details .creator-name {
+  margin: 0;
+  font-weight: bold;
+}
+
+.disciplina {
+  display: inline-block;
+  margin-top: 4px;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 14px;
+  color: white;
+}
+
+.rating-date {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 15px;
+}
+
+
+
+.date {
+  font-size: 14px;
+  color: #ccc;
+}
+
+.descricao {
+  margin-top: 16px;
+  font-size: 15px;
+  line-height: 1.5;
+}
+.video-info-box {
+  background: #1e1e1e;
+  color: #fff;
+  border-radius: 12px;
+  padding: 20px;
+  margin: 20px auto;
+  max-width: 800px;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.4);
+  font-family: Arial, sans-serif;
+  transition: all 0.3s ease;
+}
+
+.video-info-box .header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  
+}
+
+.video-info-box .toggle-button {
+  background: none;
+  border: none;
+  font-size: 24px;
+  color: #aaa;
+  cursor: pointer;
+  transition: 0.3s;
+
+}
+
+
+.video-info-box .toggle-button:hover {
+    font-size:26px;
+}
+
+.video-info-box .toggle-button:active {
+    font-size:5px;
+    margin-right:30px;
+    margin-top:20px;
+}
+
+
+
+.creator-info {
+  display: flex;
+  align-items: center;
+  margin-top: 15px;
+}
+
+.creator-photo {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  margin-right: 12px;
+  object-fit: cover;
+  border: 2px solid #444;
+}
+
+.creator-details .creator-name {
+  margin: 0;
+  font-weight: bold;
+}
+
+.disciplina {
+  display: inline-block;
+  margin-top: 4px;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 14px;
+  color: white;
+}
+
+.rating-date {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 15px;
+}
+
+.stars {
+  font-size: 24px;
+  color: #555;
+  cursor: pointer;
+  display: flex;
+  flex-direction: row-reverse; 
+}
+
+.stars .filled {
+  color: gold;
+  
+}
+
+.star{
+    font-size: 32px;
+}
+
+.date {
+  font-size: 14px;
+  color: #ccc;
+}
+
+.descricao {
+  margin-top: 16px;
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+
