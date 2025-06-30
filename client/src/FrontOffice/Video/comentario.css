@@ -1,0 +1,243 @@
+.comentarios-container {
+  margin-top: 20px;
+  font-family: Arial, sans-serif;
+  
+}
+
+.comentarios-container button {
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  cursor: pointer;
+  border-radius: 4px;
+  font-size: 14px;
+  transition: background-color 0.3s ease;
+  margin-bottom: 15px;
+}
+
+
+
+.comentario-card {
+  display: flex;
+  gap: 15px;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  margin-bottom: 12px;
+  background-color: #f9f9f9;
+  width:30%;
+}
+
+.comentario-card:hover {
+  background-color: #d6d4d4;
+}
+
+
+.comentario-avatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #007bff;
+}
+
+.comentario-content {
+  flex: 1;
+}
+
+.comentario-content strong {
+  display: block;
+  font-size: 16px;
+  margin-bottom: 4px;
+  color: #333;
+}
+
+.comentario-date {
+  font-size: 12px;
+  color: #666;
+  margin-bottom: 8px;
+  display: block;
+}
+
+.comentario-content p {
+  font-size: 14px;
+  line-height: 1.4;
+  color: #444;
+  margin: 0;
+}
+
+.comentario-form {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 15px;
+  width:50%;
+}
+
+.comentario-form textarea {
+  resize: vertical;
+  padding: 8px;
+  font-size: 14px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  font-family: Arial, sans-serif;
+  margin-bottom: 8px;
+}
+
+.comentario-form button {
+  align-self: flex-end;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 8px 18px;
+  cursor: pointer;
+  border-radius: 4px;
+  font-size: 14px;
+  transition: background-color 0.3s ease;
+}
+
+.comentario-form button:disabled {
+  background-color: #7abaff;
+  cursor: not-allowed;
+}
+
+.comentario-form button:hover:not(:disabled) {
+  background-color: #0056b3;
+}
+
+
+.comentario-form {
+  margin-bottom: 1rem;
+}
+
+.comentario-form textarea {
+  width: 100%;
+  padding: 8px;
+  font-size: 1rem;
+}
+
+.emoji-toolbar {
+  margin: 4px 0;
+}
+
+.emoji-toolbar button {
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+
+.comentario-card {
+  display: flex;
+  align-items: flex-start;
+  margin-top: 1rem;
+  padding: 0.5rem;
+  background: #f9f9f9;
+  border-radius: 6px;
+}
+
+.comentario-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  margin-right: 10px;
+}
+
+.comentario-content {
+  flex: 1;
+}
+
+.comentario-date {
+  font-size: 0.8rem;
+  color: #888;
+  margin-left: 0.5rem;
+}
+
+.emoji-picker-wrapper {
+  all: initial !important; /* reseta quase tudo */
+  position: relative !important; /* se precisar */
+}
+
+.emoji-picker-wrapper .button{
+    background-color: transparent !important;
+}
+
+.emoji-button {
+  background: transparent !important;
+  border: none !important;
+  cursor: pointer !important;
+  font-size: 1.5rem !important; 
+  padding: 0 !important;
+  margin-left: 0.5rem !important;
+  outline: none !important;
+    margin-top: -50px !important;
+}
+
+.emoji-button:hover {
+  background-color: rgba(0,0,0,0.1) !important; 
+  border-radius: 4px !important;
+}
+
+.comentario-actions {
+    position: relative;
+}
+
+.btn-menu {
+    background: transparent !important;
+    border: none !important;
+    font-size: 20px !important;
+    cursor: pointer !important;
+    padding: 4px 8px !important;
+    user-select: none !important;
+color: black !important;
+}
+
+.menu-dropdown {
+    position: absolute !important;
+    top: 28px !important;
+    right: 0 !important;
+    background: white !important;
+    border: 1px solid #ccc !important;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15) !important;
+    border-radius: 4px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    z-index: 100 !important;
+    color:#333
+}
+
+.menu-dropdown button {
+    background: none !important;
+    border: none !important;
+    padding: 8px 12px !important;
+    cursor: pointer !important;
+    text-align: left !important;
+    width: 100% !important;
+    font-size: 14px !important;
+    color:#333  !important;
+}
+
+.menu-dropdown button:hover {
+    background-color: #f0f0f0 !important;
+}
+
+
+.comentario-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px; /* espaço entre header e texto */
+}
+
+.comentario-header strong {
+  margin-right: 8px;
+}
+
+.comentario-user-info {
+  display: flex;
+  align-items: center;
+  gap: 8px; /* espaço entre nome e data */
+}
+
+.comentario-date {
+  color: #666;
+  font-size: 0.9em;
+}
+

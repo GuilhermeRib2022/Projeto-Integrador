@@ -1,5 +1,8 @@
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef, useState } from 'react';
+import ReactPlayer from 'react-player';
 import { FaPlay, FaPause, FaVolumeUp, FaVolumeMute, FaExpand, FaVolumeDown, FaVolumeOff, FaCompress } from 'react-icons/fa';
+
+
 import './style.css';
 
 const formatTime = (time) => {
@@ -10,62 +13,52 @@ const formatTime = (time) => {
 };
 
 const CustomVideoPlayer = ({ src }) => {
-    const videoRef = useRef(null);
+    const playerRef = useRef(null);
+    const containerRef = useRef(null);
+
     const [isPlaying, setIsPlaying] = useState(false);
     const [volume, setVolume] = useState(1);
     const [muted, setMuted] = useState(false);
     const [progress, setProgress] = useState(0);
+    const [buffered, setBuffered] = useState(0);
     const [duration, setDuration] = useState(0);
     const [currentTime, setCurrentTime] = useState(0);
     const [playbackRate, setPlaybackRate] = useState(1);
-    const [buffered, setBuffered] = useState(0);
     const [isFullscreen, setIsFullscreen] = useState(false);
-    const containerRef = useRef(null);
 
     const togglePlay = () => {
-        const video = videoRef.current;
-        if (video.paused) {
-            video.play();
-            setIsPlaying(true);
-        } else {
-            video.pause();
-            setIsPlaying(false);
-        }
+        setIsPlaying((prev) => !prev);
     };
 
     const toggleMute = () => {
-        const video = videoRef.current;
-        video.muted = !video.muted;
-        setMuted(video.muted);
+        setMuted((prev) => !prev);
     };
 
     const handleVolumeChange = (e) => {
-        const vol = parseFloat(e.target.value);
-        videoRef.current.volume = vol;
-        setVolume(vol);
-        setMuted(vol === 0);
-    };
-
-    const handleProgress = () => {
-        const video = videoRef.current;
-        const current = video.currentTime;
-        const dur = video.duration;
-        setCurrentTime(current);
-        setDuration(dur);
-        setProgress((current / dur) * 100);
+        const newVol = parseFloat(e.target.value);
+        setVolume(newVol);
+        setMuted(newVol === 0);
     };
 
     const handleSeek = (e) => {
-        const video = videoRef.current;
-        const newTime = (e.target.value / 100) * video.duration;
-        video.currentTime = newTime;
-        setProgress(e.target.value);
+        const newProgress = parseFloat(e.target.value);
+        playerRef.current.seekTo(newProgress / 100, 'fraction');
+        setProgress(newProgress);
+    };
+
+    const handleProgress = ({ played, playedSeconds, loaded }) => {
+        setProgress(played * 100);
+        setBuffered(loaded * 100);
+        setCurrentTime(playedSeconds);
+    };
+
+    const handleDuration = (dur) => {
+        setDuration(dur);
     };
 
     const handleSpeedChange = (e) => {
-        const rate = parseFloat(e.target.value);
-        videoRef.current.playbackRate = rate;
-        setPlaybackRate(rate);
+        const newRate = parseFloat(e.target.value);
+        setPlaybackRate(newRate);
     };
 
     const handleFullscreen = () => {
@@ -81,106 +74,108 @@ const CustomVideoPlayer = ({ src }) => {
         }
     };
 
-    useEffect(() => {
-        const video = videoRef.current;
-        const updateBuffered = () => {
-            if (video && video.buffered.length > 0) {
-                const bufferedEnd = video.buffered.end(video.buffered.length - 1);
-                const duration = video.duration || 1;
-                setBuffered((bufferedEnd / duration) * 100);
-            }
-        };
-        video.addEventListener("progress", updateBuffered);
-        return () => video.removeEventListener("progress", updateBuffered);
-    }, []);
-
-    useEffect(() => {
-        const handleFullscreenChange = () => {
-            const isFull =
-                document.fullscreenElement ||
-                document.webkitFullscreenElement ||
-                document.msFullscreenElement;
-            setIsFullscreen(!!isFull);
-        };
-
-        document.addEventListener("fullscreenchange", handleFullscreenChange);
-        document.addEventListener("webkitfullscreenchange", handleFullscreenChange);
-        document.addEventListener("msfullscreenchange", handleFullscreenChange);
-
-        return () => {
-            document.removeEventListener("fullscreenchange", handleFullscreenChange);
-            document.removeEventListener("webkitfullscreenchange", handleFullscreenChange);
-            document.removeEventListener("msfullscreenchange", handleFullscreenChange);
-        };
-    }, []);
-
-
     const VolumeIcon = ({ volume, muted }) => {
         if (muted || volume === 0) return <FaVolumeMute />;
-        if (volume > 0 && volume <= 0.3) return <FaVolumeOff />; // baixo volume
-        if (volume > 0.3 && volume <= 0.6) return <FaVolumeDown />; // médio
-        return <FaVolumeUp />; // alto volume
+        if (volume > 0 && volume <= 0.3) return <FaVolumeOff />;
+        if (volume > 0.3 && volume <= 0.6) return <FaVolumeDown />;
+        return <FaVolumeUp />;
     };
 
-
     return (
-        <div className="video-wrapper" ref={containerRef}>
-            <video
-                ref={videoRef}
-                src={src}
-                className="custom-video"
+        <div className="video-wrapper" ref={containerRef} style={{ cursor: 'default' }}>
+            <div
+                className="player-wrapper"
                 onClick={togglePlay}
-                onTimeUpdate={handleProgress}
-                onLoadedMetadata={() => setDuration(videoRef.current.duration)}
-                onEnded={() => setIsPlaying(false)}
-            />
-            <div className="controls-overlay">
-                <button onClick={togglePlay} title="Play/Pause">
-                    {isPlaying ? <FaPause /> : <FaPlay />}
-                </button>
+                style={{ position: 'relative', width: '100%', height: '100%' }}
+            >
+                <ReactPlayer
+                    ref={playerRef}
+                    url={src}
+                    playing={isPlaying}
+                    muted={muted}
+                    volume={volume}
+                    playbackRate={playbackRate}
+                    onProgress={handleProgress}
+                    onDuration={handleDuration}
+                    onEnded={() => setIsPlaying(false)}
+                    width="100%"
+                    height="100%"
+                    controls={false}
+                />
 
-                <div className="volume-wrapper">
-                    <button onClick={toggleMute} title="Mute/Unmute">
-                        <VolumeIcon volume={volume} muted={muted} />
+                <div className="controls-overlay">
+                    <button
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            togglePlay();
+                        }}
+                        title="Play/Pause"
+                    >
+                        {isPlaying ? <FaPause /> : <FaPlay />}
                     </button>
-                    <input
-                        type="range"
-                        min="0"
-                        max="1"
-                        step="0.01"
-                        value={volume}
-                        onChange={handleVolumeChange}
-                        className="volume-slider"
-                    />
+
+                    <div className="volume-wrapper">
+                        <button
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                toggleMute();
+                            }}
+                            title="Mute/Unmute"
+                        >
+                            <VolumeIcon volume={volume} muted={muted} />
+                        </button>
+                        <input
+                            type="range"
+                            min="0"
+                            max="1"
+                            step="0.01"
+                            value={volume}
+                            onChange={handleVolumeChange}
+                            className="volume-slider"
+                        />
+                    </div>
+
+                    <div className="progress-container">
+                        <div className="buffered-bar" style={{ width: `${buffered}%` }}></div>
+                        <div className="progressing-bar" style={{ width: `${progress}%` }}></div>
+                        <input
+                            type="range"
+                            min="0"
+                            max="100"
+                            value={progress}
+                            onChange={handleSeek}
+                            className="progress-bar"
+                            onClick={(e) => e.stopPropagation()}
+                        />
+                    </div>
+
+                    <span className="time">
+                        {formatTime(currentTime)} / {formatTime(duration)}
+                    </span>
+
+                    <select
+                        className="velocidade"
+                        value={playbackRate}
+                        onChange={handleSpeedChange}
+                        title="Velocidade"
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        <option value="0.5">0.5x</option>
+                        <option value="1">1x</option>
+                        <option value="1.5">1.5x</option>
+                        <option value="2">2x</option>
+                    </select>
+
+                    <button
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            handleFullscreen();
+                        }}
+                        title="Tela cheia"
+                    >
+                        {isFullscreen ? <FaCompress /> : <FaExpand />}
+                    </button>
                 </div>
-
-                <div className="progress-container">
-                    <div className="progressing-bar" style={{ width: `${progress}%` }}></div>
-                    <div className="buffered-bar" style={{ width: `${buffered}%` }}></div>
-                    <input
-                        type="range"
-                        min="0"
-                        max="100"
-                        value={progress}
-                        onChange={handleSeek}
-                        className="progress-bar"
-                    />
-                </div>
-
-                <span className="time">
-                    {formatTime(currentTime)} / {formatTime(duration)}
-                </span>
-
-                <select className="velocidade" value={playbackRate} onChange={handleSpeedChange} title="Velocidade">
-                    <option value="0.5">0.5x</option>
-                    <option value="1">1x</option>
-                    <option value="1.5">1.5x</option>
-                    <option value="2">2x</option>
-                </select>
-
-                <button onClick={handleFullscreen} title="Tela cheia">
-                    {isFullscreen ? <FaCompress /> : <FaExpand />}
-                </button>
             </div>
         </div>
     );

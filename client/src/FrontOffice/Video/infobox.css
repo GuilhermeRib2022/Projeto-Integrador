@@ -1,6 +1,6 @@
 .video-info-box {
-  background: #1e1e1e;
-  color: #fff;
+  background: #d6d6d6;
+  color: #000000;
   border-radius: 12px;
   padding: 20px;
   margin: 20px auto;
@@ -12,7 +12,7 @@
   width: 100%;
 
 }
-
+/* #1e1e1e AND #2a2a2a*/
 .video-info-box .header {
   display: flex;
   justify-content: space-between;
@@ -68,17 +68,7 @@
   font-size: 15px;
   line-height: 1.5;
 }
-.video-info-box {
-  background: #1e1e1e;
-  color: #fff;
-  border-radius: 12px;
-  padding: 20px;
-  margin: 20px auto;
-  max-width: 800px;
-  box-shadow: 0 0 8px rgba(0, 0, 0, 0.4);
-  font-family: Arial, sans-serif;
-  transition: all 0.3s ease;
-}
+
 
 .video-info-box .header {
   display: flex;
@@ -176,3 +166,28 @@
 }
 
 
+.fa-star,
+.fa-star-o {
+    color: rgb(53, 53, 53);
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.fa-star,
+.fa-star-o:hover {
+    color: rgb(240, 197, 9);
+}
+
+
+.rating-section{
+  background-color:rgb(163, 163, 163, 0.2);
+
+}
+
+.video-title{
+  background:rgb(163, 163, 163, 0.2);
+}
+
+.delete-rating-btn:hover{
+  color:red !important;
+}

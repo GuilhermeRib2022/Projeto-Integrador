@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useLocation } from 'react-router-dom';
 import axios from 'axios';
 import { BASE_URL } from '../../components/url';
@@ -9,10 +10,27 @@ import './style.css'
 const SearchResults = () => {
     const [videos, setVideos] = useState([]);
     const [loading, setLoading] = useState(true);
+    const navigate = useNavigate();
 
     const query = new URLSearchParams(useLocation().search);
     const texto = query.get('texto');
     const disciplina = query.get('disciplina') || '';
+
+    function getContrastingTextColor(hex) {
+        // Remove "#" if present
+        const color = hex.replace('#', '');
+
+        // Parse r, g, b values
+        const r = parseInt(color.substr(0, 2), 16);
+        const g = parseInt(color.substr(2, 2), 16);
+        const b = parseInt(color.substr(4, 2), 16);
+
+        // Calculate luminance (simple brightness formula)
+        const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+
+        // Return black for light backgrounds, white for dark ones
+        return brightness > 128 ? '#000000' : '#FFFFFF';
+    }
 
     useEffect(() => {
         if (!texto && !disciplina) {
@@ -52,18 +70,25 @@ const SearchResults = () => {
             {loading && <p>Carregando...</p>}
 
             {!loading && videos.length === 0 && (
-                <h1>Nenhum vídeo encontrado para "{texto || disciplina}"</h1>
+                <div className="search-header">
+                    <h1>Nenhum vídeo encontrado para "{texto || disciplina}"</h1>
+                    <button className="btn-voltar" onClick={() => navigate(`/`)}> Voltar </button>
+                </div>
             )}
 
             {!loading && videos.length > 0 && (
                 <>
-                    <h1>Resultados para "{texto || disciplina}"</h1>
+                    <div className="search-header">
+                        <h1>Resultados para "{texto || disciplina}"</h1>
+
+                        <button className="btn-voltar" onClick={() => navigate(-1)}> Voltar </button>
+                    </div>
                     <div className="video-list">
                         {videos.map((video, index) => (
                             <div className="video-card" key={index}>
                                 <div className="video-header" style={{ backgroundColor: video.Cor || '#d0e3ff' }}>
-                                    <span className="disciplina">{video.Disciplina}</span>
-                                    <span className="rating">⭐ {Math.round(parseFloat(video.Nota) * 10)}%</span>
+                                    <span style={{ color: getContrastingTextColor(video.Cor), cursor: 'pointer' }} className={video.disciplina} onClick={() => navigate(`/pesquisar/disciplina?disciplina=${encodeURIComponent(video.Disciplina)}`)}><strong>{video.Disciplina}</strong></span>
+                                    <span style={{ color: getContrastingTextColor(video.Cor) }} className={video.rating}>⭐ {Math.round(parseFloat(video.Nota) * 10)}%</span>
                                 </div>
 
                                 <div className="video-thumbnail">
@@ -81,7 +106,7 @@ const SearchResults = () => {
                                     </Link>
 
                                     <p className="meta">
-                                        {formatViews(video.Views)} visualizações • {formatDate(video.UpdateTime)}
+                                        {formatViews(video.Views)} visualizações • {formatDate(video.DataPublicacao)}
                                     </p>
                                 </div>
                             </div>

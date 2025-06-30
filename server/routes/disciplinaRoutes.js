@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import {Disciplina} from '../models/disciplinaModels.js';
+import { Disciplina } from '../models/disciplinaModels.js';
 const router = Router();
 
 //OBTEM TODAS AS DISCIPLINAS
@@ -28,8 +28,16 @@ router.post("/", async (req, res) => {
     if (!Nome || !Descricao || !Cor) {
         return res.status(400).send({ message: "Nome, Descrição e Cor necessários." });
     }
-    const disciplinas = await Disciplina.createDisciplina(Nome, Descricao, Cor);
-    res.send(disciplinas);
+    try {
+        const disciplinas = await Disciplina.createDisciplina(Nome, Descricao, Cor);
+        res.status(201).send(disciplinas);
+    } catch (error) {
+        if (error.code === 'ER_DUP_ENTRY') {
+            return res.status(409).send({ message: "Nome ou Cor da disciplina já existe." });
+        }
+        console.error(error);
+        res.status(500).send({ message: "Erro ao criar disciplina." });
+    }
 });
 
 //EDITAR DISCIPLINA
@@ -45,7 +53,11 @@ router.patch("/:id", async (req, res) => {
         const disciplina = await Disciplina.editDisciplina(id, Nome, Descricao, Cor);
         res.send(disciplina);
     } catch (error) {
-        res.status(404).send({ message: error.message });
+        if (error.code === 'ER_DUP_ENTRY') {
+            return res.status(409).send({ message: "Nome ou Cor da disciplina já existe." });
+        }
+        console.error(error);
+        res.status(500).send({ message: "Erro ao criar disciplina." });
     }
 });
 

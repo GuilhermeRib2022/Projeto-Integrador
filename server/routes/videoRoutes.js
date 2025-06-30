@@ -9,6 +9,26 @@ router.get("/", async (req, res) => {
     res.send(videos)
 })
 
+router.get("/home", async (req, res) => {
+  try {
+    const maisVistos = await Video.getVideosView();      
+    const melhorAvaliados = await Video.getVideosReview();    
+    const recentes = await Video.getVideosDate();      
+    const Disciplina1 = await Video.getVidoesDisciplina();  
+    const Disciplina2 = await Video.getVidoesDisciplina();  
+    res.json({
+      maisVistos,
+      melhorAvaliados,
+      recentes,
+      Disciplina1, 
+      Disciplina2,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Erro ao buscar vídeos");
+  }
+});
+
 
 
 router.get("/search", async (req, res) => {
@@ -29,6 +49,24 @@ router.get("/search", async (req, res) => {
 
 });
 
+
+router.get("/disciplina", async (req, res) => {
+    const texto = req.query.texto;
+    const disciplina = req.query.disciplina;
+    let videos;
+    if(!disciplina){
+        videos = await Video.getSearch(texto);
+    }else if(!texto){
+        videos = await Video.getDisciplinaExact(disciplina);
+    } else {
+        videos = await Video.getVideoDisciplina(texto, disciplina);
+    }
+    
+
+    //Enviar resposta com video e texto enviado
+    res.send(videos);
+
+});
 
 /*
 router.get("/search", async (req, res) => {

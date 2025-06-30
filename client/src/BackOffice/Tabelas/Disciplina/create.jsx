@@ -26,17 +26,21 @@ const DisciplinaCreate = () => {
 
       navigate('/admin/disciplina');
     } catch (err) {
-      setError('Erro ao criar disciplina. Verifique os dados.');
+      if (err.response && err.response.status === 409) {
+        setError('Nome ou Cor da disciplina já existe.');
+      } else {
+        setError('Erro ao criar disciplina. Verifique os dados.');
+      }
       console.error(err);
     }
   };
 
   return (
     <div className="container mt-4">
-          <div className="fixd d-flex justify-content-between align-items-center mb-3">
-            <h1>Criar nova Disciplina</h1>
-            <Link to="/admin/disciplina" className="btn btn-outline-secondary">Voltar</Link>
-          </div>
+      <div className="fixd d-flex justify-content-between align-items-center mb-3">
+        <h1>Criar nova Disciplina</h1>
+        <Link to="/admin/disciplina" className="btn btn-outline-secondary">Voltar</Link>
+      </div>
       <hr />
       {error && <div className="alert alert-danger">{error}</div>}
       <form onSubmit={handleSubmit}>

@@ -1,7 +1,12 @@
 import { Router } from 'express';
-import {Comentario} from '../models/comentarioModels.js';
+import { Comentario } from '../models/comentarioModels.js';
 import authenticateToken from '../services/Autenticacao.js';
 const router = Router();
+
+function parsePositiveInt(value, defaultValue) {
+  const parsed = parseInt(value, 10);
+  return Number.isInteger(parsed) && parsed > 0 ? parsed : defaultValue;
+}
 
 //OBTER TODAS OS COMENTÁRIOS
 router.get("/", async (req, res) => {
@@ -54,10 +59,21 @@ router.delete("/:id", authenticateToken, async (req, res) => { // Apagar um come
 
 //OBTER COMENTÁRIOS POR VIDEOID
 router.get("/video/:id", async (req, res) => {
-    const Videoid = req.params.id
-    const videos = await Comentario.getComentariosVideo(Videoid)
-    res.send(videos)
+  try {
+    const videoId = req.params.id;
+    // pegar página e limite da query string, defaults
+    const page = parsePositiveInt(req.query.page, 1);
+    const limit = parsePositiveInt(req.query.limit, 10);
+    const offset = (page - 1) * limit;
+
+    const comentarios = await Comentario.getComentariosVideo(videoId, limit, offset);
+    res.send(comentarios);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Erro ao obter comentários');
+  }
 });
+
 
 //CRIAR COMENTÁRIO POR VIDEOID & UTILIZADORID
 router.post("/video/:id", authenticateToken, async (req, res) => { // Rota de criação de review
@@ -75,6 +91,7 @@ router.post("/video/:id", authenticateToken, async (req, res) => { // Rota de cr
         res.status(201).send(comentario);
     }
     catch (error) {
+        console.error('Erro interno ao criar comentário:', error);
         res.status(500).send({ message: "Erro ao criar comentário" });
     }
 });

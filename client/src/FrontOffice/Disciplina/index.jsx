@@ -34,11 +34,11 @@ const Disciplinas = () => {
     axios.get(`${BASE_URL}/disciplina`, {
       headers: { Authorization: `Bearer ${token}` }
     })
-    .then(res => setDisciplinas(res.data))
-    .catch(err => console.error(err));
+      .then(res => setDisciplinas(res.data))
+      .catch(err => console.error(err));
   }, []);
 
-  
+
   return (
     <div className="disciplinas-grid">
       {disciplinas.map((disciplina, index) => {
@@ -52,13 +52,13 @@ const Disciplinas = () => {
 
         return (
           <Link
-            to={`/pesquisar/disciplina/disciplina='${encodeURIComponent(disciplina.Nome)}'`}
+            to={`/pesquisar/disciplina?disciplina=${encodeURIComponent(disciplina.Nome)}`}
             key={index}
             className="disciplina-card-link"
           >
             <div
               className="disciplina-card"
-              style={{ background: cardBg, color: textColor}}
+              style={{ background: cardBg, color: textColor }}
             >
               <h3>{disciplina.Nome}</h3>
               <p style={{ background: descBg }}>{disciplina.Descricao}</p>

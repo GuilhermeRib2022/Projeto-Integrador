@@ -114,6 +114,24 @@ WHERE Disciplina.nome LIKE ? `, [`%${searchTerm}%`]);
         }
     },
 
+        async getDisciplinaExact(searchTerm) {
+        try {
+
+            if (!searchTerm || typeof searchTerm !== 'string') {
+                throw new Error('Pesquisa inválida');
+            }
+            const [rows] = await pool.query(`SELECT v.*, disciplina.Nome AS Disciplina, disciplina.Cor AS Cor, utilizador.Nome AS Autor, AVG_reviews.AvgNota AS Nota FROM video v
+LEFT JOIN disciplina ON disciplina.ID = v.DisciplinaID
+LEFT JOIN utilizador ON utilizador.ID = v.UtilizadorID
+LEFT JOIN (SELECT videoID, AVG(Nota) AS AvgNota FROM review GROUP BY videoID) AS AVG_reviews ON AVG_reviews.videoID = v.ID
+WHERE Disciplina.nome LIKE ? `, [`${searchTerm}`]);
+            return rows;
+
+        } catch (error) {
+            throw new Error('Falha ao pesquisar vídeos: ' + error.message);
+        }
+    },
+
     //PESQUISAR VÍDEO POR NOME E DISCIPLINA MELHORADO
     async getVideoDisciplina(searchTerm, disciplina) {
         try {
@@ -149,6 +167,82 @@ WHERE v.Titulo LIKE ? AND disciplina.nome LIKE ?`, [`%${searchTerm}%`, `%${disci
             throw new Error(`Failed to search videos by discipline: ${error.message}`);
         }
     },
+
+    //OBTÉM TODOS OS VÍDEOS, ordenados por Visualizações
+    async getVideosView() {
+        try {
+            const [rows] = await pool.query(`
+                SELECT v.*, disciplina.Nome AS Disciplina, disciplina.Cor AS Cor, utilizador.Nome AS Autor, AVG_reviews.AvgNota AS Nota FROM video v
+LEFT JOIN disciplina ON disciplina.ID = v.DisciplinaID
+LEFT JOIN utilizador ON utilizador.ID = v.UtilizadorID
+LEFT JOIN (SELECT videoID, AVG(Nota) AS AvgNota FROM review GROUP BY videoID) AS AVG_reviews ON AVG_reviews.videoID = v.ID
+ORDER BY v.Views DESC LIMIT 8`)
+            return rows
+        } catch (error) {
+            throw new Error(`Failed to fetch videos: ${error.message}`)
+        }
+    },
+
+        async getVideosReview() {
+        try {
+            const [rows] = await pool.query(`
+                SELECT v.*, disciplina.Nome AS Disciplina, disciplina.Cor AS Cor, utilizador.Nome AS Autor, AVG_reviews.AvgNota AS Nota FROM video v
+LEFT JOIN disciplina ON disciplina.ID = v.DisciplinaID
+LEFT JOIN utilizador ON utilizador.ID = v.UtilizadorID
+LEFT JOIN (SELECT videoID, AVG(Nota) AS AvgNota FROM review GROUP BY videoID) AS AVG_reviews ON AVG_reviews.videoID = v.ID
+ORDER BY Nota DESC LIMIT 8`)
+            return rows
+        } catch (error) {
+            throw new Error(`Failed to fetch videos: ${error.message}`)
+        }
+    },
+
+    //OBTÉM TODOS OS VÍDEOS, ordenados por data
+    async getVideosDate() {
+        try {
+            const [rows] = await pool.query(`
+                SELECT v.*, disciplina.Nome AS Disciplina, disciplina.Cor AS Cor, utilizador.Nome AS Autor, AVG_reviews.AvgNota AS Nota FROM video v
+LEFT JOIN disciplina ON disciplina.ID = v.DisciplinaID
+LEFT JOIN utilizador ON utilizador.ID = v.UtilizadorID
+LEFT JOIN (SELECT videoID, AVG(Nota) AS AvgNota FROM review GROUP BY videoID) AS AVG_reviews ON AVG_reviews.videoID = v.ID
+ORDER BY v.DataPublicacao DESC LIMIT 8`)
+            return rows
+        } catch (error) {
+            throw new Error(`Failed to fetch videos: ${error.message}`)
+        }
+    },
+
+    async getVidoesDisciplina() {
+        try {
+
+            // Passo 1: buscar todas as disciplinas com pelo menos 1 vídeo
+            const [disciplinasComVideo] = await pool.query(`
+      SELECT DISTINCT DisciplinaID
+      FROM video
+    `);
+
+            // Passo 2: escolher uma aleatória
+            const randomIndex = Math.floor(Math.random() * disciplinasComVideo.length);
+            const disciplinaID = disciplinasComVideo[randomIndex].DisciplinaID;
+
+            // Passo 3: buscar vídeos dessa disciplina
+            const [rows] = await pool.query(`
+      SELECT v.*, d.Nome AS Disciplina, d.Cor AS Cor, u.Nome AS Autor, AVG_reviews.AvgNota AS Nota
+      FROM video v
+      LEFT JOIN disciplina d ON d.ID = v.DisciplinaID
+      LEFT JOIN utilizador u ON u.ID = v.UtilizadorID
+      LEFT JOIN (
+        SELECT videoID, AVG(Nota) AS AvgNota FROM review GROUP BY videoID
+      ) AS AVG_reviews ON AVG_reviews.videoID = v.ID
+      WHERE v.DisciplinaID = ?
+      LIMIT 8
+    `, [disciplinaID]);
+            return rows;
+        } catch (error) {
+            throw new Error(`Failed to fetch random disciplina videos: ${error.message}`);
+        }
+    },
+
 
 }
 

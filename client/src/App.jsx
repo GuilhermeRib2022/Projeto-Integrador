@@ -18,6 +18,7 @@ import Video from './FrontOffice/Video';
 import Disciplinas from './FrontOffice/Disciplina';
 import SearchResults from './FrontOffice/Home/SearchResults';
 import SearchDisciplina from './FrontOffice/SearchDisciplina/SearchDisciplina';
+import ScrollToTop from './services/ScrollToTop';
 
 import './App.css'
 
@@ -33,6 +34,7 @@ function AppIn() {
         <div className="flex-grow-1 d-flex">
           {!isAdminRoute && <Sidebar collapsed={collapsed} setCollapsed={setCollapsed} />}
           <main className={`flex-grow-1 p-3 ${collapsed ? 'main-collapsed' : 'main-expanded'}`}>
+            <ScrollToTop/>
             <Routes>
               <Route path="*" element={<NotFound />} />
               <Route path="/admin/*" element={<ProtectedRoute><Admin /></ProtectedRoute>} />
@@ -43,9 +45,8 @@ function AppIn() {
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
               <Route path="/search" element={<SearchResults />} />
-              <Route path="/disciplina" element={<SearchDisciplina />} />
+              <Route path="/pesquisar/disciplina" element={<SearchDisciplina />} />
               <Route path="/" element={<Home />} />
-
             </Routes>
           </main>
         </div>

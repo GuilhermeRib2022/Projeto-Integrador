@@ -6,6 +6,7 @@ import ReactPlayer from 'react-player';
 import CustomVideoPlayer from './videoplayer';
 import VideoInfoBox from './infobox';
 import Anotacao from './anotacao';
+import Comentario from './comentario';
 
 import { BASE_URL } from '../../components/url';
 import './style.css';
@@ -37,6 +38,10 @@ const Video = ({ collapsed }) => {
                 <Anotacao videoId={video.ID} />
                 <VideoInfoBox video={video} />
                 
+            </div>
+            <hr></hr>
+            <div>
+                <Comentario video={video} />
             </div>
 
         </div>

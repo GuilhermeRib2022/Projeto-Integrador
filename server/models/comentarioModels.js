@@ -24,11 +24,16 @@ export const Comentario = {
     },
 
     //OBTÉM COMENTÁRIOS DE VIDEOID
-    async getComentariosVideo(VideoID) {
-        const [rows] = await pool.query("SELECT comentario.ID,VideoID,utilizador.nome,Texto,comentario.UploadTime FROM comentario\
+    async getComentariosVideo(VideoID, limit, offset) {
+        limit = Number.isInteger(limit) && limit > 0 ? limit : 10;
+        offset = Number.isInteger(offset) && offset >= 0 ? offset : 0;
+
+        const [rows] = await pool.query(`SELECT comentario.ID,VideoID, comentario.UtilizadorID, utilizador.nome, utilizador.FotoPerfil, Texto,comentario.UploadTime FROM comentario\
                                     LEFT JOIN utilizador ON utilizador.ID = comentario.utilizadorID\
-                                    WHERE comentario.videoID = ?;"
-            , [VideoID]);
+                                    WHERE comentario.videoID = ?
+                                    ORDER BY comentario.UploadTime DESC
+                                    LIMIT ? OFFSET ?`
+            , [VideoID, limit, offset]);
         return rows
     },
 
@@ -36,12 +41,12 @@ export const Comentario = {
     async createComentario(videoID, utilizadorID, Texto) {
         const [result] = await pool.query('INSERT INTO comentario (VideoID, utilizadorID, Texto) VALUES (?, ?, ?)', [videoID, utilizadorID, Texto]);
         const id = result.insertId;
-        return getComentario(id);
+        return this.getComentariosVideo(videoID);
     },
 
     //ATUALIZAR COMENTÁRIO POR VIDEOID & UTILIZADORID
     async editComentario(ID, VideoID, utilizadorID, Texto) {
-        const current = await getComentario(ID);
+        const current = await this.getComentariosVideo(VideoID)
 
         const updatedVideoID = VideoID ?? current.VideoID;
         const updatedUtilizadorID = utilizadorID ?? current.UtilizadorID;
@@ -53,7 +58,7 @@ export const Comentario = {
             throw new Error(`No comentario found with ID ${ID}`);
         }
 
-        return getComentario(ID);
+        return this.getComentariosVideo(VideoID);
     },
 
 }

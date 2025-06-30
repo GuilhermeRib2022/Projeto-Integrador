@@ -91,3 +91,26 @@ text-decoration: underline;
   color: gray;
   margin-top:0px;
 }
+
+
+.btn-voltar {
+  margin: 10px;
+  padding: 8px 16px;
+  background-color: #007bff;
+  border: none;
+  color: white;
+  cursor: pointer;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.btn-voltar:hover {
+  background-color: #0056b3;
+}
+
+.search-header {
+  display: flex;
+  align-items: center;     
+  justify-content: space-between; 
+  margin-bottom: 20px;    
+}

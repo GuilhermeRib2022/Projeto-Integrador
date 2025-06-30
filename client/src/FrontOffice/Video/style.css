@@ -268,6 +268,7 @@ select {
   display: flex;
   justify-content: space-between;
   align-items: center;
+
 }
 
 .video-title {
@@ -342,7 +343,7 @@ select {
 }
 
 .video-date {
-  font-size: 16px;
+  font-size: 20px;
   font-weight: bold;
 }
 
@@ -364,12 +365,8 @@ select {
   margin-right: 5px;
 }
 
-.star:hover,
-.star:hover ~ .star {
-  color: #ffc107; /* amarelo claro */
+
+.player-wrapper {
+  cursor: default; /* mantém o cursor padrão (seta) */
 }
 
-/* Estrelas preenchidas */
-.star.filled {
-  color: #ffcc00;
-}

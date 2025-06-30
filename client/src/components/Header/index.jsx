@@ -118,8 +118,8 @@ const Header = () => {
 
                   {users && (
                     <>
-                      <li><NavLink className="dropdown-item" to="/ocorrencia">Ocorrencias</NavLink></li>
-                      <li><NavLink className="dropdown-item" to="/encomendas">Encomendas</NavLink></li>
+                      <li><NavLink className="dropdown-item" to="/perfil">Perfil</NavLink></li>
+                      <li><NavLink className="dropdown-item" to="/anotacoes">Anotacoes</NavLink></li>
                       <li>  <a href="#" className="dropdown-item" onClick={handleLogout}>Logout</a></li>
                     </>
                   )}

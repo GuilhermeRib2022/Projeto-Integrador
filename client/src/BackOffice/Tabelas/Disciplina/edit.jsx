@@ -49,13 +49,17 @@ const DisciplinaEdit = () => {
 
       navigate('/admin/disciplina');
     } catch (err) {
+      if (err.response && err.response.status === 409) {
+        setError('Nome ou Cor da disciplina já existe.');
+      } else {
+        setError('Erro ao criar disciplina. Verifique os dados.');
+      }
       console.error(err);
-      setError('Erro ao atualizar a disciplina.');
     }
   };
 
   if (loading) return <p>A carregar dados...</p>;
-  if (error) return <div className="alert alert-danger">{error}</div>;
+
 
   return (
     <div className="container mt-4">
@@ -64,6 +68,7 @@ const DisciplinaEdit = () => {
             <Link to="/admin/disciplina" className="btn btn-outline-secondary">Voltar</Link>
           </div>
       <hr />
+      {error && <div className="alert alert-danger">{error}</div>}
       <form onSubmit={handleSubmit}>
         <div className="mb-3">
           <label htmlFor="nome" className="form-label">Nome</label>

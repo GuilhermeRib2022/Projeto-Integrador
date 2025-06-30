@@ -48,8 +48,10 @@ router.post("/video/:id", async (req, res) => { // Rota de criação de review
     try {
         const UtilizadorID = req.user.id; // Assumindo que o ID do utilizador está disponível no token JWT
         const VideoID = req.params.id; // O ID do vídeo é passado como parâmetro na rota
-        const {Nota} = req.body;
-        if (!VideoID || !UtilizadorID || !Nota || Nota < 0 || Nota > 10 || typeof Nota !== 'number') {
+        const { Nota } = req.body;
+
+        const notaValida = typeof Nota === 'number' && Nota >= 0 && Nota <= 10;
+        if (!VideoID || !UtilizadorID || !notaValida) {
             console.error("Dados inválidos:", { VideoID, UtilizadorID, Nota });
             return res.status(400).send({ message: "Review Inválida" });
         }
