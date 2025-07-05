@@ -1,6 +1,38 @@
 import pool from "../database.js";
 
 export const Video = {
+
+
+    async visualizar(videoID) {
+    const [result] = await pool.query(
+      'UPDATE video SET views = views + 1 WHERE ID = ?',
+      [videoID]
+    );
+    return result;
+  },
+
+    async publicarVideo(disciplinaID, utilizadorID, titulo, descricao, videoPath, thumbnail, duracao) {
+        const sql = `INSERT INTO Video (DisciplinaID, UtilizadorID, Titulo, Descricao, VideoPath, Thumbnail, Duracao) VALUES (?, ?, ?, ?, ?, ?, ?)`;
+        const values = [ disciplinaID, utilizadorID, titulo, descricao || null, videoPath, thumbnail || null, duracao];
+        const [result] = await pool.query(sql, values);
+        return result.insertId; 
+    },
+
+    
+        async getVideosUser(UtilizadorID) {
+        try {
+            const [rows] = await pool.query(`
+                SELECT v.*, disciplina.Nome AS Disciplina, disciplina.Cor AS Cor, utilizador.Nome AS Autor, AVG_reviews.AvgNota AS Nota FROM video v
+LEFT JOIN disciplina ON disciplina.ID = v.DisciplinaID
+LEFT JOIN utilizador ON utilizador.ID = v.UtilizadorID
+LEFT JOIN (SELECT videoID, AVG(Nota) AS AvgNota FROM review GROUP BY videoID) AS AVG_reviews ON AVG_reviews.videoID = v.ID
+WHERE v.UtilizadorID = ?`, [UtilizadorID])
+            return rows
+        } catch (error) {
+            throw new Error(`Failed to fetch videos: ${error.message}`)
+        }
+    },
+
     //OBTÉM TODOS OS VÍDEOS
     async getVideos() {
         try {
@@ -19,7 +51,7 @@ LEFT JOIN (SELECT videoID, AVG(Nota) AS AvgNota FROM review GROUP BY videoID) AS
     // # TALVEZ O VIDEO INCLUIR A AVALIAÇÃO MÉDIA.
     async getVideo(id) {
         try {
-            const [rows] = await pool.query(`SELECT v.*, disciplina.Nome AS Disciplina, disciplina.Cor AS Cor, utilizador.Nome AS Autor, AVG_reviews.AvgNota AS Nota FROM video v
+            const [rows] = await pool.query(`SELECT v.*, disciplina.Nome AS Disciplina, disciplina.Cor AS Cor, utilizador.Nome AS Autor, utilizador.FotoPerfil as FotoPerfil, AVG_reviews.AvgNota AS Nota FROM video v
 LEFT JOIN disciplina ON disciplina.ID = v.DisciplinaID
 LEFT JOIN utilizador ON utilizador.ID = v.UtilizadorID
 LEFT JOIN (SELECT videoID, AVG(Nota) AS AvgNota FROM review GROUP BY videoID) AS AVG_reviews ON AVG_reviews.videoID = v.ID
@@ -244,80 +276,60 @@ ORDER BY v.DataPublicacao DESC LIMIT 8`)
     },
 
 
-}
+    async editarVideo(videoID, utilizadorID, { titulo, descricao, disciplina, thumbnail }) {
+        try {
+            // Buscar o vídeo pelo ID
+            const [videos] = await pool.query('SELECT * FROM video WHERE ID = ?', [videoID]);
+            const video = videos[0];
 
+            if (!video) throw new Error('Vídeo não encontrado');
+            if (video.UtilizadorID !== utilizadorID) throw new Error('Acesso negado');
 
+            // Montar partes da query dinamicamente
+            const campos = [];
+            const valores = [];
 
-/*
-Funções:
-Em todas as situações, o ID do utilizador é obtido através do token JWT.
+            if (titulo) {
+                campos.push('Titulo = ?');
+                valores.push(titulo);
+            }
 
-x Utilizador pesquisa vídeos. GET localhost:9595/video/pesquisa OU GET localhost:9595/video?search=termo
-x Utilizador pesquisa videos de uma disciplina. GET localhost:9595/video/pesquisa/disciplina OU GET localhost:9595/video?search=termo&disciplina=ID
-- Utilizador dá review a video. POST localhost:9595/video/:id/review 
-x Utilizador cria comentário em video. POST localhost:9595/video/:id/comentario 
-x Utilizador cria anotação em vídeo. POST localhost:9595/video/:id/anotacao
-- Utilizador fala com LLM.
-*/
+            if (descricao) {
+                campos.push('Descricao = ?');
+                valores.push(descricao);
+            }
 
-/*
+            if (disciplina) {
+                campos.push('DisciplinaID = ?');
+                valores.push(disciplina);
+            }
 
-//CRIAR COMENTÁRIO EM VÍDEO
-export async function createVideoComentario(videoID, utilizadorID, Texto) {
-   try {
-       const [result] = await pool.query('INSERT INTO comentario (VideoID, utilizadorID, Texto) VALUES (?, ?, ?)', [videoID, utilizadorID, Texto]);
-       return { id: result.insertId, ...result };
-   } catch (error) {
-       throw new Error(`Failed to create video comment: ${error.message}`);
-   }
-}
+            if (thumbnail) {
+                campos.push('Thumbnail = ?');
+                valores.push(thumbnail);
+            }
 
-//CRIAR ANOTAÇÃO EM VÍDEO
-export async function createVideoAnotacao(videoID, utilizadorID, Texto) {
-   try {
-       const [result] = await pool.query('INSERT INTO anotacao (VideoID, utilizadorID, Texto) VALUES (?, ?, ?)', [videoID, utilizadorID, Texto]);
-       return { id: result.insertId, ...result };
-   } catch (error) {
-       throw new Error(`Failed to create video annotation: ${error.message}`);
-   }
-}
+            if (campos.length === 0) {
+                throw new Error('Nenhuma alteração fornecida');
+            }
 
-//OBTÉM COMENTÁRIOS DE VÍDEO
-export async function getVideoComentarios(id) {
-    const [rows] = await pool.query("SELECT comentario.ID,VideoID,utilizador.nome,Texto,comentario.UploadTime FROM comentario\
-                                    LEFT JOIN utilizador ON utilizador.ID = comentario.utilizadorID\
-                                    WHERE comentario.videoID = ?;"
-        , [id]);
-    return rows
-}
+            valores.push(videoID); // último valor é o ID para o WHERE
 
-//OBTER ANOTAÇÃO DE VÍDEO
-export async function getAnotacao(videoID, utilizadorID) {
-    try {
-        const [rows] = await pool.query('SELECT * FROM anotacao WHERE VideoID = ? AND utilizadorID = ?', [videoID, utilizadorID]);
-        return rows[0] || null;
-    } catch (error) {
-        throw new Error(`Failed to fetch annotation for video ${videoID} and user ${utilizadorID}: ${error.message}`);
+            const query = `
+            UPDATE video
+            SET ${campos.join(', ')}
+            WHERE ID = ?
+        `;
+
+            await pool.query(query, valores);
+            return true;
+
+        } catch (error) {
+            throw new Error(`Erro ao editar vídeo: ${error.message}`);
+        }
     }
-}
-    
-//CRIAR REVIEW EM VÍDEO
-export async function createVideoReview(videoID, utilizadorID, Nota) {
-   try {
-       const [result] = await pool.query('INSERT INTO review (VideoID, utilizadorID, Nota) VALUES (?, ?, ?)', [videoID, utilizadorID, Nota]);
-       return { id: result.insertId, ...result };
-   } catch (error) {
-       throw new Error(`Falha ao criar review de vídeo: ${error.message}`);
-   }
+
+
 }
 
-export async function upsertAnotacao(VideoID, UtilizadorID, Texto) {
-    const [result] = await pool.query(
-        `INSERT INTO anotacao (VideoID, UtilizadorID, Texto)
-         VALUES (?, ?, ?)
-         ON DUPLICATE KEY UPDATE Texto = VALUES(Texto)`,
-        [VideoID, UtilizadorID, Texto]
-    );
-}
 
-*/

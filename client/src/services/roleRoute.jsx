@@ -13,17 +13,28 @@ const isTokenExpired = (token) => {
   }
 };
 
-function ProtectedRoute({ children }) {
+//3 é Admin, 2 é Professor, 1 é Aluno
+function RoleRoute({ children, allowedRoles = [1, 2, 3] }) {
   const token = localStorage.getItem('token');
 
-  // Se não tem token ou ele está expirado, redireciona imediatamente:
   if (!token || isTokenExpired(token)) {
     localStorage.removeItem('token');
     return <Navigate to="/login" replace />;
   }
 
-  // Se o token está válido, permite renderizar os filhos
-  return children;
+  try {
+    const decoded = jwtDecode(token);
+
+    // Verifica se o campo 'cargo' existe e é um dos permitidos
+    if (!allowedRoles.includes(decoded.cargo)) {
+      return <Navigate to="/unauthorized" replace />; // ou outra rota se quiser
+    }
+
+    return children;
+  } catch (err) {
+    console.error('Erro ao validar cargo no token:', err);
+    return <Navigate to="/login" replace />;
+  }
 }
 
-export default ProtectedRoute;
+export default RoleRoute;

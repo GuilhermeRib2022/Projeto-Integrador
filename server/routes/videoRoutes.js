@@ -1,8 +1,102 @@
 import { Router } from 'express';
 import {Video} from '../models/videoModels.js'
 import authenticateToken from '../services/Autenticacao.js';
+import express from 'express';
+import upload from '../services/upload.js';
+import getVideoDuration from '../services/getVideoDuration.js';
+import path from 'path';
+import multer from 'multer';
 
 const router = Router();
+
+//Rota para publicar um vídeo
+router.post('/publicar',   authenticateToken, (req, res, next) => {upload.fields([ { name: 'video', maxCount: 1 }, { name: 'thumbnail', maxCount: 1 } ])(req, res, function (err) {
+      if (err instanceof multer.MulterError) {
+        return res.status(400).json({ message: `Erro no upload: ${err.message}` });
+      } else if (err) {
+        return res.status(400).json({ message: `Erro no ficheiro: ${err.message}` });
+      }
+      next(); //Segue para a próxima etapa
+    });
+  },
+  async (req, res) => {
+    try {
+      const { titulo, descricao, disciplina } = req.body;
+      const utilizadorID = req.user.id;
+      const video = req.files['video']?.[0]?.filename;
+      const thumbnail = req.files['thumbnail']?.[0]?.filename || null;
+
+      if (!titulo || !disciplina || !video) {
+        return res.status(400).json({ message: 'Campos obrigatórios em falta' });
+      }
+
+        const fullPath = path.join('uploads/videos', video);
+        const duracao = await getVideoDuration(fullPath); 
+
+        const result = await Video.publicarVideo(disciplina, utilizadorID, titulo, descricao, video, thumbnail, duracao);
+
+        res.status(201).json({ message: 'Vídeo publicado com sucesso', videoID: result  });
+    } catch (err) {
+        console.error('Erro ao publicar vídeo:', err);
+      res.status(500).json({ message: 'Erro interno ao publicar vídeo' });
+    }
+  }
+);
+
+//Rota para editar um vídeo
+router.put('/editar/:id', authenticateToken, (req, res, next) => {
+  upload.fields([{ name: 'thumbnail', maxCount: 1 }])(req, res, function (err) {
+    if (err instanceof multer.MulterError) {
+      return res.status(400).json({ message: `Erro no upload: ${err.message}` });
+    } else if (err) {
+      return res.status(400).json({ message: `Erro no ficheiro: ${err.message}` });
+    }
+    next();
+  });
+}, async (req, res) => {
+  try {
+    const videoID = req.params.id;
+    const utilizadorID = req.user.id;
+
+    const { titulo, descricao, disciplina } = req.body;
+    const thumbnail = req.files?.['thumbnail']?.[0]?.filename;
+
+    await Video.editarVideo(videoID, utilizadorID, {
+      titulo,
+      descricao,
+      disciplina,
+      thumbnail
+    });
+
+    res.status(200).json({ message: 'Vídeo atualizado com sucesso!' });
+  } catch (err) {
+    console.error('Erro ao editar vídeo:', err.message);
+    res.status(500).json({ message: err.message || 'Erro ao editar vídeo' });
+  }
+});
+
+//Rota para adicionar uma visualização
+router.post('/:id/view', async (req, res) => {
+  const videoID = req.params.id;
+  try {
+    await Video.visualizar(videoID);
+    res.status(200).send({ message: 'Visualização registrada com sucesso' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({ message: 'Erro ao registrar visualização' });
+  }
+});
+
+//OBTER Video POR UserID
+router.get("/user", authenticateToken, async (req, res) => {
+    const UtilizadorID = req.user.id;
+    try {
+        const video = await Video.getVideosUser(UtilizadorID);
+        res.send(video);
+    } catch (error) {
+        res.status(404).send({ message: "Anotação não encontrada" });
+    }
+});
 
 router.get("/", async (req, res) => {
     const videos = await Video.getVideos()
@@ -43,12 +137,10 @@ router.get("/search", async (req, res) => {
         videos = await Video.getVideoDisciplina(texto, disciplina);
     }
     
-
     //Enviar resposta com video e texto enviado
     res.send(videos);
 
 });
-
 
 router.get("/disciplina", async (req, res) => {
     const texto = req.query.texto;
@@ -62,23 +154,10 @@ router.get("/disciplina", async (req, res) => {
         videos = await Video.getVideoDisciplina(texto, disciplina);
     }
     
-
     //Enviar resposta com video e texto enviado
     res.send(videos);
 
 });
-
-/*
-router.get("/search", async (req, res) => {
-    const texto = req.query.texto;
-    const videos = await searchVideo(texto);
-
-    //Enviar resposta com video e texto enviado
-    res.send(videos);
-
-});
-
-*/
 
 router.get("/search", async (req, res) => {
     const texto = req.query.texto;
@@ -89,11 +168,21 @@ router.get("/search", async (req, res) => {
     res.send(videos);
 });
 
-router.get("/:id", async (req, res) => { 
-    const id = req.params.id
-    const videos = await Video.getVideo(id)
-    res.send(videos)
-})
+router.get('/:id', async (req, res) => {
+  const videoID = req.params.id;
+  try {
+    const video = await Video.getVideo(videoID); 
+
+    if (!video) {
+      return res.status(404).json({ message: 'Vídeo não encontrado' });
+    }
+
+    res.json(video);
+  } catch (err) {
+    console.error('Erro ao buscar vídeo:', err);
+    res.status(500).json({ message: 'Erro ao buscar vídeo' });
+  }
+});
 
 router.get("/:id/reviewMedia", async (req, res) => { 
     const id = req.params.id
@@ -113,16 +202,6 @@ router.post("/search", async (req, res) => {
     res.send(videos)
 })
 
-/*
-router.get("/search/:text", async (req, res) => {
-    const Texto = req.params.text;
-    const videos = await searchVideo(Texto)
-    res.send(videos)
-})
-*/
-
-
-
 router.post("/search/disciplina/:id", async (req, res) => {
     const DisciplinaID = req.params.id;
     const {Texto} = req.body;
@@ -132,97 +211,3 @@ router.post("/search/disciplina/:id", async (req, res) => {
 
 export default router;
 
-/*
-router.post("/:id/review", authenticateToken, async (req, res) => { // Rota de criação de review
-    try {
-        const UtilizadorID = req.user.id; // Assumindo que o ID do utilizador está disponível no token JWT
-        const VideoID = req.params.id; // O ID do vídeo é passado como parâmetro na rota
-        const {Nota} = req.body;
-        if (!VideoID || !UtilizadorID || !Nota || Nota < 0 || Nota > 5 || typeof Nota !== 'number') {
-            return res.status(400).send({ message: "Review Inválida" });
-        }
-
-        const comentario = await createVideoReview(VideoID, UtilizadorID, Nota);
-        res.status(201).send(comentario);
-    }
-    catch (error) {
-        console.error('Erro ao criar review:', error);
-        res.status(500).send({ message: "Erro ao criar review" });
-    }
-});
-
-router.get("/:id/comentarios", async (req, res) => { 
-    const id = req.params.id
-    const videos = await getVideoComentarios(id)
-    res.send(videos)
-})
-    
-router.post("/:id/comentar", authenticateToken, async (req, res) => { // Rota de criação de review
-    try {
-        const UtilizadorID = req.user.id; // Assumindo que o ID do utilizador está disponível no token JWT
-        const VideoID = req.params.id; // O ID do vídeo é passado como parâmetro na rota
-        const {Texto } = req.body;
-        if (!VideoID || !UtilizadorID || !Texto || Texto.length < 1) {
-            return res.status(400).send({ message: "Comentário Inválido" });
-        }
-
-        const comentario = await createVideoComentario(VideoID, UtilizadorID, Texto);
-        res.status(201).send(comentario);
-    }
-    catch (error) {
-        console.error('Erro ao criar review:', error);
-        res.status(500).send({ message: "Erro ao criar review" });
-    }
-});
-
-router.post("/:id/anotar", authenticateToken, async (req, res) => { // Rota de criação de review
-    try {
-        const UtilizadorID = req.user.id; // Assumindo que o ID do utilizador está disponível no token JWT
-        const VideoID = req.params.id; // O ID do vídeo é passado como parâmetro na rota
-        const {Texto} = req.body;
-        if (!VideoID || !UtilizadorID || !Texto || Texto.length < 1) {
-            return res.status(400).send({ message: "Comentário Inválido" });
-        }
-
-        const comentario = await createVideoAnotacao(VideoID, UtilizadorID, Texto);
-        res.status(201).send(comentario);
-    }
-    catch (error) {
-        console.error('Erro ao criar review:', error);
-        res.status(500).send({ message: "Erro ao criar review" });
-    }
-});
-
-router.get("/:id/anotacao", authenticateToken, async (req, res) => { // Rota de criação de review
-    try {
-        const UtilizadorID = req.user.id; // Assumindo que o ID do utilizador está disponível no token JWT
-        const VideoID = req.params.id; // O ID do vídeo é passado como parâmetro na rota
-        if (!VideoID || !UtilizadorID) {
-            return res.status(400).send({ message: "Comentário Inválido" });
-        }
-
-        const comentario = await getAnotacao(VideoID, UtilizadorID);
-        res.status(201).send(comentario);
-    }
-    catch (error) {
-        console.error('Erro ao criar review:', error);
-        res.status(500).send({ message: "Erro ao criar review" });
-    }
-});
-
-*/
-
-
-
-//IMPORTANTE: Upload de vídeo. Requer multer
-/* Utilizador envia o vídeo com o título, descrição, disciplina e ficheiro de vídeo e thumbnail.
-    O vídeo é guardado na pasta uploads/videos e a thumbnail na pasta uploads/thumbnails.
-    O vídeo é guardado na base de dados com o título, descrição, disciplina e localização do vídeo e thumbnail.
-    A disciplina é guardada como ID na base de dados.
-    O utilizador é guardado na base de dados como ID do utilizador que enviou o vídeo.
-    O utilizador deve autenticado com JWT e deve ser professor.
-
-*/
-
-//Falta: Apagar Review, Atualizar Review, Apagar Comentário, Atualizar Comentário, Apagar Anotação, Atualizar Anotação
-//Basicamente atualizar review quando uma já existe.

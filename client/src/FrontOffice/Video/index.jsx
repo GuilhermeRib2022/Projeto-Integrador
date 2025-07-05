@@ -13,16 +13,33 @@ import './style.css';
 const Video = ({ collapsed }) => {
     const { id } = useParams();
     const [video, setVideo] = useState(null);
+    const [erro, setErro] = useState(null);
 
     useEffect(() => {
         axios.get(`${BASE_URL}/video/${id}`)
-            .then(res => setVideo(res.data))
-            .catch(err => console.error(err));
+            .then(res => {
+                setVideo(res.data);
+                setErro(null);
+
+                    axios.post(`${BASE_URL}/video/${id}/view`)
+                        .catch(err => {
+                            console.error('Erro ao registrar visualização:', err);
+                            hasCountedView.current = true;
+
+                        });
+            })
+            .catch(err => {
+                if (err.response?.status === 404) {
+                    setErro('Vídeo não encontrado');
+                } else {
+                    setErro('Erro ao carregar vídeo');
+                }
+            });
     }, [id]);
 
 
     /*<video controls src={videoUrl} width="100%" /> */
-
+    if (erro) return <p style={{ fontSize: '50px' }}>{erro}</p>;
     if (!video) return <p>Carregando...</p>;
 
     const videoUrl = `${BASE_URL}/uploads/videos/${video.VideoPath}`;
@@ -37,7 +54,7 @@ const Video = ({ collapsed }) => {
             <div style={{ display: 'flex', gap: '20px', flexWrap: 'nowrap', alignItems: 'flex-start' }}>
                 <Anotacao videoId={video.ID} />
                 <VideoInfoBox video={video} />
-                
+
             </div>
             <hr></hr>
             <div>

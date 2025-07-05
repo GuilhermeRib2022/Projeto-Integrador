@@ -1,0 +1,73 @@
+.publicar-video-container {
+  max-width: 600px;
+  margin: 40px auto;
+  padding: 30px;
+  background-color: #f9f9f9;
+  border-radius: 16px;
+  box-shadow: 0 0 15px rgba(0,0,0,0.1);
+}
+
+.publicar-video-container h2 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.formulario-video {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.formulario-video label {
+  font-weight: bold;
+}
+
+.formulario-video input,
+.formulario-video textarea,
+.formulario-video select {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  color: black;
+}
+
+.formulario-video button {
+  padding: 12px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.formulario-video button:hover {
+  background-color: #0056b3;
+}
+
+.erro {
+  background-color: #f8d7da;
+  color: #721c24;
+  padding: 10px;
+  border-radius: 8px;
+  margin-bottom: 15px;
+}
+
+.sucesso {
+  background-color: #d4edda;
+  color: #155724;
+  padding: 10px;
+  border-radius: 8px;
+  margin-bottom: 15px;
+}
+
+.select-disicplina {
+  padding: 10px;
+  border: 1px solid #000000;
+  border-radius: 8px;
+  background-color: #fff;
+}
+
+.option-disciplina {
+  color: #000000;
+}

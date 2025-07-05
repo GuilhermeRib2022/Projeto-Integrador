@@ -17,7 +17,7 @@ function VideoInfoBox({ video }) {
 
     const handleRatingChange = async (value) => {
         setRating(value);
-        console.log('New rating:', value * 2);
+        if (!token) return alert('Necessário iniciar sessão para fazer esta ação.')
 
         try {
             await axios.post(`${BASE_URL}/review/video/${video.ID}`, {
@@ -33,6 +33,8 @@ function VideoInfoBox({ video }) {
     };
 
     useEffect(() => {
+        const token = localStorage.getItem('token');
+        if (!token) return;
         axios.get(`${BASE_URL}/review/video/${video.ID}`, {
             headers: { Authorization: `Bearer ${token}` }
         })
@@ -43,6 +45,7 @@ function VideoInfoBox({ video }) {
     }, []);
 
     const handleDeleteRating = async () => {
+        if (!token) return alert('Necessário iniciar sessão para fazer esta ação.')
         try {
             await axios.delete(`${BASE_URL}/review/video/${video.ID}`, {
                 headers: { Authorization: `Bearer ${token}` }
@@ -65,18 +68,32 @@ function VideoInfoBox({ video }) {
             {expanded && (
                 <div className="video-info-details">
                     <div className="creator-info">
-                        <img src={video.CriadorFotoPerfil} alt="Criador" className="creator-avatar" />
-                        <div className="creator-text">
-                            <strong>{video.Autor}</strong>
-                            <span className="disciplina" style={{ background: video.Cor }}>
-                                {video.Disciplina}
-                            </span>
+                        <div style={{ display: 'flex', alignItems: 'center' }}>
+                            {video.FotoPerfil ? (
+                                <img
+                                    src={`${BASE_URL}/uploads/fotosperfil/${video.FotoPerfil}`}
+                                    alt="pfp"
+                                    style={{ width: '40px', height: '40px', objectFit: 'cover', borderRadius: '50%' }}
+                                />
+                            ) : (
+                                <img src="/profile.png" alt="TryLearn" height="40" />
+                            )}
+                            <div className="nome-criador">
+                                <a className="nome" href={`/perfil/${video.UtilizadorID}`}>
+                                    <strong>{video.Autor}</strong>
+                                </a>
+                            </div>
                         </div>
-                        <span className="rating-section">
-                            <i className="fa fa-star" style={{ color: 'black', marginRight: '4px' }}></i>
-                            {Math.round(parseFloat(video.Nota) * 10)}%
+
+                        <span className="disciplina" style={{ background: video.Cor }}>
+                            {video.Disciplina}
                         </span>
+
+                        <div className="video-date">
+                            {new Date(video.DataPublicacao).toLocaleDateString('pt-PT')}
+                        </div>
                     </div>
+
 
                     <div className="rating-section">
                         <Rating
@@ -101,14 +118,22 @@ function VideoInfoBox({ video }) {
                         >
                             ✖
                         </button>
-                        <div className="video-date">
-                            {new Date(video.DataPublicacao).toLocaleDateString('pt-PT')}
-                        </div>
+                        <span className="rating-percentage">
+                            <i className="fa fa-star" style={{ background: 'transparent', border: 'none', fontSize: '25px', color: 'black', cursor: 'default', }}></i>
+                            {Math.round(parseFloat(video.Nota) * 10)}%
+                        </span>
                     </div>
 
                     <div className="description-section">
                         <strong>Descrição:</strong>
-                        <p>{video.Descricao}</p>
+                        <textarea
+                            readOnly
+                            value={video.Descricao || "Sem descrição"}
+                            className='video-description-list'
+                            rows={4}
+                            style={{ width: '100%', resize: 'none', border: 'none', backgroundColor: 'transparent', color: '#333', fontFamily: 'inherit' }}
+                            onClick={(e) => e.stopPropagation()}
+                        />
                     </div>
                 </div>
             )}

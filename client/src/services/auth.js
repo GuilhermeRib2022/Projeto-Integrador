@@ -7,8 +7,9 @@ export const getUserFromToken = () => {
   try {
     const decoded = jwtDecode(token);
     return {
-      email: decoded.email,
-      cargo: decoded.cargo // Change based on your actual payload key
+      id: decoded.id,
+      nome: decoded.nome,
+      cargo: decoded.cargo,
     };
   } catch (error) {
     console.error('Failed to decode token:', error);

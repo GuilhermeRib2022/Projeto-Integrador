@@ -7,6 +7,7 @@ import multer from 'multer';
 import fs from 'fs/promises';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import authenticateToken from '../services/Autenticacao.js';
 
 dotenv.config();
 const router = Router();
@@ -35,6 +36,35 @@ function asyncHandler(fn) {
 //Rota de pesquisa todos os utilizadores
 router.get("/", asyncHandler(async (req, res) => { 
     const result = await Utilizador.getUtilizadores()
+    res.send(result)
+}))
+
+router.patch("/perfil/edit", authenticateToken, upload.single('fotoPerfil'), asyncHandler(async (req, res) => { 
+  const utilizadorID = req.user.id;
+  const { nome, email, password, descricao } = req.body;
+  const fotoPerfil = req.file ? req.file.filename : null;
+
+  try {
+    const result = await Utilizador.editarConta({nome, email, password, descricao,fotoPerfil, utilizadorID});
+    res.status(200).json(result);
+  } catch (error) {
+    console.error("Erro ao atualizar utilizador:", error);
+    res.status(400).json({ message: error.message });
+  }
+}))
+
+
+//Rota de obter perfil de utilizador
+router.get("/perfil/:id", asyncHandler(async (req, res) => { 
+    const UtilizadorID = req.params.id
+    const result = await Utilizador.getPerfil(UtilizadorID)
+    res.send(result)
+}))
+
+//Rota de obter perfil de utilizador
+router.get("/perfil", authenticateToken, asyncHandler(async (req, res) => { 
+    const UtilizadorID = req.user.id;
+    const result = await Utilizador.getPerfil(UtilizadorID)
     res.send(result)
 }))
 

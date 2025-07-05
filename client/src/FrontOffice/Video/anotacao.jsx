@@ -10,8 +10,9 @@ function Anotacao({ videoId }) {
 
     useEffect(() => {
         const fetchNote = async () => {
+            const token = localStorage.getItem('token');
+            if (!token) return setLoading(false);
             try {
-                const token = localStorage.getItem('token');
                 const res = await axios.get(`${BASE_URL}/anotacao/video/${videoId}`, {
                     headers: {
                         Authorization: `Bearer ${token}`,
@@ -29,8 +30,10 @@ function Anotacao({ videoId }) {
     }, [videoId]);
 
     const handleSave = async () => {
+         const token = localStorage.getItem('token');
+         if (!token) return alert('Necessário iniciar sessão para fazer esta ação.')
         try {
-            const token = localStorage.getItem('token');
+           
             await axios.put(
                 `${BASE_URL}/anotacao/video/${videoId}`,
                 { Texto: note },

@@ -54,8 +54,17 @@
 .subscribe-button {
   margin-top: auto;
   margin-bottom: -10px;
-  width: 40%;
+  background-color: #2e5d9b;
+  width: 45%;
 }
+
+.subscribe-button:hover {
+  margin-top: auto;
+  margin-bottom: -10px;
+  background-color: #4f81c2;
+  width: 45%;
+}
+
 
 .disciplina-card {
   display: flex;

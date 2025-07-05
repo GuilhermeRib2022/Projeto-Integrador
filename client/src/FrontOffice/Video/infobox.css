@@ -1,5 +1,5 @@
 .video-info-box {
-  background: #d6d6d6;
+  background: #F3F3F3;
   color: #000000;
   border-radius: 12px;
   padding: 20px;
@@ -171,6 +171,7 @@
     color: rgb(53, 53, 53);
     cursor: pointer;
     transition: color 0.2s;
+    margin-right: 4px;
 }
 
 .fa-star,
@@ -190,4 +191,59 @@
 
 .delete-rating-btn:hover{
   color:red !important;
+}
+
+.nome{
+  font-size: 18px;
+  font-weight: bold;
+  color: #000;
+  text-decoration: none;
+}
+
+
+.rating-section span{
+  padding: 2px 0;
+}
+
+.rating-percentage {
+  display: flex;
+  align-items: center;
+  color: black;
+  font-weight: bold;
+}
+
+.creator-info {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 15px;
+  gap: 20px; /* espaçamento entre os três blocos */
+}
+
+/* esquerda: foto + nome */
+.nome-criador img {
+  display: flex;
+  align-items: center;
+}
+
+.nome-criador {
+  margin-left: 10px;
+}
+
+/* bloco da disciplina no meio */
+.disciplina {
+  flex-grow: 1;
+  text-align: center;
+  padding: 0 10px;
+  max-width: 200px; /* ajustar conforme o layout */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* data no lado direito */
+.video-date {
+  white-space: nowrap;
+  min-width: 100px; /* espaço fixo para alinhar à direita */
+  text-align: right;
 }

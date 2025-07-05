@@ -1,12 +1,4 @@
-#root {
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-  width: 100%;
-  margin: 0;
-  padding: 0;
-  text-align: initial; /* or center, but only if you want it everywhere */
-}
+
 
 .logo {
   height: 6em;
@@ -45,31 +37,25 @@
 }
 
 
-/* Make sure html and body take full height */
 
-/* Your root div should be flex container */
-#root {
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-}
 
-/* The app wrapper (could be body or root) */
 .App {
   display: flex;
   flex-direction: column;
   flex-grow: 1; /* take full height */
 }
 
-/* Make main grow to push footer down */
+
+/*TEST TEST TEST*/
 main {
   flex: 1 0 auto;     
   max-width: 1600px;   
-  min-width: 600px;     
+  min-width: 1600px;     
   margin: 0 auto;   
   box-sizing: border-box; 
 }
 
+/*TEST TEST TEST*/
 #root {
   display: flex;
   justify-content: center; 
@@ -80,20 +66,15 @@ main {
   flex-direction: column;  
 }
 
-/* Footer styling */
-footer {
-  flex-shrink: 0; /* don’t let footer shrink */
-  background-color: #242424;
-  color: rgba(255, 255, 255, 0.87);
-  padding: 1rem 0;
-  text-align: center;
-}
+/*TEST TEST TEST*/
 
 .main-expanded {
   margin-left: 240px;
   width: calc(100% - 240px);
   transition: margin-left 0.3s ease, width 0.3s ease;
 }
+
+/*TEST TEST TEST*/
 
 .main-collapsed {
   margin-left: 60px;
@@ -108,3 +89,10 @@ footer {
 }
 
 
+footer {
+  flex-shrink: 0; /* don’t let footer shrink */
+  background-color: #242424;
+  color: rgba(255, 255, 255, 0.87);
+  padding: 1rem 0;
+  text-align: center;
+}

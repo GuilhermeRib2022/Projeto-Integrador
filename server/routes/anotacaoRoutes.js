@@ -7,6 +7,17 @@ const router = Router();
 router.use(authenticateToken);
 
 
+//OBTER ANOTAÇÃO POR UserID
+router.get("/user", authenticateToken, async (req, res) => {
+    const UtilizadorID = req.user.id;
+    try {
+        const anotacao = await Anotacao.getAnotacaoUser(UtilizadorID);
+        res.send(anotacao);
+    } catch (error) {
+        res.status(404).send({ message: "Anotação não encontrada" });
+    }
+});
+
 //OBTER TODAS AS ANOTAÇÕES
 router.get("/", async (req, res) => {
     const anotacoes = await Anotacao.getAnotacoes();
@@ -23,6 +34,8 @@ router.get("/:id", async (req, res) => {
         res.status(404).send({ message: "Anotação não encontrada" });
     }
 });
+
+
 
 //APAGAR ANOTAÇÃO POR ID
 router.delete("/:id", async (req, res) => { // Rota de apagar Anotação

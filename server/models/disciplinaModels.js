@@ -3,13 +3,30 @@ import pool from "../database.js";
 export const Disciplina = {
     //OBTEM TODAS AS DISCIPLINAS
     async getDisciplinas() {
-        const [rows] = await pool.query('SELECT * FROM disciplina where ID>0')
+        const [rows] = await pool.query(`SELECT * FROM disciplina where ID>0`)
         return rows
+    },
+
+
+    async getDisciplinasPlus(utilizadorID) {
+        const [rows] = await pool.query(`
+        SELECT d.*, 
+               CASE 
+                 WHEN du.utilizadorid IS NOT NULL THEN 1 
+                 ELSE 0 
+               END AS is_subscribed
+        FROM disciplina d
+        LEFT JOIN disciplinautilizador du 
+          ON d.ID = du.disciplinaid AND du.utilizadorid = ?
+        ORDER BY is_subscribed DESC, d.Nome ASC
+    `, [utilizadorID]);
+
+        return rows;
     },
 
     //OBTER DISCIPLINA POR ID
     async getDisciplina(id) {
-        const [rows] = await pool.query('SELECT * FROM disciplina where ID = ?', [id])
+        const [rows] = await pool.query(`SELECT * FROM disciplina where ID = ?`, [id])
         return rows[0]
     },
 
@@ -43,4 +60,29 @@ export const Disciplina = {
         return Disciplina.getDisciplina(id);
     },
 
+    //ASSOCIAR DISCIPLINA
+    async associarDisciplina(DisciplinaID, UtilizadorID) {
+        const [result] = await pool.query('INSERT INTO disciplinaUtilizador (UtilizadorID, DisciplinaID, Tipo) VALUES (?, ?, ?)', [UtilizadorID, DisciplinaID, "Aluno"]);
+        const id = result.insertId;
+        return Disciplina.getDisciplina(id);
+    },
+
+    //DESASSOCIAR DISCIPLINA
+    async desassociarDisciplina(DisciplinaID, UtilizadorID) {
+        const [result] = await pool.query('DELETE FROM disciplinaUtilizador WHERE UtilizadorID = ? AND DisciplinaID = ?', [UtilizadorID, DisciplinaID]);
+        const id = result.insertId;
+        return Disciplina.getDisciplina(id);
+    },
+
+    //OBTER DISCIPLINAS DE UTILIZADOR
+    async listarDisciplina(utilizadorID) {
+
+        const [result] = await pool.query(`SELECT d.* FROM disciplina d
+            LEFT JOIN disciplinaUtilizador du ON du.disciplinaID = d.ID
+            LEFT JOIN utilizador u ON u.ID = du.UtilizadorID
+            WHERE u.ID = ?
+            ORDER BY d.nome ASC`
+            , [utilizadorID]);
+        return result
+    },
 }

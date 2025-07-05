@@ -29,15 +29,78 @@ function hexToRgba(hex, alpha = 0.7) {
 
 const Disciplinas = () => {
   const [disciplinas, setDisciplinas] = useState([]);
+  const [userDisciplinas, setUserDisciplinas] = useState([]);
 
   useEffect(() => {
+    //Obtém todas as disciplinas
     axios.get(`${BASE_URL}/disciplina`, {
       headers: { Authorization: `Bearer ${token}` }
     })
       .then(res => setDisciplinas(res.data))
       .catch(err => console.error(err));
-  }, []);
 
+    //Obtém disciplinas de utilizador
+    fetchUserDisciplinas();
+  }, [token]);
+
+
+  const fetchUserDisciplinas = async () => {
+    const token = localStorage.getItem('token');
+     if (!token) return; 
+    try {
+      
+      const res = await axios.get(`${BASE_URL}/disciplina/utilizador`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setUserDisciplinas(res.data);
+    } catch (error) {
+      console.error("Erro ao buscar disciplinas do usuário:", error);
+    }
+  };
+
+
+  const inscrever = async (disciplinaID) => {
+    const token = localStorage.getItem('token');
+     if (!token) return alert('Inicie sessão para fazer esta ação.'); 
+    try {
+      const token = localStorage.getItem('token');
+      await axios.post(
+        `${BASE_URL}/disciplina/utilizador/${disciplinaID}`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      window.dispatchEvent(new Event('disciplinasUpdated'));
+    } catch (err) {
+      console.error('Erro ao inscrever na disciplina:', err);
+      alert('Erro ao inscrever na disciplina');
+    }
+  };
+
+  const desinscrever = async (disciplinaID) => {
+    const token = localStorage.getItem('token');
+     if (!token) return; 
+    try {
+      const token = localStorage.getItem('token');
+      await axios.delete(
+        `${BASE_URL}/disciplina/utilizador/${disciplinaID}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      window.dispatchEvent(new Event('disciplinasUpdated'));
+    } catch (err) {
+      console.error('Erro ao salvar anotação:', err);
+      alert('Erro ao salvar anotação');
+    }
+  };
+
+  
 
   return (
     <div className="disciplinas-grid">
@@ -49,6 +112,7 @@ const Disciplinas = () => {
         const textColor = getContrastingTextColor(bgColor);
         const descBg = hexToRgba(bgColor, 0.7);
 
+        const isInscrito = userDisciplinas.some(d => d.ID === disciplina.ID);
 
         return (
           <Link
@@ -62,20 +126,38 @@ const Disciplinas = () => {
             >
               <h3>{disciplina.Nome}</h3>
               <p style={{ background: descBg }}>{disciplina.Descricao}</p>
-              <button
-                className="subscribe-button"
-                style={{
-                  backgroundColor: descBg,
-                  color: textColor,
-                  border: `1px solid ${textColor}`
-                }}
-                onClick={(e) => {
+              {!isInscrito && (
+              <button className="subscribe-button" style={{ backgroundColor: '#a10000', color: '#fff', border: `1px solid ${textColor}` }}
+                onClick={async (e) => {
                   e.preventDefault();
-                  console.log(`Subscreveu em: ${disciplina.Nome}`);
+                  try {
+                    await inscrever(disciplina.ID);
+                    fetchUserDisciplinas(); // Atualiza a lista
+                  } catch (error) {
+                    console.error(error);
+                    alert('Erro ao subscrever');
+                  }
                 }}
               >
                 Subscrever
-              </button>
+              </button>)}
+
+              {isInscrito && (
+              <button className="subscribe-button" 
+                onClick={async (e) => {
+                  e.preventDefault();
+                  console.log(`Anulou em: ${disciplina.Nome}`);
+                  try {
+                    await desinscrever(disciplina.ID);
+                    fetchUserDisciplinas(); // Atualiza a lista
+                  } catch (error) {
+                    console.error(error);
+                    alert('Erro ao desinscrever');
+                  }
+                }}
+              >
+                Anular Subsc.
+              </button>)}
             </div>
           </Link>
         );

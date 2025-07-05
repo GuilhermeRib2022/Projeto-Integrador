@@ -13,6 +13,19 @@ export const Utilizador = {
         }
     },
 
+
+    async getPerfil(id) {
+        try {
+            const [rows] = await pool.query(`SELECT u.ID, u.nome, u.Email, u.Descricao, u.FotoPerfil, u.DataCriacao, u.CargoID, c.Tipo AS Cargo 
+                                         FROM utilizador u 
+                                         LEFT JOIN cargo c ON c.ID = u.CargoID
+                                         WHERE u.ID = ?`, [id]);
+            return rows;
+        } catch (error) {
+            throw new Error(`Failed to fetch user profile: ${error.message}`);
+        }
+    },
+
     async getUtilizador(id) {
         try {
             const [rows] = await pool.query(`SELECT u.*,c.Tipo AS Cargo FROM utilizador u 
@@ -24,7 +37,7 @@ export const Utilizador = {
         }
     },
 
-    async Registar({ nome, password, email}) {
+    async Registar({ nome, password, email }) {
         const hashedPassword = await bcrypt.hash(password, 10);
         const [result] = await pool.query(
             'INSERT INTO Utilizador (nome, email, password, cargoID) VALUES (?, ?, ?, 1)',
@@ -49,6 +62,79 @@ export const Utilizador = {
     async deleteUtilizador(id) {
         const [rows] = await pool.query('DELETE FROM Utilizador where ID = ?', [id])
         return rows
+    },
+
+    async editarConta({ nome, email, password, descricao, fotoPerfil, utilizadorID }) {
+        try {
+            if (!utilizadorID) {
+                throw new Error('utilizadorID Necessário');
+            }
+
+            // Verifica se o email já está em uso por outro utilizador
+            if (email) {
+                const [emailRows] = await pool.query(
+                    'SELECT ID FROM Utilizador WHERE Email = ? AND ID != ?',
+                    [email, utilizadorID]
+                );
+                if (emailRows.length > 0) {
+                    throw new Error('Email já está em uso');
+                }
+            }
+
+            // Verifica se o nome já está em uso por outro utilizador
+            if (nome) {
+                const [nomeRows] = await pool.query(
+                    'SELECT ID FROM Utilizador WHERE Nome = ? AND ID != ?',
+                    [nome, utilizadorID]
+                );
+                if (nomeRows.length > 0) {
+                    throw new Error('Nome já está em uso');
+                }
+            }
+
+            let query = 'UPDATE Utilizador SET ';
+            let params = [];
+            let updates = [];
+
+            if (nome !== undefined) {
+                updates.push('Nome = ?');
+                params.push(nome);
+            }
+            if (email !== undefined) {
+                updates.push('Email = ?');
+                params.push(email);
+            }
+            if (descricao !== undefined) {
+                updates.push('Descricao = ?');
+                params.push(descricao);
+            }
+
+            if (fotoPerfil !== undefined && fotoPerfil !== null) {
+                updates.push('FotoPerfil = ?');
+                params.push(fotoPerfil);
+            }
+
+            if (password !== undefined && password.length > 0) {
+                if (password.length < 8) {
+                    throw new Error('Password deve possuir pelo menos 8 caracteres');
+                }
+                const hashedPassword = await bcrypt.hash(password, 10);
+                updates.push('Password = ?');
+                params.push(hashedPassword);
+            }
+
+            if (updates.length === 0) {
+                throw new Error('No fields to update');
+            }
+
+            query += updates.join(', ') + ' WHERE ID = ?';
+            params.push(utilizadorID);
+
+            const [rows] = await pool.query(query, params);
+            return rows;
+        } catch (error) {
+            throw new Error(`Erro ao atualizar utilizador: ${error.message}`);
+        }
     },
 
     async updateUtilizador({ id, nome, email, password, cargoID, descricao, fotoPerfil }) {
@@ -100,7 +186,7 @@ export const Utilizador = {
             const [rows] = await pool.query(query, params);
             return rows;
         } catch (error) {
-            throw new Error(`Failed to update user: ${error.message}`);
+            throw new Error(`Erro ao atualizar utilizador: ${error.message}`);
         }
     },
 

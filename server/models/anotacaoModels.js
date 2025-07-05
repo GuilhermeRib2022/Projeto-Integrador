@@ -15,6 +15,15 @@ export const Anotacao = {
         return rows[0]
     },
 
+    async getAnotacaoUser(UtilizadorID) {
+        const [rows] = await pool.query(`SELECT a.*,v.titulo, v.Thumbnail FROM anotacao a 
+        LEFT JOIN video v ON v.ID = a.VideoID
+        where a.UtilizadorID = ? AND a.Texto <> ''
+        `, [UtilizadorID]);
+
+        return rows
+    },
+
     //APAGAR ANOTAÇÃO POR ID
     async deleteAnotacao(id) {
         const [rows] = await pool.query('DELETE FROM anotacao where ID = ?', [id])

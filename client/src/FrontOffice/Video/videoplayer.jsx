@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import ReactPlayer from 'react-player';
 import { FaPlay, FaPause, FaVolumeUp, FaVolumeMute, FaExpand, FaVolumeDown, FaVolumeOff, FaCompress } from 'react-icons/fa';
 
@@ -80,6 +80,26 @@ const CustomVideoPlayer = ({ src }) => {
         if (volume > 0.3 && volume <= 0.6) return <FaVolumeDown />;
         return <FaVolumeUp />;
     };
+
+    useEffect(() => {
+        const handleFullscreenChange = () => {
+            const isFull =
+                document.fullscreenElement === containerRef.current ||
+                document.webkitFullscreenElement === containerRef.current ||
+                document.msFullscreenElement === containerRef.current;
+            setIsFullscreen(isFull);
+        };
+
+        document.addEventListener('fullscreenchange', handleFullscreenChange);
+        document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
+        document.addEventListener('msfullscreenchange', handleFullscreenChange);
+
+        return () => {
+            document.removeEventListener('fullscreenchange', handleFullscreenChange);
+            document.removeEventListener('webkitfullscreenchange', handleFullscreenChange);
+            document.removeEventListener('msfullscreenchange', handleFullscreenChange);
+        };
+    }, []);
 
     return (
         <div className="video-wrapper" ref={containerRef} style={{ cursor: 'default' }}>

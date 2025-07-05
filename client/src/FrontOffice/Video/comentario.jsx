@@ -47,7 +47,7 @@ function Comentario({ video }) {
 
     useEffect(() => {
         function handleClickOutside(event) {
-            // Se o clique foi dentro do menu ou do botão 3 pontos, não fecha o menu
+            // Se o click foi dentro do menu ou do botão 3 pontos, não fecha o menu
             if (
                 event.target.closest('.comentario-actions') ||
                 event.target.closest('.btn-menu')
@@ -180,6 +180,11 @@ function Comentario({ video }) {
                     </form>
 
                     <hr />
+                    
+                    {comments.length === 0 && !loading && (
+                        <p className="no-comments">Nenhum comentário ainda. Seja o primeiro a comentar!</p>
+                    )}
+
 
                     {comments.map((comment, index) => (
                         <div
