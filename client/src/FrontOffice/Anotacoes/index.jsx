@@ -3,14 +3,8 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { BASE_URL } from '../../components/url';
 import './style.css';
+import { jwtDecode } from 'jwt-decode';
 
-const parseJwt = (token) => {
-    try {
-        return JSON.parse(atob(token.split('.')[1]));
-    } catch {
-        return null;
-    }
-};
 
 const Anotacoes = () => {
     const [anotacoes, setAnotacoes] = useState([]);
@@ -20,7 +14,7 @@ const Anotacoes = () => {
     const [searchTerm, setSearchTerm] = useState('');
 
     const token = localStorage.getItem('token');
-    const userID = token ? parseJwt(token)?.id : null;
+    const userID = token ? jwtDecode(token)?.id : null;
 
     useEffect(() => {
         const fetchAnotacoes = async () => {
@@ -77,7 +71,7 @@ const Anotacoes = () => {
                 <tbody>
                     {filteredAnotacoes.map((anotacao) => (
                         <tr
-                            key={anotacoes.ID}
+                            key={anotacao.ID}
                             className="linha-clicavel"
                             onClick={() => handleVideoClick(anotacao.VideoID)}
                             style={{ cursor: 'pointer' }}

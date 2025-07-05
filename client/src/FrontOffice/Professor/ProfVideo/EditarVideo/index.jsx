@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { BASE_URL } from '../../../../components/url';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -10,7 +10,8 @@ const EditarVideo = () => {
   const [descricao, setDescricao] = useState('');
   const [disciplina, setDisciplina] = useState('');
   const [thumbnailFile, setThumbnailFile] = useState(null);
-  const [thumbnailAtual, setThumbnailAtual] = useState(null); // Nome da thumbnail atual
+  const [thumbnailPreviewUrl, setThumbnailPreviewUrl] = useState(null);
+  const [thumbnailAtual, setThumbnailAtual] = useState(null);
   const [disciplinas, setDisciplinas] = useState([]);
   const [mensagem, setMensagem] = useState('');
   const [erro, setErro] = useState('');
@@ -40,6 +41,45 @@ const EditarVideo = () => {
 
     fetchDados();
   }, [id]);
+
+  // Cria e limpa o object URL para preview da thumbnail
+  useEffect(() => {
+    if (thumbnailFile) {
+      const url = URL.createObjectURL(thumbnailFile);
+      setThumbnailPreviewUrl(url);
+
+      return () => URL.revokeObjectURL(url);
+    } else {
+      setThumbnailPreviewUrl(null);
+    }
+  }, [thumbnailFile]);
+
+  const handleFileChange = (e) => {
+    setMensagem('');
+    setErro('');
+    const file = e.target.files[0];
+    if (file) {
+      // Tipos permitidos
+      const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+      if (!allowedTypes.includes(file.type)) {
+        setMensagem('Tipo de arquivo não suportado. Use JPEG, PNG, GIF ou WebP.');
+        setErro('Erro');
+        setThumbnailFile(null);
+        return;
+      }
+
+      // Tamanho máximo 20MB
+      const maxSize = 20 * 1024 * 1024;
+      if (file.size > maxSize) {
+        setMensagem('Arquivo muito grande. Tamanho máximo: 20MB.');
+        setErro('Erro');
+        setThumbnailFile(null);
+        return;
+      }
+
+      setThumbnailFile(file);
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -71,10 +111,10 @@ const EditarVideo = () => {
   };
 
   const renderThumbnailPreview = () => {
-    if (thumbnailFile) {
+    if (thumbnailPreviewUrl) {
       return (
         <img
-          src={URL.createObjectURL(thumbnailFile)}
+          src={thumbnailPreviewUrl}
           alt="Nova thumbnail"
           className="preview-thumbnail"
         />
@@ -98,8 +138,8 @@ const EditarVideo = () => {
     <div className="publicar-video-container">
       <h2>Editar Vídeo</h2>
 
-      {erro && <div className="erro">{erro}</div>}
-      {mensagem && <div className="sucesso">{mensagem}</div>}
+      {erro && <div className="erro">{mensagem || erro}</div>}
+      {!erro && mensagem && <div className="sucesso">{mensagem}</div>}
 
       <form onSubmit={handleSubmit} className="formulario-video">
         <label>Título</label>
@@ -134,8 +174,8 @@ const EditarVideo = () => {
         <label>Nova Thumbnail (opcional)</label>
         <input
           type="file"
-          accept="image/*"
-          onChange={(e) => setThumbnailFile(e.target.files[0])}
+          accept="image/jpeg,image/png,image/gif,image/webp"
+          onChange={handleFileChange}
         />
 
         {renderThumbnailPreview()}

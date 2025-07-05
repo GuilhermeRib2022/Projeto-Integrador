@@ -50,6 +50,11 @@ const PublicarVideo = () => {
 
     try {
       const token = localStorage.getItem('token');
+      if (!token) {
+        setErro('Token de autenticação não encontrado. Por favor, faça login novamente.');
+        return;
+      }
+
       const res = await axios.post(`${BASE_URL}/video/publicar`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',

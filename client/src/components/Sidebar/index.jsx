@@ -9,22 +9,23 @@ import './style.css';
 
 
 const Sidebar = ({ collapsed, setCollapsed }) => {
-  let cargo = null;
-  const [userDisciplinas, setUserDisciplinas] = useState([]);
 
+  const [userDisciplinas, setUserDisciplinas] = useState([]);
+  const [cargo, setCargo] = useState(null);
+  
   const toggleSidebar = () => setCollapsed(!collapsed);
 
-  try {
-    const token = localStorage.getItem('token');
-    if (token) {
-      const decoded = jwtDecode(token);
-      cargo = decoded.cargo;
+  useEffect(()=> {
+    //Decode token once
+    try{
+      const token = localStorage.getItem('token');
+      if(token){
+        const decoded = jwtDecode(token);
+        setCargo(decoded.cargo);
+      }
+    } catch (err) {
+      console.log("erro ao decodificar o token: ", err);
     }
-  } catch (err) {
-    console.error("Erro ao decodificar o token:", err);
-  }
-
-  useEffect(() => {
     const fetchUserDisciplinas = async () => {
       const token = localStorage.getItem('token');
       if (!token) return;

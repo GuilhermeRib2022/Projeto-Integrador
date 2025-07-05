@@ -7,6 +7,7 @@ const router = Router();
 
 //Obter disciplinas de utilizador
 router.get("/utilizador", authenticateToken, async (req, res) => {
+    console.log("req.user:", req.user); 
     const utilizadorID =  req.user.id;
 
     try{
@@ -44,6 +45,10 @@ router.get("", authenticateToken, async (req, res) => {
     }
 });
 
+router.get("", async (req, res) => {
+    const result = await Disciplina.getDisciplinas();
+    res.send(result);
+});
 
 
 

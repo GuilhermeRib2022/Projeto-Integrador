@@ -1,7 +1,6 @@
 .edit-perfil-container {
     
   max-width: 800px;
-  margin: 30px auto;
   padding: 20px;
   border-bottom: 1.5px solid #ccc;
   background: #F9F9F9;
@@ -39,14 +38,7 @@
   object-fit: cover;
 }
 
-button {
-  padding: 10px 15px;
-  background-color: #0053ba;
-  color: white;
-  border: none;
-  cursor: pointer;
-  border-radius: 5px;
-}
+
 
 .mensagem {
   margin-bottom: 15px;

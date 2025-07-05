@@ -57,6 +57,22 @@ const EditPerfil = () => {
     const handleFileChange = (e) => {
         const file = e.target.files[0];
         if (file) {
+            // Validate file type
+            const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+            if (!allowedTypes.includes(file.type)) {
+                setMensagem('Tipo de arquivo não suportado. Use JPEG, PNG, GIF ou WebP.');
+                setErro(true);
+                return;
+            }
+
+            // Validate file size (20MB limit)
+            const maxSize = 20 * 1024 * 1024;
+            if (file.size > maxSize) {
+                setMensagem('Arquivo muito grande. Tamanho máximo: 5MB.');
+                setErro(true);
+                return;
+            }
+
             setFormData(prev => ({ ...prev, fotoPerfil: file }));
             setPreview(URL.createObjectURL(file));
         }
@@ -142,7 +158,7 @@ const EditPerfil = () => {
                     <input type="password" name="password" value={formData.password} onChange={handleChange} />
                 </div>
 
-                <button type="submit">Salvar Alterações</button>
+                <button className="btn btn-success" type="submit">Salvar Alterações</button>
             </form>
         </div>
     );

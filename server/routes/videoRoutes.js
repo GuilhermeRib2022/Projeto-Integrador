@@ -94,7 +94,7 @@ router.get("/user", authenticateToken, async (req, res) => {
         const video = await Video.getVideosUser(UtilizadorID);
         res.send(video);
     } catch (error) {
-        res.status(404).send({ message: "Anotação não encontrada" });
+        res.status(404).send({ message: "Vídeos não encontrados" });
     }
 });
 

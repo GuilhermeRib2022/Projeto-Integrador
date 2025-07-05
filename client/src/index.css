@@ -46,13 +46,13 @@
     color: #f9f9f9 !important;
   }
 
-  bg-vini{
+  .bg-vini{
     background-color: #1f1f1f !important;
     color: #f9f9f9 !important;
   }
 
   button {
-    background-color: #f9f9f9;
+    background-color: #f9f9f9 !important;
     color: #f9f9f9 !important;
   }
 }

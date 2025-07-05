@@ -33,7 +33,6 @@ function VideoInfoBox({ video }) {
     };
 
     useEffect(() => {
-        const token = localStorage.getItem('token');
         if (!token) return;
         axios.get(`${BASE_URL}/review/video/${video.ID}`, {
             headers: { Authorization: `Bearer ${token}` }

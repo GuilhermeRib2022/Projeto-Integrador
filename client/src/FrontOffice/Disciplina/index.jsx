@@ -63,7 +63,6 @@ const Disciplinas = () => {
     const token = localStorage.getItem('token');
      if (!token) return alert('Inicie sessão para fazer esta ação.'); 
     try {
-      const token = localStorage.getItem('token');
       await axios.post(
         `${BASE_URL}/disciplina/utilizador/${disciplinaID}`,
         {},
@@ -95,8 +94,8 @@ const Disciplinas = () => {
       );
       window.dispatchEvent(new Event('disciplinasUpdated'));
     } catch (err) {
-      console.error('Erro ao salvar anotação:', err);
-      alert('Erro ao salvar anotação');
+      console.error('Erro ao desinscrever da disciplina:', err);
+      alert('Erro ao desinscrever da disciplina');
     }
   };
 

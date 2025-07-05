@@ -2,7 +2,7 @@
 import multer from 'multer';
 import path from 'path';
 
-const MAX_FILE_SIZE = 25 * 1024 * 1024; // 20MB
+const MAX_FILE_SIZE = 25 * 1024 * 1024; // 25MB
 
 // Armazenamento de vídeos
 const videoStorage = multer.diskStorage({
@@ -20,7 +20,7 @@ const videoStorage = multer.diskStorage({
 
 const fileFilter = (req, file, cb) => {
   const isVideo = file.fieldname === 'video' && file.mimetype.startsWith('video/');
-  const isImage = file.fieldname === 'thumbnail' && file.mimetype.startsWith('image/');
+  const isImage = file.fieldname === 'thumbnail' && file.mimetype.startsWith('image/') && file.mimetype !== 'image/svg+xml';
   
   if (isVideo || isImage) cb(null, true);
   else cb(new Error('Tipo de ficheiro inválido'));

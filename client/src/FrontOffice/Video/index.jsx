@@ -15,6 +15,7 @@ const Video = ({ collapsed }) => {
     const [video, setVideo] = useState(null);
     const [erro, setErro] = useState(null);
 
+
     useEffect(() => {
         axios.get(`${BASE_URL}/video/${id}`)
             .then(res => {

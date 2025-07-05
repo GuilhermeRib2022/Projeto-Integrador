@@ -4,13 +4,17 @@ export const Video = {
 
 
     async visualizar(videoID) {
-    const [result] = await pool.query(
-      'UPDATE video SET views = views + 1 WHERE ID = ?',
-      [videoID]
-    );
-    return result;
-  },
+      const [result] = await pool.query(
+        'UPDATE video SET views = views + 1 WHERE ID = ?',
+        [videoID]
+      );
+      if (result.affectedRows === 0) {
+        throw new Error('Video not found');
+      }
+      return result;
+    },
 
+    
     async publicarVideo(disciplinaID, utilizadorID, titulo, descricao, videoPath, thumbnail, duracao) {
         const sql = `INSERT INTO Video (DisciplinaID, UtilizadorID, Titulo, Descricao, VideoPath, Thumbnail, Duracao) VALUES (?, ?, ?, ?, ?, ?, ?)`;
         const values = [ disciplinaID, utilizadorID, titulo, descricao || null, videoPath, thumbnail || null, duracao];

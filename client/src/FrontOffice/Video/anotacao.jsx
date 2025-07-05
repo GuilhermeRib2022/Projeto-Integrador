@@ -31,7 +31,7 @@ function Anotacao({ videoId }) {
 
     const handleSave = async () => {
          const token = localStorage.getItem('token');
-         if (!token) return alert('Necessário iniciar sessão para fazer esta ação.')
+         if (!token) return alert('Necessário iniciar sessão para fazer esta ação.');
         try {
            
             await axios.put(

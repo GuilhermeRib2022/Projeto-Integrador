@@ -21,8 +21,13 @@ const ListarVideo = () => {
         const fetchVideos = async () => {
             console.log("Chamando API de vídeos...");
             try {
+                const token = localStorage.getItem("token");
+                if (!token) {
+                    setErro('Token de autenticação não encontrado. Por favor, faça login novamente.');
+                    return;
+                }
                 const response = await axios.get(`${BASE_URL}/video/user`, {
-                    headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
+                    headers: { Authorization: `Bearer ${token}` }
                 });
                 console.log("Resposta da API:", response.data);
                 setVideos(response.data);

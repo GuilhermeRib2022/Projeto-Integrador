@@ -5,8 +5,6 @@ import { useParams } from 'react-router-dom';  // Para pegar o id da URL
 import { BASE_URL } from '../../components/url';
 import './style.css';
 
-const token = localStorage.getItem('token');
-
 const parseJwt = (token) => {
   try {
     return JSON.parse(atob(token.split('.')[1]));
@@ -28,11 +26,12 @@ const Perfil = () => {
 
   useEffect(() => {
     const fetchPerfil = async () => {
+
       try {
         const res = await axios.get(`${BASE_URL}/utilizador/perfil/${id}`, {
           headers: { Authorization: `Bearer ${token}` }
         });
-        setPerfil(res.data[0]); 
+        setPerfil(res.data[0]);
 
         setLoading(false);
       } catch (err) {
@@ -42,10 +41,7 @@ const Perfil = () => {
     };
 
     if (id) fetchPerfil();
-  }, [id]);
-
-  if (loading) return <div>Carregando perfil...</div>;
-  if (error) return <div>{error}</div>;
+  }, [id]);  if (error) return <div>{error}</div>;
   if (!perfil) return <div>Perfil não encontrado</div>;
 
 return (
@@ -62,7 +58,7 @@ return (
             <h2>{perfil.nome}</h2>
             <p className="description">{perfil.Descricao}</p>
             <p className="date"><strong>Membro desde:</strong> {new Date(perfil.DataCriacao).toLocaleDateString()}</p>
-            {userID == perfil.ID &&(
+            {userID === perfil.ID && (
                 <button
                     className="editarperfil-btn"
                     onClick={() => navigate('/perfil/editar')}
