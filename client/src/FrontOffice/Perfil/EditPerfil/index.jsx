@@ -115,7 +115,7 @@ const EditPerfil = () => {
         <div className="edit-perfil-container">
             <div  className="search-header">
                 <h2>Editar Perfil</h2>
-                <button className="btn-voltar" onClick={() => navigate(-1)}> Voltar </button>
+                <button className="btn btn-primary" onClick={() => navigate(-1)}> Voltar </button>
             </div>
             {mensagem && (
                 <div

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLocation } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
 import axios from 'axios';
 import { BASE_URL } from '../../components/url';
 import { Link } from 'react-router-dom';
@@ -12,9 +13,11 @@ const SearchResults = () => {
     const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
 
-    const query = new URLSearchParams(useLocation().search);
-    const texto = query.get('texto');
-    const disciplina = query.get('disciplina') || '';
+
+
+    const [searchParams] = useSearchParams();
+    const texto = searchParams.get('texto') || '';
+    const disciplina = searchParams.get('disciplina') || '';
 
     function getContrastingTextColor(hex) {
         // Remove "#" if present
@@ -56,7 +59,7 @@ const SearchResults = () => {
                 setLoading(false);
             });
 
-    }, [texto, disciplina]);
+    }, [searchParams]);
 
     if (loading) return <p>Carregando...</p>;
 
@@ -72,7 +75,7 @@ const SearchResults = () => {
             {!loading && videos.length === 0 && (
                 <div className="search-header">
                     <h1>Nenhum vídeo encontrado para "{texto || disciplina}"</h1>
-                    <button className="btn-voltar" onClick={() => navigate(`/`)}> Voltar </button>
+                    <button className="btn btn-primary" onClick={() => navigate(`/`)}> Voltar </button>
                 </div>
             )}
 
@@ -81,7 +84,7 @@ const SearchResults = () => {
                     <div className="search-header">
                         <h1>Resultados para "{texto || disciplina}"</h1>
 
-                        <button className="btn-voltar" onClick={() => navigate(-1)}> Voltar </button>
+                        <button className="btn btn-primary" onClick={() => navigate(-1)}> Voltar </button>
                     </div>
                     <div className="video-list">
                         {videos.map((video, index) => (

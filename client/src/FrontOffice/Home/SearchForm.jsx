@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import Search from '../../assets/search.svg?react';
 import { useNavigate, useLocation } from 'react-router-dom';
 
 const SearchForm = () => {
@@ -42,7 +43,7 @@ const SearchForm = () => {
         onChange={e => setDisciplina(e.target.value)}
       />
       <button type="submit" className="btn-pesquisar btn" style={{ padding: '6px 12px' }}>
-        <img src="/search.svg" alt="Pesquisar" height="20" />
+        <Search height="20"/>
       </button>
     </form>
   );

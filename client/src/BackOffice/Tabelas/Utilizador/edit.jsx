@@ -36,7 +36,6 @@ const UtilizadorEdit = () => {
         ]);
 
         const user = userRes.data;
-        console.log(user);
         setFormData({
           nome: user.Nome || '',
           email: user.Email || '',
@@ -45,7 +44,6 @@ const UtilizadorEdit = () => {
           cargo: user.CargoID || '',
           fotoPerfil: null
         });
-        console.log(formData)
         setCurrentFoto(user.FotoPerfil);
         setCargos(cargosRes.data);
 

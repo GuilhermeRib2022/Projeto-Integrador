@@ -1,0 +1,46 @@
+.estatisticas-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 30px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.1);
+}
+
+.search-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+}
+
+.btn-voltar {
+  padding: 8px 16px;
+  font-size: 16px;
+  background-color: #eee;
+  border: 1px solid #ccc;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.estatisticas-box p {
+  margin: 10px 0;
+  font-size: 1.1rem;
+}
+
+hr {
+  margin: 15px 0;
+  border: none;
+  border-top: 1px solid #ccc;
+}
+
+.carregando, .erro {
+  text-align: center;
+  margin-top: 40px;
+  font-size: 18px;
+  color: #666;
+}
+
+.estatistica-video{
+  font-size: 18px;
+}

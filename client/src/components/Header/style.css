@@ -27,6 +27,14 @@ ul.navbar-nav .nav-link.active {
   border-bottom: 2px solid black;
 }
 
+.nav-link{
+  color:#000;
+}
+
+.nav-link:hover{
+  color:#ffffff;
+}
+
 .navbar .dropdown-menu .dropdown-item.active {
   color: black !important;
   background-color: lightgray !important;
@@ -52,14 +60,16 @@ ul.navbar-nav .nav-link.active {
 }
 
 .btn-pesquisar{
-  background: #cac8c8;
-  transition: 0.5s ease;
-  margin-left: -30px;
+  background: #cac8c8 !important;
+  transition: 0.5s ease !important;
+  margin-left: -30px !important;
+  color:#000 !important;
 }
 
 .btn-pesquisar:hover{
   /*background: linear-gradient(175deg,rgba(55, 50, 70, 0.8) 25%, rgba(71, 54, 71, 0.5) 64%, rgba(68, 66, 57, 0.46) 100%);*/
-  background:#333333;
+  background:#333333 !important;
+  color:white !important;
 }
 
 .btn-pesquisar img {
@@ -70,6 +80,80 @@ ul.navbar-nav .nav-link.active {
 .btn-pesquisar:hover img {
   filter: invert(1); 
 }
+
+
+
+/* Prevent color/background changes on focus or active */
+ul.navbar-nav a:focus{
+  color: #000000 !important;
+  background-color: transparent !important;
+  outline: none; /* Remove focus outline */
+  box-shadow: none;
+}
+
+ul.navbar-nav a:focus:hover{
+  color: #ffffff !important;
+  background-color: #606d7a !important;
+  outline: none; /* Remove focus outline */
+  box-shadow: none;
+}
+
+.nav-link.dropdown-toggle {
+  color: black !important;
+  cursor: pointer;
+  user-select: none;
+  text-decoration: none;
+}
+
+.nav-link.dropdown-toggle:hover {
+  color: white !important;
+  background-color: #606d7a !important;
+  text-decoration: none;
+  outline: none;
+}
+
+
+html.dark {
+  filter: invert(1) hue-rotate(180deg);
+  background-color: #121212;
+}
+
+.mode:hover{
+  color:white;
+}
+
+
+html.dark img,
+html.dark .video-card,
+html.dark .disciplina-color,
+html.dark .videoHeader,
+html.dark .video-thumbnail,
+html.dark .video-info,
+html.dark video {
+  filter: invert(1) hue-rotate(180deg);
+}
+/*
+body.light {
+  background-color: #ffffff;
+  color: #000000;
+}
+
+body.dark {
+  background-color: #121212;
+  color: #ffffff;
+}
+
+
+body.dark .navbar {
+  background-color: #222 !important;
+}
+
+body.dark .nav-link,
+body.dark .navbar-brand,
+body.dark .dropdown-menu {
+  color: #fff !important;
+}
+*/
 
 /* MOSTRAR DEPOIS xd
 html{

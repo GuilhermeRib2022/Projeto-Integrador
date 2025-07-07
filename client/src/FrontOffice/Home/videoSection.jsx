@@ -7,7 +7,7 @@ import hexToRGBA from '../../services/hexToRgba';
 const VideoSection = ({ title, videos }) => {
   const navigate = useNavigate();
 
-    function getContrastingTextColor(hex) {
+  function getContrastingTextColor(hex) {
     // Remove "#" if present
     const color = hex.replace('#', '');
 

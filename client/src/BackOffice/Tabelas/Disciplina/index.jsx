@@ -14,6 +14,25 @@ const Disciplina = () => {
   const [currentPage, setCurrentPage] = useState(1); //Página Atual
   const itemsPerPage = 10; //Número de linhas por página
 
+const handleDelete = async (id) => {
+  if (window.confirm("Tem certeza que deseja apagar esta disciplina?")) {
+    try {
+      await axios.delete(`${BASE_URL}/disciplina/${id}`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`
+        }
+      });
+
+      setData(prevData => prevData.filter(d => d.ID !== id));
+      alert('Disciplina apagada com sucesso.');
+    } catch (err) {
+      const backendMsg = err.response?.data?.message || "Erro ao apagar disciplina.";
+      alert(`Não foi possível apagar: ${backendMsg}`);
+    }
+  }
+};
+
+
   useEffect(() => {
     axios.get(`${BASE_URL}/disciplina`, {
       headers: {
@@ -64,13 +83,13 @@ const Disciplina = () => {
       <div className="fixd d-flex justify-content-between align-items-center mb-3">
         <h1>Disciplinas</h1>
         <div className="form-outline flex-grow-1 mx-3" data-mdb-input-init>
-          <input type="search" id="form1" className="form-control" placeholder="Pesquisa" aria-label="Search" value={search} onChange={(e) => setSearch(e.target.value)} />
+          <input type="search" id="form1" className="form-control" placeholder="Pesquisa" aria-label="Search" value={search} onChange={(e) => {setSearch(e.target.value); setCurrentPage(1);} } />
         </div>
         <Link to="/admin" className="btn btn-outline-secondary">Voltar</Link>
       </div>
       <hr></hr>
       <div className="table-container" >
-        <table className="element table table-responsive table-hover table-striped utilizador-table">
+        <table className="disciplina-table element table table-responsive table-hover table-striped ">
           <thead>
             <tr>
               <th><strong>ID</strong></th>
@@ -87,7 +106,8 @@ const Disciplina = () => {
                 <td>{disciplina.Nome}</td>
                 <td>{disciplina.Descricao}</td>
                 <td style={{ backgroundColor: disciplina.Cor, color: getContrastingTextColor(disciplina.Cor), }}><strong>{disciplina.Cor}</strong></td>
-                <td className="text-center align-middle"><Link to={`/admin/disciplina/edit/${disciplina.ID}`} className='btn btn-outline-secondary button-info w-40 rounded-0 '>Editar</Link></td>
+                <td className="text-center align-middle"><Link to={`/admin/disciplina/edit/${disciplina.ID}`} className='btn btn-outline-secondary button-info w-40 rounded-0 '>Editar</Link>
+                <button onClick={() => handleDelete(disciplina.ID)} className="btn btn-outline-danger button-delete w-40 rounded-0"> Apagar </button></td>
               </tr>
             ))}
           </tbody>

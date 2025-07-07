@@ -80,9 +80,34 @@ export const Disciplina = {
         const [result] = await pool.query(`SELECT d.* FROM disciplina d
             LEFT JOIN disciplinaUtilizador du ON du.disciplinaID = d.ID
             LEFT JOIN utilizador u ON u.ID = du.UtilizadorID
-            WHERE u.ID = ?
+            WHERE u.ID = ? 
             ORDER BY d.nome ASC`
             , [utilizadorID]);
         return result
     },
+
+
+        //OBTER DISCIPLINAS DE UTILIZADOR
+    async listarDisciplinaUser(utilizadorID) {
+
+        const [result] = await pool.query(`SELECT d.* FROM disciplina d
+            LEFT JOIN disciplinaUtilizador du ON du.disciplinaID = d.ID
+            LEFT JOIN utilizador u ON u.ID = du.UtilizadorID
+            WHERE u.ID = ? AND u.cargoID <> 1
+            ORDER BY d.nome ASC`
+            , [utilizadorID]);
+        return result
+    },
+
+    async getEstatisticasDisciplina() {
+        const [rows] = await pool.query(`
+            SELECT d.ID, d.Nome, d.cor AS Cor, COUNT(v.ID) AS TotalVideos, SUM(v.Views) AS TotalViews, AVG(r.Nota) AS MediaReviews, SUM(CASE WHEN du.UtilizadorID IS NOT NULL THEN 1 ELSE 0 END) AS Inscricoes
+            FROM disciplina d
+            LEFT JOIN video v ON v.DisciplinaID = d.ID
+            LEFT JOIN review r ON r.VideoID = v.ID
+            LEFT JOIN disciplinaUtilizador du ON du.DisciplinaID = d.ID
+            GROUP BY d.ID
+        `);
+        return rows;
+    }
 }

@@ -1,62 +1,3 @@
-@media (prefers-color-scheme: dark) {
-  :root {
-    color: #213547 !important;
-    background-color: #1f1f1f !important;
-  }
-
-  a:hover {
-    color: #747bff;
-  }
-
-  nav{
-    background-color: #1f1f1f !important;
-    color: #fff !important;
-  }
-
-  a{
-    background-color: #1f1f1f !important;
-    color: #fff !important;
-  }
-
-  span{
-    color: #fff !important;
-  }
-
-  .sidebar{
-    background-color: #1f1f1f !important;
-    color: #fff !important;
-  }
-
-  .nav-link{
-
-    color: #fff !important;
-  }
-
-    .nav-link active{
-    color: #fff !important;
-  }
-  
-  div{
-    background-color: #1f1f1f !important;
-    color: #f9f9f9 !important;
-  }
-
-  body{
-    background-color: #1f1f1f !important;
-    color: #f9f9f9 !important;
-  }
-
-  .bg-vini{
-    background-color: #1f1f1f !important;
-    color: #f9f9f9 !important;
-  }
-
-  button {
-    background-color: #f9f9f9 !important;
-    color: #f9f9f9 !important;
-  }
-}
-
 
 :root {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
@@ -125,3 +66,66 @@ body {
 }
 
 
+/*
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    color: #213547 !important;
+    background-color: #1f1f1f !important;
+  }
+
+  a:hover {
+    color: #747bff;
+  }
+
+  nav{
+    background-color: #1f1f1f !important;
+    color: #fff !important;
+  }
+
+  a{
+    background-color: #1f1f1f !important;
+    color: #fff !important;
+  }
+
+  span{
+    color: #fff !important;
+  }
+
+  .sidebar{
+    background-color: #1f1f1f !important;
+    color: #fff !important;
+  }
+
+  .nav-link{
+
+    color: #fff !important;
+  }
+
+    .nav-link active{
+    color: #fff !important;
+  }
+  
+  div{
+    background-color: #1f1f1f !important;
+    color: #f9f9f9 !important;
+  }
+
+  body{
+    background-color: #1f1f1f !important;
+    color: #f9f9f9 !important;
+  }
+
+  .bg-vini{
+    background-color: #1f1f1f !important;
+    color: #f9f9f9 !important;
+  }
+
+  button {
+    background-color: #f9f9f9 !important;
+    color: #f9f9f9 !important;
+  }
+}
+
+
+*/

@@ -4,7 +4,10 @@ export const Comentario = {
 
     //OBTER TODAS OS COMENTÁRIOS
     async getComentarios() {
-        const [rows] = await pool.query('SELECT * FROM comentario where ID>0')
+        const [rows] = await pool.query(`SELECT comentario.ID,VideoID, comentario.UtilizadorID, utilizador.nome, utilizador.FotoPerfil, Texto,comentario.UploadTime, comentario.EditTime FROM comentario\
+                                    LEFT JOIN utilizador ON utilizador.ID = comentario.utilizadorID\
+                                    ORDER BY comentario.UploadTime DESC`
+        );
         return rows
     },
 
@@ -44,6 +47,21 @@ export const Comentario = {
         return this.getComentariosVideo(videoID);
     },
 
+    //EDITAR COMENTÁRIO POR ID DE COMENTÁRIO
+    async editComentarioID(ID, Texto) {
+        const [result] = await pool.query(
+            "UPDATE comentario SET Texto = ?, EditTime = NOW() WHERE ID = ?",
+            [Texto, ID]
+        );
+
+        if (result.affectedRows === 0) {
+            throw new Error('Comentário não encontrado para atualização');
+        }
+
+        // Opcional: buscar e retornar o comentário atualizado
+        return await this.getComentario(ID);
+    },
+
     //ATUALIZAR COMENTÁRIO POR VIDEOID & UTILIZADORID
     async editComentario(ID, VideoID, utilizadorID, Texto) {
         const current = await this.getComentariosVideo(VideoID)
@@ -52,7 +70,7 @@ export const Comentario = {
         const updatedUtilizadorID = utilizadorID ?? current.UtilizadorID;
         const updatedTexto = Texto ?? current.Texto;
 
-        const [result] = await pool.query('UPDATE comentario SET VideoID = ?, utilizadorID = ?, Texto = ? WHERE ID = ?', [updatedVideoID, updatedUtilizadorID, updatedTexto, ID]);
+        const [result] = await pool.query('UPDATE comentario SET VideoID = ?, utilizadorID = ?, Texto = ?, EditTime = NOW() WHERE ID = ?', [updatedVideoID, updatedUtilizadorID, updatedTexto, ID]);
 
         if (result.affectedRows === 0) {
             throw new Error(`No comentario found with ID ${ID}`);

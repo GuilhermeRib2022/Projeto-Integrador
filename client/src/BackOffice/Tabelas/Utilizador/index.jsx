@@ -90,7 +90,7 @@ const Utilizador = () => {
       <div className="fixd d-flex justify-content-between align-items-center mb-3">
         <h1>Utilizadores</h1>
         <div className="form-outline flex-grow-1 mx-3" data-mdb-input-init>
-          <input type="search" id="form1" className="form-control" placeholder="Pesquisa" aria-label="Search" value={search} onChange={(e) => setSearch(e.target.value)} />
+          <input type="search" id="form1" className="form-control" placeholder="Pesquisa" aria-label="Search" value={search} onChange={(e) => {setSearch(e.target.value); setCurrentPage(1);} } />
         </div>
         <Link to="/admin" className="btn btn-outline-secondary">Voltar</Link>
       </div>

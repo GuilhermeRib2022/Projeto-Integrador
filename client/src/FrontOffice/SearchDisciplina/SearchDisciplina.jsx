@@ -64,7 +64,7 @@ const SearchDisciplina = () => {
     <div>
       <div className="search-header">
       <h1>Resultados para "{disciplina}"</h1>
-      <button className="btn-voltar" onClick={() => navigate(-1)}> Voltar </button>
+      <button className="btn btn-primary " onClick={() => navigate(-1)}> Voltar </button>
       </div>
     <div className="video-list">
       
@@ -81,6 +81,7 @@ const SearchDisciplina = () => {
               src={`${BASE_URL}/uploads/thumbnails/${video.Thumbnail}`} 
               alt="thumbnail"
               onError={(e) => { e.target.src = '/placeholder.png'; }}
+              onClick={() => navigate(`/video/${video.ID}`)}
             />
             <span className="duration">{formatDuration(video.Duracao)}</span>
           </div>

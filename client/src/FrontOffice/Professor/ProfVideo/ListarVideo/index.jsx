@@ -54,6 +54,7 @@ const ListarVideo = () => {
                 className="form-control mb-3"
                 style={{ maxWidth: '400px' }}
             />
+            <hr></hr>
             <table className="table-videos table table-striped table-hover  centered-table mt-3 ">
                 <thead>
                     <tr>
@@ -121,6 +122,7 @@ const ListarVideo = () => {
                     ))}
                 </tbody>
             </table>
+            <hr></hr>
         </div>
     );
 };

@@ -75,6 +75,8 @@ router.get("/video/:id", async (req, res) => {
 });
 
 
+
+
 //CRIAR COMENTÁRIO POR VIDEOID & UTILIZADORID
 router.post("/video/:id", authenticateToken, async (req, res) => { // Rota de criação de review
     try {
@@ -94,6 +96,38 @@ router.post("/video/:id", authenticateToken, async (req, res) => { // Rota de cr
         console.error('Erro interno ao criar comentário:', error);
         res.status(500).send({ message: "Erro ao criar comentário" });
     }
+});
+
+// Atualizar comentário por ID
+router.patch("/:id", authenticateToken, async (req, res) => {
+  try {
+    const ID = req.params.id;
+    const { Texto } = req.body;
+
+    if (!Texto) {
+      return res.status(400).send({ message: "O campo Texto é obrigatório para atualização." });
+    }
+
+    // Busca o comentário pelo ID (deve retornar um único comentário)
+    const comentarioExiste = await Comentario.getComentario(ID);
+
+    if (!comentarioExiste) {
+      return res.status(404).send({ message: "Comentário não encontrado" });
+    }
+
+    // Verifica permissão: só autor ou admin pode editar
+    if (comentarioExiste.UtilizadorID !== req.user.id && req.user.cargo !== 'admin') {
+      return res.status(403).send({ message: "Acesso negado. Apenas o autor ou admin podem editar este comentário." });
+    }
+
+    // Chama o model para editar
+    const comentarioAtualizado = await Comentario.editComentarioID(ID, Texto);
+
+    res.status(200).send(comentarioAtualizado);
+  } catch (error) {
+    console.error('Erro ao editar comentário:', error);
+    res.status(500).send({ message: "Erro ao editar comentário" });
+  }
 });
 
 //ATUALIZAR COMENTÁRIO POR VIDEOID & UTILIZADORID

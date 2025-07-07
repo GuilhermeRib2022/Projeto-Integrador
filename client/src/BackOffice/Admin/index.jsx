@@ -17,6 +17,17 @@ import Disciplina from '../Tabelas/Disciplina';
 import DisciplinaCreate from '../Tabelas/Disciplina/create';
 import DisciplinaEdit from '../Tabelas/Disciplina/edit';
 
+import Videos from '../Tabelas/Video';
+import VideoEdit from '../Tabelas/Video/edit';
+import VideoEstatisticas from '../Tabelas/Video/estatisticas';
+
+import Comentarios from '../Tabelas/Comentario';
+import ComentarioEdit from '../Tabelas/Comentario/edit';
+
+import EstatisticasWebsite from '../Estatisticas';
+import EstatisticasDisciplina from '../Estatisticas/disciplinas';
+import EstatisticasUtilizador from '../Estatisticas/utilizadores';
+
 import './style.css';
 
 const Admin = () => {
@@ -35,11 +46,22 @@ const Admin = () => {
 
         <Route path="/cargo" element={<Cargo />} />
         <Route path="/cargo/criar" element={<CargoCreate />} />
-        <Route path="/cargo/edit/:id" element={<CargoEdit />} />~
+        <Route path="/cargo/edit/:id" element={<CargoEdit />} />
+
+        <Route path="/video" element={<Videos />} />
+        <Route path="/video/edit/:id" element={<VideoEdit />} />
+        <Route path="/video/estatisticas/:id" element={<VideoEstatisticas />} />
 
         <Route path="/disciplina" element={<Disciplina />} />
         <Route path="/disciplina/criar" element={<DisciplinaCreate />} />
         <Route path="/disciplina/edit/:id" element={<DisciplinaEdit />} />
+
+        <Route path="/comentario" element={<Comentarios />} />
+        <Route path="/comentario/edit/:id" element={<ComentarioEdit />} />
+
+        <Route path="/websitestats" element={<EstatisticasWebsite />} />
+        <Route path="/disciplina/stats" element={<EstatisticasDisciplina />} />
+        <Route path="/utilizador/stats" element={<EstatisticasUtilizador />} />
       </Routes>
       </div>
       </div>

@@ -43,7 +43,23 @@ router.post('/publicar',   authenticateToken, (req, res, next) => {upload.fields
   }
 );
 
-//Rota para editar um vídeo
+//Obter estatísticas de vídeo
+router.get('/estatisticas/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const estatisticas = await Video.getEstatisticasById(id);
+
+    if (!estatisticas) {
+      return res.status(404).json({ message: 'Vídeo não encontrado' });
+    }
+
+    res.json(estatisticas);
+  } catch (err) {
+    console.error('Erro ao obter estatísticas do vídeo:', err);
+    res.status(500).json({ message: 'Erro interno do servidor' });
+  }
+});
+
 router.put('/editar/:id', authenticateToken, (req, res, next) => {
   upload.fields([{ name: 'thumbnail', maxCount: 1 }])(req, res, function (err) {
     if (err instanceof multer.MulterError) {
@@ -56,17 +72,12 @@ router.put('/editar/:id', authenticateToken, (req, res, next) => {
 }, async (req, res) => {
   try {
     const videoID = req.params.id;
-    const utilizadorID = req.user.id;
+    const utilizador = { id: req.user.id, cargoID: req.user.cargo};
 
     const { titulo, descricao, disciplina } = req.body;
     const thumbnail = req.files?.['thumbnail']?.[0]?.filename;
 
-    await Video.editarVideo(videoID, utilizadorID, {
-      titulo,
-      descricao,
-      disciplina,
-      thumbnail
-    });
+    await Video.editarVideo(videoID, utilizador, { titulo, descricao, disciplina, thumbnail});
 
     res.status(200).json({ message: 'Vídeo atualizado com sucesso!' });
   } catch (err) {
@@ -74,6 +85,7 @@ router.put('/editar/:id', authenticateToken, (req, res, next) => {
     res.status(500).json({ message: err.message || 'Erro ao editar vídeo' });
   }
 });
+
 
 //Rota para adicionar uma visualização
 router.post('/:id/view', async (req, res) => {
@@ -98,11 +110,13 @@ router.get("/user", authenticateToken, async (req, res) => {
     }
 });
 
+//Obter todos os vídeos
 router.get("/", async (req, res) => {
     const videos = await Video.getVideos()
     res.send(videos)
 })
 
+//Obter vídeos da página home (Mais vistos, melhor avaliados, mais recentes, 2 disciplinas aleatórias)
 router.get("/home", async (req, res) => {
   try {
     const maisVistos = await Video.getVideosView();      
@@ -123,8 +137,7 @@ router.get("/home", async (req, res) => {
   }
 });
 
-
-
+//Pesquisar video por disciplina ou título ou ambos 
 router.get("/search", async (req, res) => {
     const texto = req.query.texto;
     const disciplina = req.query.disciplina;
@@ -142,6 +155,7 @@ router.get("/search", async (req, res) => {
 
 });
 
+//Pesquisar video por disciplina ou título ou ambos  (Usado na página de disciplina)
 router.get("/disciplina", async (req, res) => {
     const texto = req.query.texto;
     const disciplina = req.query.disciplina;
@@ -159,6 +173,7 @@ router.get("/disciplina", async (req, res) => {
 
 });
 
+//Pesquisar videos
 router.get("/search", async (req, res) => {
     const texto = req.query.texto;
     const disciplina = req.query.disciplina;
@@ -168,6 +183,7 @@ router.get("/search", async (req, res) => {
     res.send(videos);
 });
 
+//obter vídeo por ID
 router.get('/:id', async (req, res) => {
   const videoID = req.params.id;
   try {
@@ -184,30 +200,43 @@ router.get('/:id', async (req, res) => {
   }
 });
 
+//obter média das reviews de video
 router.get("/:id/reviewMedia", async (req, res) => { 
     const id = req.params.id
     const videos = await Video.VideoReviewMedia(id)
     res.send(videos)
 })
 
+//Obter reviews de vídeo
 router.get("/:id/reviews", async (req, res) => { 
     const id = req.params.id
     const videos = await Video.VideoReviews(id)
     res.send(videos)
 })
 
+//pesquisar videos
 router.post("/search", async (req, res) => {
     const {Texto} = req.body;
     const videos = await Video.searchVideo(Texto)
     res.send(videos)
 })
 
+//pesquisar videos por disciplina
 router.post("/search/disciplina/:id", async (req, res) => {
     const DisciplinaID = req.params.id;
     const {Texto} = req.body;
     const videos = await Video.searchVideoDisciplina(Texto, DisciplinaID)
     res.send(videos)
 })
+
+
+//Obter videos com ID de utilizador
+router.get("/utilizador/:id", async (req, res) => {
+    const UtilizadorID = req.params.id;
+    const videos = await Video.getVideosUser(UtilizadorID)
+    res.send(videos)
+})
+
 
 export default router;
 

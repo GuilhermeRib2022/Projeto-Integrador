@@ -71,3 +71,14 @@
     width: 120%;
     align-self: center;
 }
+
+.admin-sidebar .dashboard-logo{
+  width: 60%;
+  align-self: center;
+  transition: 0.8s;
+}
+
+.admin-sidebar .dashboard-logo:hover{
+    width: 120%;
+    align-self: center;
+}

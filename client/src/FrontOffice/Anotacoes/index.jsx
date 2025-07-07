@@ -50,7 +50,7 @@ const Anotacoes = () => {
         <div className="anotacoes-container">
             <div className="search-header">
                 <h1>Minhas Anotações</h1>
-                <button className="btn-voltar" onClick={() => navigate(-1)}> Voltar </button>
+                <button className="btn btn-primary" onClick={() => navigate(-1)}> Voltar </button>
             </div>
             <input
                 type="text"

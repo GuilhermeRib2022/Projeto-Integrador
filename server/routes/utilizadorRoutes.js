@@ -8,6 +8,9 @@ import fs from 'fs/promises';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import authenticateToken from '../services/Autenticacao.js';
+import { Estatisticas } from '../models/estatisticasModels.js';
+import { EstatisticasAdmin } from '../models/estatisticasAdminModels.js';
+import verificarCargo from '../services/verificarCargo.js';
 
 dotenv.config();
 const router = Router();
@@ -32,6 +35,18 @@ const upload = multer({ storage });
 function asyncHandler(fn) {
     return (req, res, next) => fn(req, res, next).catch(next);
 }
+
+//Obter estatísticas de utilizadores
+router.get("/estatisticas", authenticateToken, verificarCargo(3),async (req, res) => {
+
+    try {
+        const estatisticas = await Utilizador.getEstatisticasUtilizador();
+        res.send(estatisticas);
+    } catch (error) {
+        console.error("Erro ao obter estatísticas dos Utilizadores:", error);
+        res.status(500).send({ message: "Erro ao obter estatísticas dos utilizadores" });
+    }
+});
 
 //Rota de pesquisa todos os utilizadores
 router.get("/", asyncHandler(async (req, res) => { 
@@ -75,7 +90,7 @@ router.get("/contar", async (req, res) => {
 })
 
 //Rota de pesquisa de Utilizador por ID
-router.get("/:id", async (req, res) => { 
+router.get("/:id", authenticateToken, async (req, res) => { 
     const id = req.params.id
     const result = await Utilizador.getUtilizador(id)
     res.send(result)
@@ -170,17 +185,93 @@ router.use((err, req, res, next) => {
     res.status(500).send('Something broke!')
 })
 
+//ATIVAR UM UTILIZADOR
 router.patch('/:id/ativar', async (req, res) => {
   const id = req.params.id;
   const employees = await Utilizador.ativar(id); // ativar utilizador
   res.json(employees);
 });
 
+//DESATIVAR UM UTILIZADOR
 router.delete('/:id/desativar', async (req, res) => {
   const id = req.params.id;
   const employees = await Utilizador.desativar(id); // desativar utilizador
   res.json(employees);
 });
+
+
+//OBTER ESTATISTICAS GERAIS DO WEBSITE
+router.get('/admin/estatisticas/:id', authenticateToken, async (req, res) => {
+  try {
+    const totalVideos = await EstatisticasAdmin.getTotalVideos();
+    const duracaoMediaVideos = await EstatisticasAdmin.getDuracaoMediaVideos();
+    const totalViews = await EstatisticasAdmin.getTotalViews();
+    const mediaViews = totalVideos > 0 ? totalViews / totalVideos : 0;
+    const viewsSemanaAtual = await EstatisticasAdmin.getViewsSemanaAtual();
+    const viewsSemanaPassada = await EstatisticasAdmin.getViewsSemanaPassada();
+    const diferencaViews = viewsSemanaAtual - viewsSemanaPassada;
+    const totalAvaliacoes = await EstatisticasAdmin.getTotalAvaliacoes();
+    const avaliacoesSemana = await EstatisticasAdmin.getAvaliacoesSemana();
+    const averageRating = await EstatisticasAdmin.getAverageRating();
+    const videoMelhorAvaliado = await EstatisticasAdmin.getVideoMelhorAvaliado();
+    const totalComentarios = await EstatisticasAdmin.getTotalComentarios();
+    const comentariosSemana = await EstatisticasAdmin.getComentariosSemana();
+    const mediaComentariosPorVideo = totalVideos > 0 ? totalComentarios / totalVideos : 0;
+    const totalDisciplinas = await EstatisticasAdmin.getTotalDisciplinas();
+    const disciplinaMaisVisualizada = await EstatisticasAdmin.getDisciplinaMaisVisualizada();
+    const disciplinaMelhorAvaliada = await EstatisticasAdmin.getDisciplinaMelhorAvaliada();
+    const totalAnotacoes = await EstatisticasAdmin.getTotalAnotacoes();
+    const totalPerguntasLLM = await EstatisticasAdmin.getTotalPerguntasLLM();
+    const videoMaisVisto = await EstatisticasAdmin.getVideoMaisVisto();
+
+    res.json({ totalVideos, duracaoMediaVideos, totalViews, mediaViews, viewsSemanaAtual, viewsSemanaPassada, diferencaViews, videoMaisVisto, totalAvaliacoes, avaliacoesSemana, averageRating, videoMelhorAvaliado, totalComentarios, comentariosSemana, mediaComentariosPorVideo, totalDisciplinas, disciplinaMaisVisualizada, disciplinaMelhorAvaliada, totalAnotacoes, totalPerguntasLLM,});
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Erro ao obter estatísticas.' });
+  }
+});
+
+
+//OBTER TODAS AS ESTATISTICAS DE UM PROFESSOR
+router.get('/professor/estatisticas/:id', authenticateToken, async (req, res) => {
+  try {
+    const userId = req.params.id;
+
+
+    if((req.params.id != req.user.id) && req.user.cargo !== 3){
+          return res.status(401).json({ message: 'Sem autorização para acessar.' });
+    }
+
+    const totalVideos = await Estatisticas.getTotalVideos(userId);
+    const duracaoMediaVideos = await Estatisticas.getDuracaoMediaVideos(userId);
+    const totalViews = await Estatisticas.getTotalViews(userId);
+    const mediaViews = totalVideos > 0 ? totalViews / totalVideos : 0;
+    const viewsSemanaAtual = await Estatisticas.getViewsSemanaAtual(userId);
+    const viewsSemanaPassada = await Estatisticas.getViewsSemanaPassada(userId);
+    const diferencaViews = viewsSemanaAtual - viewsSemanaPassada;
+    const totalAvaliacoes = await Estatisticas.getTotalAvaliacoes(userId);
+    const avaliacoesSemana = await Estatisticas.getAvaliacoesSemana(userId);
+    const averageRating = await Estatisticas.getAverageRating(userId);
+    const videoMelhorAvaliado = await Estatisticas.getVideoMelhorAvaliado(userId);
+    const totalComentarios = await Estatisticas.getTotalComentarios(userId);
+    const comentariosSemana = await Estatisticas.getComentariosSemana(userId);
+    const mediaComentariosPorVideo = totalVideos > 0 ? totalComentarios / totalVideos : 0;
+    const totalDisciplinas = await Estatisticas.getTotalDisciplinas(userId);
+    const disciplinaMaisVisualizada = await Estatisticas.getDisciplinaMaisVisualizada(userId);
+    const disciplinaMelhorAvaliada = await Estatisticas.getDisciplinaMelhorAvaliada(userId);
+    const totalAnotacoes = await Estatisticas.getTotalAnotacoes(userId);
+    const totalPerguntasLLM = await Estatisticas.getTotalPerguntasLLM(userId);
+    const videoMaisVisto = await Estatisticas.getVideoMaisVisto(userId);
+
+    res.json({ totalVideos, duracaoMediaVideos, totalViews, mediaViews, viewsSemanaAtual, viewsSemanaPassada, diferencaViews, videoMaisVisto, totalAvaliacoes, avaliacoesSemana, averageRating, videoMelhorAvaliado, totalComentarios, comentariosSemana, mediaComentariosPorVideo, totalDisciplinas, disciplinaMaisVisualizada, disciplinaMelhorAvaliada, totalAnotacoes, totalPerguntasLLM,});
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Erro ao obter estatísticas.' });
+  }
+});
+
+
+
 
 
 export default router;

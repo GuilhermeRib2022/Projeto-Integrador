@@ -3,22 +3,24 @@ import axios from 'axios';
 import { BASE_URL } from '../../../../components/url';
 import { useNavigate, useParams } from 'react-router-dom';
 import './style.css';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 const EditarVideo = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
+
   const [titulo, setTitulo] = useState('');
   const [descricao, setDescricao] = useState('');
   const [disciplina, setDisciplina] = useState('');
+  const [thumbnailAtual, setThumbnailAtual] = useState(null);
   const [thumbnailFile, setThumbnailFile] = useState(null);
   const [thumbnailPreviewUrl, setThumbnailPreviewUrl] = useState(null);
-  const [thumbnailAtual, setThumbnailAtual] = useState(null);
   const [disciplinas, setDisciplinas] = useState([]);
   const [mensagem, setMensagem] = useState('');
   const [erro, setErro] = useState('');
-  const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchDados = async () => {
+    const carregarDados = async () => {
       try {
         const token = localStorage.getItem('token');
 
@@ -32,22 +34,23 @@ const EditarVideo = () => {
         setDisciplina(video.DisciplinaID);
         setThumbnailAtual(video.Thumbnail);
 
-        const resDisc = await axios.get(`${BASE_URL}/disciplina`);
+        const resDisc = await axios.get(`${BASE_URL}/disciplina`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
         setDisciplinas(resDisc.data);
       } catch (err) {
         setErro('Erro ao carregar dados do vídeo.');
       }
     };
 
-    fetchDados();
+    carregarDados();
   }, [id]);
 
-  // Cria e limpa o object URL para preview da thumbnail
   useEffect(() => {
     if (thumbnailFile) {
       const url = URL.createObjectURL(thumbnailFile);
       setThumbnailPreviewUrl(url);
-
       return () => URL.revokeObjectURL(url);
     } else {
       setThumbnailPreviewUrl(null);
@@ -55,30 +58,20 @@ const EditarVideo = () => {
   }, [thumbnailFile]);
 
   const handleFileChange = (e) => {
+    const file = e.target.files[0];
     setMensagem('');
     setErro('');
-    const file = e.target.files[0];
-    if (file) {
-      // Tipos permitidos
-      const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
-      if (!allowedTypes.includes(file.type)) {
-        setMensagem('Tipo de arquivo não suportado. Use JPEG, PNG, GIF ou WebP.');
-        setErro('Erro');
-        setThumbnailFile(null);
-        return;
-      }
 
-      // Tamanho máximo 20MB
-      const maxSize = 20 * 1024 * 1024;
-      if (file.size > maxSize) {
-        setMensagem('Arquivo muito grande. Tamanho máximo: 20MB.');
-        setErro('Erro');
-        setThumbnailFile(null);
-        return;
-      }
+    const tiposPermitidos = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+    const tamanhoMax = 20 * 1024 * 1024;
 
-      setThumbnailFile(file);
+    if (file && (!tiposPermitidos.includes(file.type) || file.size > tamanhoMax)) {
+      setErro('Arquivo inválido (tipo ou tamanho incorreto).');
+      setThumbnailFile(null);
+      return;
     }
+
+    setThumbnailFile(file);
   };
 
   const handleSubmit = async (e) => {
@@ -104,88 +97,88 @@ const EditarVideo = () => {
       });
 
       setMensagem('Vídeo atualizado com sucesso!');
-      navigate(`/video/${id}`);
+      setTimeout(() => navigate(`/video/${id}`), 1500);
     } catch (err) {
       setErro('Erro ao atualizar o vídeo.');
     }
   };
 
-  const renderThumbnailPreview = () => {
-    if (thumbnailPreviewUrl) {
-      return (
-        <img
-          src={thumbnailPreviewUrl}
-          alt="Nova thumbnail"
-          className="preview-thumbnail"
-        />
-      );
-    }
-
-    if (thumbnailAtual) {
-      return (
-        <img
-          src={`${BASE_URL}/uploads/thumbnails/${thumbnailAtual}`}
-          alt="Thumbnail atual"
-          className="preview-thumbnail"
-        />
-      );
-    }
-
-    return null;
-  };
-
   return (
-    <div className="publicar-video-container">
-      <h2>Editar Vídeo</h2>
+    <div className="container mt-4 edit-video">
+      <div className="d-flex justify-content-between align-items-center mb-3">
+        <h2>Editar Vídeo</h2>
+        <button className="btn btn-outline-secondary" onClick={() => navigate(-1)}>Voltar</button>
+      </div>
 
-      {erro && <div className="erro">{mensagem || erro}</div>}
-      {!erro && mensagem && <div className="sucesso">{mensagem}</div>}
+      {erro && <div className="alert alert-danger">{erro}</div>}
+      {mensagem && <div className="alert alert-success">{mensagem}</div>}
 
-      <form onSubmit={handleSubmit} className="formulario-video">
-        <label>Título</label>
-        <input
-          type="text"
-          value={titulo}
-          onChange={(e) => setTitulo(e.target.value)}
-          required
-        />
+      <form onSubmit={handleSubmit} encType="multipart/form-data">
+        <div className="mb-3">
+          <label className="form-label">Título</label>
+          <input
+            type="text"
+            className="form-control"
+            value={titulo}
+            onChange={(e) => setTitulo(e.target.value)}
+            required
+          />
+        </div>
 
-        <label>Descrição</label>
-        <textarea
-          value={descricao}
-          onChange={(e) => setDescricao(e.target.value)}
-          required
-        ></textarea>
+        <div className="mb-3">
+          <label className="form-label">Descrição</label>
+          <textarea
+            className="form-control"
+            value={descricao}
+            onChange={(e) => setDescricao(e.target.value)}
+            required
+          ></textarea>
+        </div>
 
-        <label>Disciplina</label>
-        <select
-          value={disciplina}
-          onChange={(e) => setDisciplina(e.target.value)}
-          required
-        >
-          <option value="">-- Selecione uma disciplina --</option>
-          {disciplinas.map((d) => (
-            <option key={d.ID} value={d.ID}>
-              {d.Nome}
-            </option>
-          ))}
-        </select>
+        <div className="mb-3">
+          <label className="form-label">Disciplina</label>
+          <select
+            className="form-select"
+            value={disciplina}
+            onChange={(e) => setDisciplina(e.target.value)}
+            required
+          >
+            <option value="">-- Selecione uma disciplina --</option>
+            {disciplinas.map((d) => (
+              <option key={d.ID} value={d.ID}>
+                {d.Nome}
+              </option>
+            ))}
+          </select>
+        </div>
 
-        <label>Nova Thumbnail (opcional)</label>
-        <input
-          type="file"
-          accept="image/jpeg,image/png,image/gif,image/webp"
-          onChange={handleFileChange}
-        />
+        <div className="mb-3">
+          <label className="form-label">Thumbnail (opcional)</label>
+          <input
+            type="file"
+            className="form-control"
+            accept="image/jpeg,image/png,image/gif,image/webp"
+            onChange={handleFileChange}
+          />
+        </div>
 
-        {renderThumbnailPreview()}
+        {(thumbnailPreviewUrl || thumbnailAtual) && (
+          <div className="mb-3">
+            <label className="form-label">Pré-visualização:</label><br />
+            <img
+              src={thumbnailPreviewUrl || `${BASE_URL}/uploads/thumbnails/${thumbnailAtual}`}
+              alt="Thumbnail"
+              className="img-thumbnail"
+              style={{ maxWidth: '300px' }}
+            />
+          </div>
+        )}
 
-        <button className="btn btn-success mt-3" type="submit">
-          Salvar Alterações
-        </button>
+        <button type="submit" className="btn btn-success">Salvar Alterações</button>
       </form>
     </div>
   );
 };
+
 
 export default EditarVideo;

@@ -1,5 +1,6 @@
 import React, { useRef, useState, useEffect } from 'react';
 import ReactPlayer from 'react-player';
+import { useTheme } from '../../services/themeContext.jsx';
 import { FaPlay, FaPause, FaVolumeUp, FaVolumeMute, FaExpand, FaVolumeDown, FaVolumeOff, FaCompress } from 'react-icons/fa';
 
 
@@ -25,6 +26,7 @@ const CustomVideoPlayer = ({ src }) => {
     const [currentTime, setCurrentTime] = useState(0);
     const [playbackRate, setPlaybackRate] = useState(1);
     const [isFullscreen, setIsFullscreen] = useState(false);
+    const { theme } = useTheme();
 
     const togglePlay = () => {
         setIsPlaying((prev) => !prev);
@@ -90,6 +92,12 @@ const CustomVideoPlayer = ({ src }) => {
             setIsFullscreen(isFull);
         };
 
+        const handleThemeChange = () => {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            setTheme(savedTheme);
+        };
+
+
         document.addEventListener('fullscreenchange', handleFullscreenChange);
         document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
         document.addEventListener('msfullscreenchange', handleFullscreenChange);
@@ -98,11 +106,13 @@ const CustomVideoPlayer = ({ src }) => {
             document.removeEventListener('fullscreenchange', handleFullscreenChange);
             document.removeEventListener('webkitfullscreenchange', handleFullscreenChange);
             document.removeEventListener('msfullscreenchange', handleFullscreenChange);
+
+
         };
     }, []);
 
     return (
-        <div className="video-wrapper" ref={containerRef} style={{ cursor: 'default' }}>
+        <div className={`video-wrapper ${isFullscreen ? 'fullscreen' : ''} ${theme === 'dark' ? 'dark' : 'light'}`} ref={containerRef} style={{ cursor: 'default' }}>
             <div
                 className="player-wrapper"
                 onClick={togglePlay}

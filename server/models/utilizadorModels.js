@@ -222,5 +222,24 @@ export const Utilizador = {
         await pool.query('UPDATE utilizador SET Estado = "ativo" WHERE ID = ?', [id]);
     },
 
+    async getEstatisticasUtilizador() {
+        try {
+            const [rows] = await pool.query(`
+                SELECT  u.ID, u.Nome, COUNT(DISTINCT a.ID) AS TotalAnotacoes, COUNT(DISTINCT q.ID) AS TotalQueryLLM, COUNT(DISTINCT r.ID) AS TotalReviews, COUNT(DISTINCT c.ID) AS  TotalComentarios, COUNT(DISTINCT du.DisciplinaID) AS TotalSubscricoes
+                FROM Utilizador u
+                LEFT JOIN Anotacao a ON a.UtilizadorID = u.ID
+                LEFT JOIN QueryLLM q ON q.UtilizadorID = u.ID
+                LEFT JOIN Review r ON r.UtilizadorID = u.ID
+                LEFT JOIN Comentario c ON c.UtilizadorID = u.ID
+                LEFT JOIN disciplinautilizador du ON du.UtilizadorID = u.ID
+                GROUP BY u.ID;
+
+            `);
+            return rows;
+        } catch (error) {
+            throw new Error(`Failed to fetch user statistics: ${error.message}`);
+        }
+    }
+
 
 }

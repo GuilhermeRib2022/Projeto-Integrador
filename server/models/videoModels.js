@@ -4,29 +4,29 @@ export const Video = {
 
 
     async visualizar(videoID) {
-      const [result] = await pool.query(
-        'UPDATE video SET views = views + 1 WHERE ID = ?',
-        [videoID]
-      );
-      if (result.affectedRows === 0) {
-        throw new Error('Video not found');
-      }
-      return result;
+        const [result] = await pool.query(
+            'UPDATE video SET views = views + 1 WHERE ID = ?',
+            [videoID]
+        );
+        if (result.affectedRows === 0) {
+            throw new Error('Video not found');
+        }
+        return result;
     },
 
-    
+
     async publicarVideo(disciplinaID, utilizadorID, titulo, descricao, videoPath, thumbnail, duracao) {
         const sql = `INSERT INTO Video (DisciplinaID, UtilizadorID, Titulo, Descricao, VideoPath, Thumbnail, Duracao) VALUES (?, ?, ?, ?, ?, ?, ?)`;
-        const values = [ disciplinaID, utilizadorID, titulo, descricao || null, videoPath, thumbnail || null, duracao];
+        const values = [disciplinaID, utilizadorID, titulo, descricao || null, videoPath, thumbnail || null, duracao];
         const [result] = await pool.query(sql, values);
-        return result.insertId; 
+        return result.insertId;
     },
 
-    
-        async getVideosUser(UtilizadorID) {
+
+    async getVideosUser(UtilizadorID) {
         try {
             const [rows] = await pool.query(`
-                SELECT v.*, disciplina.Nome AS Disciplina, disciplina.Cor AS Cor, utilizador.Nome AS Autor, AVG_reviews.AvgNota AS Nota FROM video v
+                SELECT v.*, disciplina.Nome AS Disciplina, disciplina.Cor AS Cor, utilizador.Nome AS Autor, utilizador.CargoID AS Cargo, AVG_reviews.AvgNota AS Nota FROM video v
 LEFT JOIN disciplina ON disciplina.ID = v.DisciplinaID
 LEFT JOIN utilizador ON utilizador.ID = v.UtilizadorID
 LEFT JOIN (SELECT videoID, AVG(Nota) AS AvgNota FROM review GROUP BY videoID) AS AVG_reviews ON AVG_reviews.videoID = v.ID
@@ -150,7 +150,7 @@ WHERE Disciplina.nome LIKE ? `, [`%${searchTerm}%`]);
         }
     },
 
-        async getDisciplinaExact(searchTerm) {
+    async getDisciplinaExact(searchTerm) {
         try {
 
             if (!searchTerm || typeof searchTerm !== 'string') {
@@ -204,6 +204,7 @@ WHERE v.Titulo LIKE ? AND disciplina.nome LIKE ?`, [`%${searchTerm}%`, `%${disci
         }
     },
 
+
     //OBTÉM TODOS OS VÍDEOS, ordenados por Visualizações
     async getVideosView() {
         try {
@@ -219,7 +220,7 @@ ORDER BY v.Views DESC LIMIT 8`)
         }
     },
 
-        async getVideosReview() {
+    async getVideosReview() {
         try {
             const [rows] = await pool.query(`
                 SELECT v.*, disciplina.Nome AS Disciplina, disciplina.Cor AS Cor, utilizador.Nome AS Autor, AVG_reviews.AvgNota AS Nota FROM video v
@@ -280,14 +281,16 @@ ORDER BY v.DataPublicacao DESC LIMIT 8`)
     },
 
 
-    async editarVideo(videoID, utilizadorID, { titulo, descricao, disciplina, thumbnail }) {
+    async editarVideo(videoID, utilizador, { titulo, descricao, disciplina, thumbnail }) {
         try {
             // Buscar o vídeo pelo ID
             const [videos] = await pool.query('SELECT * FROM video WHERE ID = ?', [videoID]);
             const video = videos[0];
 
             if (!video) throw new Error('Vídeo não encontrado');
-            if (video.UtilizadorID !== utilizadorID) throw new Error('Acesso negado');
+            if (video.UtilizadorID !== utilizador.id && utilizador.cargoID !== 3) {
+                throw new Error('Acesso negado');
+            }
 
             // Montar partes da query dinamicamente
             const campos = [];
@@ -331,7 +334,26 @@ ORDER BY v.DataPublicacao DESC LIMIT 8`)
         } catch (error) {
             throw new Error(`Erro ao editar vídeo: ${error.message}`);
         }
-    }
+    },
+
+    getEstatisticasById: async (id) => {
+        const [videoRows] = await pool.query(
+            `SELECT 
+        v.ID,
+        v.Titulo,
+        v.Views AS Visualizacoes,
+        v.OldViews AS OldVisualizacoes,
+        v.DataPublicacao AS DataCriacao, v.DataAlteracao AS DataAlteracao,
+        (SELECT COUNT(*) FROM Review r WHERE r.VideoID = v.ID) AS TotalReviews,
+        (SELECT AVG(r.Nota) FROM Review r WHERE r.VideoID = v.ID) AS MediaAvaliacao,
+        (SELECT COUNT(*) FROM Comentario c WHERE c.VideoID = v.ID) AS TotalComentarios
+      FROM Video v
+      WHERE v.ID = ?`,
+            [id]
+        );
+
+        return videoRows[0];
+    },
 
 
 }

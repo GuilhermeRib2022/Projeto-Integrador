@@ -3,5 +3,5 @@
 }
 
 .utilizador-table {
-  transform: translateX(-150px);
+  transform: translateX(-70px) !important;
 }

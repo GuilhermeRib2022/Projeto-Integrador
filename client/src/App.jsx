@@ -29,6 +29,10 @@ import PublicarVideo from './FrontOffice/Professor/ProfVideo/PublicarVideo';
 import ListarVideo from './FrontOffice/Professor/ProfVideo/ListarVideo';
 import EditarVideo from './FrontOffice/Professor/ProfVideo/EditarVideo';
 
+import { ThemeProvider } from './services/themeContext';
+import EstatisticaVideo from './FrontOffice/Professor/ProfVideo/EstatisticaVideo';
+import Estatisticas from './FrontOffice/Professor/Estatistica';
+
 import './App.css'
 
 function AppIn() {
@@ -49,6 +53,8 @@ function AppIn() {
               <Route path="/admin/*" element={<RoleRoute allowedRoles={[2,3]}><Admin /></RoleRoute>} />
               <Route path="/videos" element={<RoleRoute allowedRoles={[2,3]}><ListarVideo /></RoleRoute>} />
               <Route path="/videos/editar/:id" element={<RoleRoute allowedRoles={[2,3]}><EditarVideo /></RoleRoute>} />
+              <Route path="/videos/estatisticas/:id" element={<RoleRoute allowedRoles={[2,3]}><EstatisticaVideo /></RoleRoute>} />
+              <Route path="/estatisticas/:id" element={<RoleRoute allowedRoles={[2,3]}><Estatisticas /></RoleRoute>} />
               <Route path="/about" element={<About />} />
               <Route path="/contact" element={<Contact />} />
               <Route path="/video/:id" element={<Video collapsed={collapsed} />} />
@@ -77,9 +83,11 @@ function AppIn() {
 
 const App = () => {
   return (
-    <BrowserRouter>
-      <AppIn />
-    </BrowserRouter>
+    <ThemeProvider>
+      <BrowserRouter>
+        <AppIn />
+      </BrowserRouter>
+    </ThemeProvider>
   );
 };
 

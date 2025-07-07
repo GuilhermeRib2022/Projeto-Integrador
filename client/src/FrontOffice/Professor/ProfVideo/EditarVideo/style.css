@@ -5,3 +5,9 @@
   border-radius: 8px;
   display: block;
 }
+
+.edit-video{
+  background:rgba(235, 235, 235, 0.658);
+  border-radius: 25px;
+  padding:20px;
+}

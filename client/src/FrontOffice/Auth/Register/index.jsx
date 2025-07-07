@@ -17,7 +17,7 @@ function Register() {
 
 
     const handleSubmit = (event) => {
-        console.log(values);
+
         event.preventDefault();
 
         axios.post(`${BASE_URL}/utilizador/registar`, values)

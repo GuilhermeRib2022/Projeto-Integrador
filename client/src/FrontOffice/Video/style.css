@@ -389,3 +389,17 @@ select {
   align-items: center;
   gap: 10px; /* espaçamento entre estrelas, botão e percentagem */
 }
+
+.video-wrapper .player-wrapper {
+  filter: none;
+}
+
+
+
+.video-wrapper.fullscreen.dark .player-wrapper {
+  filter: invert(1) hue-rotate(180deg);
+}
+
+.video-wrapper.fullscreen.light .player-wrapper {
+  filter: none;
+}

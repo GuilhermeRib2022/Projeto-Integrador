@@ -44,3 +44,7 @@
 .notes-header button {
     margin-top:-10px;
 }
+
+.save-button:hover{
+  color:black;
+}

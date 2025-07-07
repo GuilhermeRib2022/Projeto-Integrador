@@ -110,11 +110,6 @@ hr {
   text-decoration: none;
 }
 
-.sidebar .nav-link .icon {
-  margin: 0 12px 0 0;
-  min-width: 24px;
-  text-align: center;
-}
 
 
 .sidebar.collapsed .label {
@@ -143,7 +138,7 @@ hr {
 
 .sidebar .nav-link .icon {
   font-size: 1.3em;
-  margin-right: 12px;
+  margin-left: 2px;
 
   min-width: 24px;
   text-align: center;
@@ -216,20 +211,19 @@ hr {
   margin-left:5px;
 }
 
-/* Container for the discipline list item */
 .disciplina-item {
   display: flex;
   align-items: center;
   padding: 8px 8px;
-  margin-left: -32px; /* ensures it's flush with the left */
+  margin-left: -32px; 
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
-/* Make the entire row a link */
 .disciplina-link {
   display: flex;
   align-items: center;
   text-decoration: none;
-  gap: 8px; /* spacing between square and text */
+  gap: 8px;
   padding: 0;
   margin: 0;
 }
@@ -260,4 +254,40 @@ hr {
 /* Optional: hover effect */
 .disciplina-link:hover {
   opacity: 0.85;
+  
 }
+
+
+.disciplina-item:hover {
+  color: rgb(255, 255, 255) !important;
+  background-color: #606d7a !important;
+}
+
+.disciplina-item:hover .disciplina-name{
+  color: rgb(255, 255, 255) !important;
+}
+
+
+.disciplina-item.collapsed {
+  display: flex;
+  align-items: center;
+  padding: 8px 8px;
+  margin-left: -0px; 
+}
+
+.sidebar.collapsed li {
+  margin-left: -36px !important;
+  
+}
+
+
+.disciplina-item {
+  padding: 5px 12px;
+  font-weight: bold;
+  font-size: 0.9rem;
+  cursor: default;
+  user-select: none;
+  white-space: nowrap;
+  margin-right: -8px; 
+}
+

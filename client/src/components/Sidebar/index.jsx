@@ -1,27 +1,32 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { NavLink } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
 import { FiInfo, FiBook } from 'react-icons/fi';
 import axios from 'axios';
 import { BASE_URL } from '../url';
+import VideosIcon from '../../assets/Videos.svg?react';
+import StatsIcon from '../../assets/Stats.svg?react';
+import HomeIcon from '../../assets/home.svg?react';
+
 import './style.css';
-
-
 
 const Sidebar = ({ collapsed, setCollapsed }) => {
 
   const [userDisciplinas, setUserDisciplinas] = useState([]);
+  const [user, setUser] = useState(null);
   const [cargo, setCargo] = useState(null);
-  
+  const navigate = useNavigate();
   const toggleSidebar = () => setCollapsed(!collapsed);
 
   useEffect(()=> {
     //Decode token once
-    try{
+    try {
       const token = localStorage.getItem('token');
-      if(token){
+      if (token) {
         const decoded = jwtDecode(token);
         setCargo(decoded.cargo);
+        setUser({ id: decoded.id }); // <-- Armazena o ID do usuário
       }
     } catch (err) {
       console.log("erro ao decodificar o token: ", err);
@@ -67,7 +72,7 @@ const Sidebar = ({ collapsed, setCollapsed }) => {
 
 
         <NavLink to="/" className="nav-link">
-          <span className="icon"> <img src="/home.svg" alt="Estatísticas" style={{ width: 20, height: 20 }} /> </span>
+          <span className="icon"> <HomeIcon style={{ width: 20, height: 20 }} /> </span>
           {<span className="link-text">Início</span>}
         </NavLink>
         <hr></hr>
@@ -75,12 +80,12 @@ const Sidebar = ({ collapsed, setCollapsed }) => {
         {(cargo === 2 || cargo === 3) && (
           <>
             <NavLink to="/videos" className="nav-link">
-              <span className="icon"> <img src="/Videos.svg" alt="Estatísticas" style={{ width: 20, height: 20 }} /> </span>
-              {<span className="link-text">Meus Vídeos</span>}
+              <span className="icon"><VideosIcon style={{ width: 20, height: 20 }}/></span>
+              {<span className="link-text"> Meus Vídeos</span>}
             </NavLink>
 
-            <NavLink to="/estatisticas" className="nav-link">
-              <span className="icon"> <img src="/Stats.svg" alt="Estatísticas" style={{ width: 20, height: 20 }} /> </span>
+            <NavLink to={`/estatisticas/${user?.id}`} className="nav-link">
+              <span className="icon"><span className="icon"><StatsIcon style={{ width: 20, height: 20, paddingRight: '2px'}}/></span> </span>
               {!collapsed && <span className="link-text">Estatísticas</span>}
             </NavLink>
 
@@ -100,7 +105,10 @@ const Sidebar = ({ collapsed, setCollapsed }) => {
         )}
 
         {userDisciplinas.length > 0 && collapsed && (
+          <>
+          <br></br>
           <span className="section-title-small">Subs</span>
+          </>
         )}
 
 
@@ -110,7 +118,7 @@ const Sidebar = ({ collapsed, setCollapsed }) => {
 
             <ul className="disciplinas-list">
               {userDisciplinas.map((disciplina) => (
-                <li key={disciplina.ID} className="disciplina-item">
+                <li key={disciplina.ID} className="disciplina-item" style={{ cursor: 'pointer' }} onClick={() => navigate(`/pesquisar/disciplina?disciplina=${encodeURIComponent(disciplina.Nome)}`)}>
                   <NavLink
                     to={`/pesquisar/disciplina?disciplina=${encodeURIComponent(disciplina.Nome)}`}
                     className="disciplina-link"
