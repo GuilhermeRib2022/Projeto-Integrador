@@ -281,6 +281,7 @@ ORDER BY v.DataPublicacao DESC LIMIT 8`)
     },
 
 
+    //EDITAR O VIDEO
     async editarVideo(videoID, utilizador, { titulo, descricao, disciplina, thumbnail }) {
         try {
             // Buscar o vídeo pelo ID
