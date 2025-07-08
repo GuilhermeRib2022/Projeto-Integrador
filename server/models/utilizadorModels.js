@@ -201,7 +201,7 @@ export const Utilizador = {
                 throw new Error('Invalid name provided');
             }
 
-            const [rows] = await pool.query('SELECT * FROM Utilizador WHERE nome= ?', [nome]);
+            const [rows] = await pool.query('SELECT * FROM Utilizador WHERE nome= ? AND Estado = ?', [nome,"ativo"]);
             return rows[0];
         } catch (error) {
             throw new Error(`Failed to fetch user by nickname: ${error.message}`);

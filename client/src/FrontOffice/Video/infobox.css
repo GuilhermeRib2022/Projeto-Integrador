@@ -10,7 +10,6 @@
   transition: all 0.3s ease;
   translate: 0px -20px;
   width: 100%;
-
 }
 /* #1e1e1e AND #2a2a2a*/
 .video-info-box .header {
@@ -189,8 +188,14 @@
   background:rgb(163, 163, 163, 0.2);
 }
 
+.delete-rating-btn{
+  margin-left: -200px !important;
+  
+}
+
 .delete-rating-btn:hover{
   color:red !important;
+  
 }
 
 .nome{

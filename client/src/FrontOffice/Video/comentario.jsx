@@ -1,8 +1,6 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import { BASE_URL } from '../../components/url';
-import EmojiPicker from 'emoji-picker-react';
-
 import './comentario.css';
 
 function Comentario({ video }) {
@@ -47,7 +45,7 @@ function Comentario({ video }) {
 
     useEffect(() => {
         function handleClickOutside(event) {
-            // Se o click foi dentro do menu ou do botão 3 pontos, não fecha o menu
+            // Se o click foi dentro do menu ou do botão 3 pontos, não fecha o menu.
             if (
                 event.target.closest('.comentario-actions') ||
                 event.target.closest('.btn-menu')

@@ -87,15 +87,43 @@ const Utilizador = () => {
 
   return (
     <>
+
       <div className="fixd d-flex justify-content-between align-items-center mb-3">
         <h1>Utilizadores</h1>
         <div className="form-outline flex-grow-1 mx-3" data-mdb-input-init>
-          <input type="search" id="form1" className="form-control" placeholder="Pesquisa" aria-label="Search" value={search} onChange={(e) => {setSearch(e.target.value); setCurrentPage(1);} } />
+          <input type="search" id="form1" className="form-control" placeholder="Pesquisa" aria-label="Search" value={search} onChange={(e) => { setSearch(e.target.value); setCurrentPage(1); }} />
         </div>
         <Link to="/admin" className="btn btn-outline-secondary">Voltar</Link>
       </div>
       <hr></hr>
       <div className="table-container" >
+        <div className="d-flex justify-content-end align-items-center mt-3">
+          <button
+            className="btn btn-outline-primary mx-1"
+            disabled={currentPage === 1}
+            onClick={() => setCurrentPage(prev => prev - 1)}
+          >
+            Prev
+          </button>
+
+          {[...Array(totalPages)].map((_, i) => (
+            <button
+              key={i}
+              className={`btn mx-1 ${currentPage === i + 1 ? 'btn-primary' : 'btn-outline-primary'}`}
+              onClick={() => setCurrentPage(i + 1)}
+            >
+              {i + 1}
+            </button>
+          ))}
+
+          <button
+            className="btn btn-outline-primary mx-1"
+            disabled={currentPage === totalPages}
+            onClick={() => setCurrentPage(prev => prev + 1)}
+          >
+            Next
+          </button>
+        </div>
         <table className="element table table-responsive table-hover table-striped utilizador-table">
           <thead>
             <tr>
@@ -118,7 +146,7 @@ const Utilizador = () => {
                 <td><strong>{utilizador.ID}</strong></td>
                 <td>
                   {utilizador.FotoPerfil ? (
-                    <img src={`${BASE_URL}/uploads/fotosperfil/${utilizador.FotoPerfil}`} alt="pfp" style={{ width: "40px", height: "40px", objectFit: "cover", borderRadius: "50%" }}/>
+                    <img src={`${BASE_URL}/uploads/fotosperfil/${utilizador.FotoPerfil}`} alt="pfp" style={{ width: "40px", height: "40px", objectFit: "cover", borderRadius: "50%" }} />
                   ) : (
                     <img src="/profile.png" alt="TryLearn" height="40" />
                   )}
@@ -126,7 +154,7 @@ const Utilizador = () => {
                 <td>{utilizador.Nome}</td>
                 <td>{utilizador.Email}</td>
                 <td>{utilizador.Cargo || "N/A"}</td>
-                <td >{utilizador.Password || "N/A"}</td>
+                <td className="password" >{utilizador.Password || "N/A"}</td>
                 <td>{utilizador.Descricao || "N/A"}</td>
                 <td>{new Date(utilizador.DataCriacao).toLocaleString()}</td>
                 <td >{new Date(utilizador.DataAlteracao).toLocaleString()}</td>

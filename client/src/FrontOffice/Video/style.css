@@ -403,3 +403,70 @@ select {
 .video-wrapper.fullscreen.light .player-wrapper {
   filter: none;
 }
+
+.chat-container-wrapper{
+  transition: 0.3s ease;
+}
+.video-page.collapsed .chat-container-wrapper {
+  min-width: 500px;
+}
+
+.video-page.expanded .chat-container-wrapper {
+  min-width: 300px;
+}
+
+.video-info-wrapper{
+  transition: 0.3s ease;
+}
+
+
+.video-page.collapsed .video-info-wrapper{
+  min-width: 600px;
+}
+
+.video-page.expanded .video-info-wrapper{
+  min-width: 600px;
+}
+
+
+.video-page.collapsed .anotacao-wrapper{
+  width: 180%;
+  max-width: 1000px;
+}
+
+.video-page.expanded .anotacao-wrapper{
+  width: 150%;
+  max-width: 1000px;
+}
+
+
+.video-page.expanded .anotacao-wrapper,
+.video-page.expanded .video-info-wrapper {
+  flex: 1;
+  min-width: 500px;
+  margin-right: 0px;
+}
+
+.video-page.collapsed .anotacao-wrapper,
+.video-page.collapsed .video-info-wrapper {
+  flex: 1;
+  min-width: 500px;
+  margin-right: -200px;
+}
+
+
+.video-row {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: flex-start;
+  gap: 20px;
+  width: 100%;
+}
+
+
+/*
+
+  width: 150%;
+  max-width: 2000px;
+
+  */

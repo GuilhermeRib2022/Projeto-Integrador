@@ -17,6 +17,8 @@ import Disciplina from '../Tabelas/Disciplina';
 import DisciplinaCreate from '../Tabelas/Disciplina/create';
 import DisciplinaEdit from '../Tabelas/Disciplina/edit';
 
+import Querys from '../Tabelas/LLM';
+
 import Videos from '../Tabelas/Video';
 import VideoEdit from '../Tabelas/Video/edit';
 import VideoEstatisticas from '../Tabelas/Video/estatisticas';
@@ -62,6 +64,8 @@ const Admin = () => {
         <Route path="/websitestats" element={<EstatisticasWebsite />} />
         <Route path="/disciplina/stats" element={<EstatisticasDisciplina />} />
         <Route path="/utilizador/stats" element={<EstatisticasUtilizador />} />
+
+        <Route path="/LLM" element={<Querys />} />
       </Routes>
       </div>
       </div>

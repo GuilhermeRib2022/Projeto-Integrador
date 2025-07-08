@@ -52,7 +52,7 @@ const Disciplinas = () => {
       });
       setUserDisciplinas(res.data);
     } catch (error) {
-      console.error("Erro ao buscar disciplinas do usuário:", error);
+      console.error("Erro ao buscar disciplinas do utilizador:", error);
     }
   };
 
@@ -65,6 +65,7 @@ const Disciplinas = () => {
         { headers: { Authorization: `Bearer ${token}` } }
       );
       fetchUserDisciplinas();
+      window.dispatchEvent(new Event('disciplinasUpdated'));
     } catch (err) {
       console.error('Erro ao inscrever na disciplina:', err);
       alert('Erro ao inscrever na disciplina');
@@ -79,6 +80,7 @@ const Disciplinas = () => {
         { headers: { Authorization: `Bearer ${token}` } }
       );
       fetchUserDisciplinas();
+      window.dispatchEvent(new Event('disciplinasUpdated'));
     } catch (err) {
       console.error('Erro ao desinscrever da disciplina:', err);
       alert('Erro ao desinscrever da disciplina');
@@ -105,8 +107,35 @@ const Disciplinas = () => {
                     <input type="text" className="form-control" placeholder="Pesquisar disciplina..." value={searchTerm} onChange={(e) => {setSearchTerm(e.target.value); setCurrentPage(1);} } />
                 </div>
 
-            </div>
+      </div>
 
+      <div className="d-flex justify-content-center mt-4">
+        <button
+          className="btn btn-outline-primary mx-1"
+          disabled={currentPage === 1}
+          onClick={() => setCurrentPage(prev => prev - 1)}
+        >
+          Prev
+        </button>
+
+        {[...Array(totalPages)].map((_, i) => (
+          <button
+            key={i}
+            className={`btn mx-1 ${currentPage === i + 1 ? 'btn-primary' : 'btn-outline-primary'}`}
+            onClick={() => setCurrentPage(i + 1)}
+          >
+            {i + 1}
+          </button>
+        ))}
+
+          <button
+            className="btn btn-outline-primary mx-1"
+            disabled={currentPage === totalPages}
+            onClick={() => setCurrentPage(prev => prev + 1)}
+          >
+            Next
+          </button>
+        </div>
       <div className="disciplinas-grid">
         {currentDisciplinas.map((disciplina, index) => {
           const bgColor = disciplina.Cor || '#000000';
@@ -124,12 +153,15 @@ const Disciplinas = () => {
               key={index}
               className="disciplina-card-link"
             >
+              
               <div
                 className="disciplina-card"
                 style={{ background: cardBg, color: textColor }}
               >
+                
                 <h3>{disciplina.Nome}</h3>
                 <p style={{ background: descBg }}>{disciplina.Descricao}</p>
+                
                 {!isInscrito && (
                   <button
                     className="subscribe-button"
@@ -169,8 +201,6 @@ const Disciplinas = () => {
           );
         })}
       </div>
-
-      {/* Paginação */}
       <div className="d-flex justify-content-center mt-4">
         <button
           className="btn btn-outline-primary mx-1"

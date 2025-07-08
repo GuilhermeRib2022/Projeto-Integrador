@@ -1,7 +1,7 @@
 import express from 'express';
 import path from 'path';
 import { fileURLToPath } from 'url';
-
+import axios from 'axios'; 
 import cors from 'cors';
 import dotenv from 'dotenv';
 import pool from './database.js';
@@ -98,6 +98,28 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.get("/ping", (req, res) => {
     res.json("pong")
 });
+
+app.post('/api/chat', async (req, res) => {
+  const { messages } = req.body;
+  const lastMessage = messages?.[messages.length - 1]?.content || '';
+
+  try {
+    const response = await axios.post('http://localhost:11434/api/generate', {
+      model: 'llama3.2',
+      prompt: lastMessage,
+      stream: false
+    });
+
+    res.json({
+      role: 'assistant',
+      content: response.data.response
+    });
+  } catch (error) {
+    console.error('Erro ao comunicar com o Ollama:', error.message);
+    res.status(500).json({ error: 'Erro no servidor de LLM' });
+  }
+});
+
 
 
 app.listen(PORT, () => {

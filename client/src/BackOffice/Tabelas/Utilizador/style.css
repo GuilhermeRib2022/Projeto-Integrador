@@ -3,5 +3,9 @@
 }
 
 .utilizador-table {
-  transform: translateX(-70px) !important;
+  transform: translateX(0px) !important;
+}
+
+.password{
+  font-size: 8px;
 }

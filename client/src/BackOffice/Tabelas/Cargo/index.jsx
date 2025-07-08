@@ -59,6 +59,33 @@ const Cargo = () => {
       </div>
       <hr></hr>
       <div className="table-container" >
+              <div className="d-flex justify-content-end align-items-center mt-3">
+        <button
+          className="btn btn-outline-primary mx-1"
+          disabled={currentPage === 1}
+          onClick={() => setCurrentPage(prev => prev - 1)}
+        >
+          Prev
+        </button>
+
+        {[...Array(totalPages)].map((_, i) => (
+          <button
+            key={i}
+            className={`btn mx-1 ${currentPage === i + 1 ? 'btn-primary' : 'btn-outline-primary'}`}
+            onClick={() => setCurrentPage(i + 1)}
+          >
+            {i + 1}
+          </button>
+        ))}
+
+        <button
+          className="btn btn-outline-primary mx-1"
+          disabled={currentPage === totalPages}
+          onClick={() => setCurrentPage(prev => prev + 1)}
+        >
+          Next
+        </button>
+      </div>
         <table className="element table table-responsive table-hover table-striped utilizador-table">
           <thead>
             <tr>

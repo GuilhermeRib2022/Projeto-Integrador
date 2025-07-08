@@ -7,6 +7,7 @@ import CustomVideoPlayer from './videoplayer';
 import VideoInfoBox from './infobox';
 import Anotacao from './anotacao';
 import Comentario from './comentario';
+import ChatBot from './chatbot';
 
 import { BASE_URL } from '../../components/url';
 import './style.css';
@@ -14,7 +15,8 @@ const Video = ({ collapsed }) => {
     const { id } = useParams();
     const [video, setVideo] = useState(null);
     const [erro, setErro] = useState(null);
-
+    const [videoTime, setVideoTime] = useState(0);
+    
 
     useEffect(() => {
         axios.get(`${BASE_URL}/video/${id}`)
@@ -38,8 +40,6 @@ const Video = ({ collapsed }) => {
             });
     }, [id]);
 
-
-    /*<video controls src={videoUrl} width="100%" /> */
     if (erro) return <p style={{ fontSize: '50px' }}>{erro}</p>;
     if (!video) return <p>Carregando...</p>;
 
@@ -47,16 +47,32 @@ const Video = ({ collapsed }) => {
 
     return (
         <div className={`video-page ${collapsed ? 'collapsed' : 'expanded'}`}>
-            <CustomVideoPlayer
-                src={`${BASE_URL}/uploads/videos/${video.VideoPath}`}
-                title={video.Titulo}
-            />
+            <div style={{ display: 'flex', gap: '20px', alignItems: 'flex-start', flexWrap: 'nowrap' }}>
+                <div style={{ flex: 1 }}>
+                    <CustomVideoPlayer
+                        src={`${BASE_URL}/uploads/videos/${video.VideoPath}`}
+                        title={video.Titulo}
+                        onTimeUpdate={(time) => {
+                            setVideoTime(time);
+                            
+                        }}
+                    />
+                </div>
 
-            <div style={{ display: 'flex', gap: '20px', flexWrap: 'nowrap', alignItems: 'flex-start' }}>
-                <Anotacao videoId={video.ID} />
-                <VideoInfoBox video={video} />
-
+                <div className="chat-container-wrapper">
+                    <ChatBot
+                        videoId={video.ID}
+                        videoTime={videoTime} />
+                </div>
             </div>
+
+            <div className="video-row" style={{ display: 'flex', gap: '20px', flexWrap: 'nowrap', alignItems: 'flex-start' }}>
+                <Anotacao videoId={video.ID} />
+                <div className="video-info-wrapper">
+                <VideoInfoBox video={video} />
+                </div>
+            </div>
+
             <hr></hr>
             <div>
                 <Comentario video={video} />

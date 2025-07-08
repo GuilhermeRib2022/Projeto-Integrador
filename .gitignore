@@ -26,6 +26,4 @@ dist/
 build/
 
 #Media files
-*.png
-*.jpg
 *.mp4

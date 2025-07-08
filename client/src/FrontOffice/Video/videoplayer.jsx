@@ -13,7 +13,7 @@ const formatTime = (time) => {
     return `${minutes < 10 ? '0' : ''}${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
 };
 
-const CustomVideoPlayer = ({ src }) => {
+const CustomVideoPlayer = ({ src, onTimeUpdate }) => {
     const playerRef = useRef(null);
     const containerRef = useRef(null);
 
@@ -52,6 +52,7 @@ const CustomVideoPlayer = ({ src }) => {
         setProgress(played * 100);
         setBuffered(loaded * 100);
         setCurrentTime(playedSeconds);
+        if(onTimeUpdate) onTimeUpdate(playedSeconds);
     };
 
     const handleDuration = (dur) => {
@@ -132,6 +133,7 @@ const CustomVideoPlayer = ({ src }) => {
                     height="100%"
                     controls={false}
                 />
+
 
                 <div className="controls-overlay">
                     <button

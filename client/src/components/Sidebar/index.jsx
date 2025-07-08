@@ -26,7 +26,7 @@ const Sidebar = ({ collapsed, setCollapsed }) => {
       if (token) {
         const decoded = jwtDecode(token);
         setCargo(decoded.cargo);
-        setUser({ id: decoded.id }); // <-- Armazena o ID do usuário
+        setUser({ id: decoded.id });
       }
     } catch (err) {
       console.log("erro ao decodificar o token: ", err);
