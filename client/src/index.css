@@ -21,7 +21,7 @@ a:hover {
 body {
   margin: 0;
 
-  place-items: center;
+  place-items: right;
   min-width: 320px;
   min-height: 100vh;
 }

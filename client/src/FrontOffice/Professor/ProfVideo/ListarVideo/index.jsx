@@ -39,7 +39,7 @@ const ListarVideo = () => {
         fetchVideos();
     }, []);
 
-        const filteredVideos = videos.filter(video =>
+    const filteredVideos = videos.filter(video =>
         video.Titulo.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
@@ -76,6 +76,9 @@ const ListarVideo = () => {
                                     src={`${BASE_URL}/uploads/thumbnails/${video.Thumbnail}`}
                                     alt="thumbnail"
                                     className="anotacoes-thumbnail"
+                                    style={{
+                                        aspectRatio: '16 / 9',
+                                    }}
                                     onClick={(e) => {
                                         e.stopPropagation();
                                         navigate(`/video/${video.ID}`);
@@ -94,7 +97,7 @@ const ListarVideo = () => {
                             <td>{video.Nota ? Number(video.Nota).toFixed(1) : "Sem nota"}</td>
                             <td>{video.Views ?? 0}</td>
                             <td>{video.DataPublicacao ? new Date(video.DataPublicacao).toLocaleDateString() : "Sem data"}</td>
-                                                        <td>
+                            <td>
                                 <textarea
                                     readOnly
                                     value={video.Descricao || "Sem descrição"}

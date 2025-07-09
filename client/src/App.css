@@ -57,9 +57,7 @@ main {
 
 /*TEST TEST TEST*/
 #root {
-  display: flex;
-  justify-content: center; 
-  align-items: center;     
+  display: flex;  
   min-height: 100vh;
   padding: 0;
   margin: 0;
@@ -69,7 +67,7 @@ main {
 /*TEST TEST TEST*/
 
 .main-expanded {
-  margin-left: 240px;
+  margin-left: 280px;
   width: calc(100% - 240px);
   transition: margin-left 0.3s ease, width 0.3s ease;
 }
@@ -77,13 +75,13 @@ main {
 /*TEST TEST TEST*/
 
 .main-collapsed {
-  margin-left: 60px;
+  margin-left: 185px;
   width: calc(100% - 60px);
   transition: margin-left 0.3s ease, width 0.3s ease;
 }
 
 .video-collapsed {
-  margin-left: -180px;
+  margin-left: -100px;
   width: calc(100% - 60px);
   transition: margin-left 0.3s ease, width 0.3s ease;
 }
@@ -96,3 +94,4 @@ footer {
   padding: 1rem 0;
   text-align: center;
 }
+

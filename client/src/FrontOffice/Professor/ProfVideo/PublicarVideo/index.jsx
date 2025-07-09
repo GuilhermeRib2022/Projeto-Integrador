@@ -92,6 +92,7 @@ const PublicarVideo = () => {
           value={descricao}
           onChange={(e) => setDescricao(e.target.value)}
           required
+          maxLength="360"
         ></textarea>
 
         <label>Disciplina</label>

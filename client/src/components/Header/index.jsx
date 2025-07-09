@@ -132,11 +132,14 @@ const [texto, setTexto] = useState(() => {
                   </NavLink>
                 }
               </li>
+              
               <li className="nav-item">
-                <NavLink className="nav-link" to="/criar">
-                  <CriarIcon height="20" style={{ marginRight: '5px', verticalAlign: 'middle' }}/>
-                  Novo
-                </NavLink>
+                {(users && users?.cargo != 1) &&
+                  <NavLink className="nav-link" to="/criar">
+                    <CriarIcon height="20" style={{ marginRight: '5px', verticalAlign: 'middle' }} />
+                    Novo
+                  </NavLink>
+                }
               </li>
               <li className="nav-item dropdown">
                 <a className="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">

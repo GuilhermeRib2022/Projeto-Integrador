@@ -11,6 +11,8 @@ const Utilizador = () => {
   const [loading, setLoading] = useState(true); //Esperar dados carregarem
   const [error, setError] = useState(null); //Obter Erro
   const [search, setSearch] = useState(""); //Pesquisa Atual
+    const [sortField, setSortField] = useState("QueryTime");
+    const [sortOrder, setSortOrder] = useState("desc");
   const [currentPage, setCurrentPage] = useState(1); //Página Atual
 
 
@@ -79,11 +81,52 @@ const Utilizador = () => {
     utilizador.ID.toString().includes(search)
   );
 
-  const indexOfLastItem = currentPage * itemsPerPage; //Obter último valor da página (Página atual * Items por página)
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage; //Obter primeiro valor da página (Último valor - Items por página)
-  const currentData = filteredData.slice(indexOfFirstItem, indexOfLastItem); //Obter valores entre o primeiro e o último valor da página.
+const sortedData = [...filteredData].sort((a, b) => {
+  const valA = a[sortField];
+  const valB = b[sortField];
 
-  const totalPages = Math.ceil(filteredData.length / itemsPerPage); //Obter número total de páginas. (Total valores/Items por página)
+  // Trata valores nulos ou indefinidos
+  if (valA == null && valB == null) return 0;
+  if (valA == null) return sortOrder === 'asc' ? 1 : -1;
+  if (valB == null) return sortOrder === 'asc' ? -1 : 1;
+
+  // Se ambos forem números
+  if (!isNaN(valA) && !isNaN(valB)) {
+    return sortOrder === 'asc' ? valA - valB : valB - valA;
+  }
+
+  // Se ambos forem datas válidas
+  const dateA = new Date(valA);
+  const dateB = new Date(valB);
+  if (!isNaN(dateA.getTime()) && !isNaN(dateB.getTime())) {
+    return sortOrder === 'asc' ? dateA - dateB : dateB - dateA;
+  }
+
+  // Comparação como string (por último)
+  const strA = String(valA);
+  const strB = String(valB);
+  return sortOrder === 'asc'
+    ? strA.localeCompare(strB)
+    : strB.localeCompare(strA);
+});
+
+
+  // Paginação
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentData = sortedData.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+  const sortOptions = [
+    { label: "ID", field: "ID", order: "asc" },
+    { label: "Nome", field: "Nome", order: "asc" },
+    { label: "Email", field: "Email", order: "desc" },
+    { label: "Cargo", field: "Cargo", order: "desc" },
+    { label: "Descricao", field: "Descricao", order: "desc" },
+    { label: "Data Criação", field: "DataCriacao", order: "desc" },
+    { label: "Data Alteração", field: "DataAlteracao", order: "desc" },
+    { label: "Inatividade", field: "Estado", order: "desc" },
+  ];
+
 
   return (
     <>
@@ -97,6 +140,22 @@ const Utilizador = () => {
       </div>
       <hr></hr>
       <div className="table-container" >
+        <div className="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+                <div className="d-flex gap-2 flex-wrap">
+          {sortOptions.map(({ label, field, order }) => (
+            <button
+              key={field}
+              className={`btn btn-sm ${sortField === field ? 'btn-primary' : 'btn-outline-primary'}`}
+              onClick={() => {
+                setSortField(field);
+                setSortOrder(order);
+                setCurrentPage(1);
+              }}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
         <div className="d-flex justify-content-end align-items-center mt-3">
           <button
             className="btn btn-outline-primary mx-1"
@@ -123,6 +182,7 @@ const Utilizador = () => {
           >
             Next
           </button>
+        </div>
         </div>
         <table className="element table table-responsive table-hover table-striped utilizador-table">
           <thead>

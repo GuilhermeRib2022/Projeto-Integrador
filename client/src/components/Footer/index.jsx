@@ -23,7 +23,7 @@ class Footer extends Component {
                 <Link to="/termos" className="nav-link px-2 text-muted">Termos de Uso</Link>
                 <Link to="/contact" className="nav-link px-2 text-muted">Contactos</Link>
                 <Link to="/about" className="nav-link px-2 text-muted">Sobre</Link>
-                <Link to="/ocorrencia" className="nav-link px-2 text-muted">Criar Ocorrência</Link>
+                <Link to="/ocorrencia" className="nav-link px-2 text-muted"></Link>
               </nav>
               <small className="text-muted">
                 &copy; Trylearn 2025 &nbsp;&bull;&nbsp; Conteúdo exclusivo do Trylearn • Todos os direitos reservados

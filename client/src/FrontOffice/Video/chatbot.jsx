@@ -72,6 +72,7 @@ const ChatBot = ({videoId, videoTime}) => {
                     onChange={(e) => setInput(e.target.value)}
                     onKeyDown={(e) => e.key === 'Enter' && sendMessage()}
                     disabled={loading}
+                    maxLength="128" // Limite de 128 caracteres
                 />
                 <button onClick={sendMessage} className="send-button" title="Enviar">
                     <FiSend size={25} />

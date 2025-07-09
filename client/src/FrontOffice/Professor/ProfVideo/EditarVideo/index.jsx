@@ -132,6 +132,7 @@ const EditarVideo = () => {
             value={descricao}
             onChange={(e) => setDescricao(e.target.value)}
             required
+            maxLength="360"
           ></textarea>
         </div>
 
@@ -169,7 +170,7 @@ const EditarVideo = () => {
               src={thumbnailPreviewUrl || `${BASE_URL}/uploads/thumbnails/${thumbnailAtual}`}
               alt="Thumbnail"
               className="img-thumbnail"
-              style={{ maxWidth: '300px' }}
+              style={{ maxWidth: '300px',aspectRatio: '16 / 9' }}
             />
           </div>
         )}

@@ -11,6 +11,8 @@ import './style.css'
 const SearchResults = () => {
     const [videos, setVideos] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [sortField, setSortField] = useState("DataPublicacao");
+    const [sortOrder, setSortOrder] = useState("desc");
     const navigate = useNavigate();
 
 
@@ -63,6 +65,31 @@ const SearchResults = () => {
 
     if (loading) return <p>Carregando...</p>;
 
+    const sortedVideos = [...videos].sort((a, b) => {
+        const valA = a[sortField];
+        const valB = b[sortField];
+
+        if (valA == null && valB == null) return 0;
+        if (valA == null) return sortOrder === 'asc' ? 1 : -1;
+        if (valB == null) return sortOrder === 'asc' ? -1 : 1;
+
+        if (!isNaN(valA) && !isNaN(valB)) {
+            return sortOrder === 'asc' ? valA - valB : valB - valA;
+        }
+
+        const dateA = new Date(valA);
+        const dateB = new Date(valB);
+        if (!isNaN(dateA.getTime()) && !isNaN(dateB.getTime())) {
+            return sortOrder === 'asc' ? dateA - dateB : dateB - dateA;
+        }
+
+        
+
+        const strA = String(valA);
+        const strB = String(valB);
+        return sortOrder === 'asc' ? strA.localeCompare(strB) : strB.localeCompare(strA);
+    });
+
 
     return (
         <div className="SearchResults">
@@ -86,8 +113,27 @@ const SearchResults = () => {
 
                         <button className="btn btn-primary" onClick={() => navigate(-1)}> Voltar </button>
                     </div>
+                    <div className="d-flex flex-wrap gap-2 mb-3">
+                        {[
+                            { label: "Relevante", field: "FatorCrescimento", order: "desc" },
+                            { label: "Mais Recentes", field: "DataPublicacao", order: "desc" },
+                            { label: "Melhor Avaliados", field: "Nota", order: "desc" },
+                            { label: "Mais Vistos", field: "Views", order: "desc" },
+                        ].map(({ label, field, order }) => (
+                            <button
+                                key={field}
+                                className={`btn btn-sm ${sortField === field && sortOrder === order ? 'btn-primary' : 'btn-outline-primary'}`}
+                                onClick={() => {
+                                    setSortField(field);
+                                    setSortOrder(order);
+                                }}
+                            >
+                                {label}
+                            </button>
+                        ))}
+                    </div>
                     <div className="video-list">
-                        {videos.map((video, index) => (
+                        {sortedVideos.map((video, index) => (
                             <div className="video-card" key={index}>
                                 <div className="video-header" style={{ backgroundColor: video.Cor || '#d0e3ff' }}>
                                     <span style={{ color: getContrastingTextColor(video.Cor), cursor: 'pointer' }} className={video.disciplina} onClick={() => navigate(`/pesquisar/disciplina?disciplina=${encodeURIComponent(video.Disciplina)}`)}><strong>{video.Disciplina}</strong></span>

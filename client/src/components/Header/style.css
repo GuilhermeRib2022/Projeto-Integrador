@@ -132,6 +132,12 @@ html.dark .video-info,
 html.dark video {
   filter: invert(1) hue-rotate(180deg);
 }
+
+
+.navbar-toggler-icon {
+  color:black !important;
+  background: black;
+}
 /*
 body.light {
   background-color: #ffffff;

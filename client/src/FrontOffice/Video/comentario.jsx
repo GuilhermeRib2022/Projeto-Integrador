@@ -164,6 +164,7 @@ function Comentario({ video }) {
                             value={newComment}
                             onChange={(e) => setNewComment(e.target.value)}
                             rows={3}
+                            maxLength="128"
                             disabled={submitting}
                             required
                         />

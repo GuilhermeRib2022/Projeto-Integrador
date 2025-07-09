@@ -89,6 +89,7 @@ const DisciplinaEdit = () => {
             id="descricao"
             rows="3"
             value={descricao}
+            maxLength="360"
             onChange={(e) => setDescricao(e.target.value)}
             required
           ></textarea>

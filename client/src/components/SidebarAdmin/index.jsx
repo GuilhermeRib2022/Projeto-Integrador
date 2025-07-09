@@ -1,5 +1,6 @@
 // components/AdminSidebar.jsx
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Logo from '../../assets/Logo.svg?react';
 import './style.css';
 
@@ -11,7 +12,7 @@ import { getUserFromToken } from '../../services/auth';
 const AdminSidebar = () => {
   const [users, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-
+  const navigate = useNavigate();
 
   useEffect(() => {
     const user = getUserFromToken();
@@ -21,7 +22,7 @@ const AdminSidebar = () => {
 
   return (
     <aside className="admin-sidebar">
-      <Logo className="dashboard-logo" paddingRight="40px" height="40"/>
+      <Logo className="dashboard-logo" paddingRight="40px" height="40" style={{ cursor: 'pointer' }} onClick={() => navigate(`/`)}/>
       <br></br>
       <h2>Dashboard</h2>
         <div className="sidebar-section">

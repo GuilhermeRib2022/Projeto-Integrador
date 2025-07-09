@@ -81,6 +81,10 @@ const Anotacoes = () => {
                                 <img
                                     src={`${BASE_URL}/uploads/thumbnails/${anotacao.Thumbnail}`}
                                     alt="thumbnail"
+                                    style={{
+                                        aspectRatio: '16 / 9',
+                                        objectFit: 'cover',
+                                    }}
                                     className="anotacoes-thumbnail"
                                     onClick={(e) => {
                                         e.stopPropagation();

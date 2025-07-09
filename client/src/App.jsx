@@ -44,9 +44,9 @@ function AppIn() {
     <div className="app-container d-flex flex-column min-vh-100">
       <div className="app-container d-flex flex-column min-vh-100">
         {!isAdminRoute && <Header />}
-        <div className="flex-grow-1 d-flex">
+        <div className="d-flex-grow-1 d-flex">
           {!isAdminRoute && <Sidebar collapsed={collapsed} setCollapsed={setCollapsed} />}
-          <main className={`flex-grow-1 p-3 ${collapsed ? 'main-collapsed' : 'main-expanded'}`}>
+          <main className={`p-3 ${collapsed ? 'main-collapsed' : 'main-expanded'}`}>
             <ScrollToTop/>
             <Routes>
               <Route path="*" element={<NotFound />} />

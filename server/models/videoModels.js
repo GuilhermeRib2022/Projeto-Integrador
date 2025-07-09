@@ -44,7 +44,8 @@ WHERE v.UtilizadorID = ?`, [UtilizadorID])
                 SELECT v.*, disciplina.Nome AS Disciplina, disciplina.Cor AS Cor, utilizador.Nome AS Autor, AVG_reviews.AvgNota AS Nota FROM video v
 LEFT JOIN disciplina ON disciplina.ID = v.DisciplinaID
 LEFT JOIN utilizador ON utilizador.ID = v.UtilizadorID
-LEFT JOIN (SELECT videoID, AVG(Nota) AS AvgNota FROM review GROUP BY videoID) AS AVG_reviews ON AVG_reviews.videoID = v.ID;`)
+LEFT JOIN (SELECT videoID, AVG(Nota) AS AvgNota FROM review GROUP BY videoID) AS AVG_reviews ON AVG_reviews.videoID = v.ID
+ORDER BY v.ID DESC`)
             return rows
         } catch (error) {
             throw new Error(`Failed to fetch videos: ${error.message}`)
@@ -119,7 +120,7 @@ WHERE v.ID = ?`, [id])
             if (!searchTerm || typeof searchTerm !== 'string') {
                 throw new Error('Pesquisa inválida');
             }
-            const [rows] = await pool.query(`SELECT v.*, disciplina.Nome AS Disciplina, disciplina.Cor AS Cor, utilizador.Nome AS Autor, AVG_reviews.AvgNota AS Nota FROM video v
+            const [rows] = await pool.query(`SELECT v.*, disciplina.Nome AS Disciplina, disciplina.Cor AS Cor, utilizador.Nome AS Autor, AVG_reviews.AvgNota AS Nota, ((v.Views - v.OldViews) / (v.OldViews + 1)) AS FatorCrescimento FROM video v
 LEFT JOIN disciplina ON disciplina.ID = v.DisciplinaID
 LEFT JOIN utilizador ON utilizador.ID = v.UtilizadorID
 LEFT JOIN (SELECT videoID, AVG(Nota) AS AvgNota FROM review GROUP BY videoID) AS AVG_reviews ON AVG_reviews.videoID = v.ID
@@ -138,7 +139,7 @@ WHERE v.Titulo LIKE ? `, [`%${searchTerm}%`]);
             if (!searchTerm || typeof searchTerm !== 'string') {
                 throw new Error('Pesquisa inválida');
             }
-            const [rows] = await pool.query(`SELECT v.*, disciplina.Nome AS Disciplina, disciplina.Cor AS Cor, utilizador.Nome AS Autor, AVG_reviews.AvgNota AS Nota FROM video v
+            const [rows] = await pool.query(`SELECT v.*, disciplina.Nome AS Disciplina, disciplina.Cor AS Cor, utilizador.Nome AS Autor, AVG_reviews.AvgNota AS Nota, ((v.Views - v.OldViews) / (v.OldViews + 1)) AS FatorCrescimento FROM video v
 LEFT JOIN disciplina ON disciplina.ID = v.DisciplinaID
 LEFT JOIN utilizador ON utilizador.ID = v.UtilizadorID
 LEFT JOIN (SELECT videoID, AVG(Nota) AS AvgNota FROM review GROUP BY videoID) AS AVG_reviews ON AVG_reviews.videoID = v.ID
@@ -156,7 +157,7 @@ WHERE Disciplina.nome LIKE ? `, [`%${searchTerm}%`]);
             if (!searchTerm || typeof searchTerm !== 'string') {
                 throw new Error('Pesquisa inválida');
             }
-            const [rows] = await pool.query(`SELECT v.*, disciplina.Nome AS Disciplina, disciplina.Cor AS Cor, utilizador.Nome AS Autor, AVG_reviews.AvgNota AS Nota FROM video v
+            const [rows] = await pool.query(`SELECT v.*, disciplina.Nome AS Disciplina, disciplina.Cor AS Cor, utilizador.Nome AS Autor, AVG_reviews.AvgNota AS Nota, ((v.Views - v.OldViews) / (v.OldViews + 1)) AS FatorCrescimento FROM video v
 LEFT JOIN disciplina ON disciplina.ID = v.DisciplinaID
 LEFT JOIN utilizador ON utilizador.ID = v.UtilizadorID
 LEFT JOIN (SELECT videoID, AVG(Nota) AS AvgNota FROM review GROUP BY videoID) AS AVG_reviews ON AVG_reviews.videoID = v.ID
@@ -264,7 +265,7 @@ ORDER BY v.DataPublicacao DESC LIMIT 8`)
 
             // Passo 3: buscar vídeos dessa disciplina
             const [rows] = await pool.query(`
-      SELECT v.*, d.Nome AS Disciplina, d.Cor AS Cor, u.Nome AS Autor, AVG_reviews.AvgNota AS Nota
+      SELECT v.*, d.Nome AS Disciplina, d.Cor AS Cor, u.Nome AS Autor, AVG_reviews.AvgNota AS Nota, ((v.Views - v.OldViews) / (v.OldViews + 1)) AS FatorCrescimento
       FROM video v
       LEFT JOIN disciplina d ON d.ID = v.DisciplinaID
       LEFT JOIN utilizador u ON u.ID = v.UtilizadorID
@@ -272,6 +273,7 @@ ORDER BY v.DataPublicacao DESC LIMIT 8`)
         SELECT videoID, AVG(Nota) AS AvgNota FROM review GROUP BY videoID
       ) AS AVG_reviews ON AVG_reviews.videoID = v.ID
       WHERE v.DisciplinaID = ?
+      ORDER BY FatorCrescimento DESC
       LIMIT 8
     `, [disciplinaID]);
             return rows;

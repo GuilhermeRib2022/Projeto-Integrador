@@ -10,6 +10,8 @@ const EstatisticasDisciplina = () => {
     const [erro, setErro] = useState(null);
     const [searchTerm, setSearchTerm] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
+    const [sortField, setSortField] = useState("QueryTime");
+    const [sortOrder, setSortOrder] = useState("desc");
     const itemsPerPage = 10;
     const navigate = useNavigate();
 
@@ -55,12 +57,36 @@ const EstatisticasDisciplina = () => {
         disciplina.Nome.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
+    const sortedData = [...filteredData].sort((a, b) => {
+        const valA = a[sortField] ?? 0;
+        const valB = b[sortField] ?? 0;
+        if (typeof valA === 'string' && typeof valB === 'string') {
+            return sortOrder === 'asc'
+                ? valA.localeCompare(valB)
+                : valB.localeCompare(valA);
+        } else {
+            // Se um deles não for string, converta para string (seguro)
+            const strA = String(valA ?? '');
+            const strB = String(valB ?? '');
+            return sortOrder === 'asc'
+                ? strA.localeCompare(strB)
+                : strB.localeCompare(strA);
+        }
+    });
 
     // Paginação
     const indexOfLastItem = currentPage * itemsPerPage;
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-    const currentData = filteredData.slice(indexOfFirstItem, indexOfLastItem);
+    const currentData = sortedData.slice(indexOfFirstItem, indexOfLastItem);
     const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+    const sortOptions = [
+        { label: "Nome", field: "Disciplina", order: "asc" },
+        { label: "Total Vídeos", field: "TotalVideos", order: "desc" },
+        { label: "Total Visualizações", field: "TotalViews", order: "desc" },
+        { label: "Média Avaliações", field: "MediaReviews", order: "desc" },
+        { label: "Total Inscrições", field: "Inscricoes", order: "desc" },
+    ];
+
 
     if (loading) return <p>🔄 A carregar estatísticas...</p>;
     if (erro) return <div className="erro">{erro}</div>;
@@ -72,11 +98,55 @@ const EstatisticasDisciplina = () => {
             <div className="fixd d-flex justify-content-between align-items-center mb-3">
                 <h1>📚 Estatísticas por Disciplina</h1>
                 <div className="form-outline flex-grow-1 mx-3" data-mdb-input-init>
-                    <input type="text" className="form-control" placeholder="Pesquisar disciplina..." value={searchTerm} onChange={(e) => {setSearchTerm(e.target.value); setCurrentPage(1);} } />
+                    <input type="text" className="form-control" placeholder="Pesquisar disciplina..." value={searchTerm} onChange={(e) => { setSearchTerm(e.target.value); setCurrentPage(1); }} />
                 </div>
                 <button className="btn btn-outline-secondary" onClick={() => navigate(-1)}>Voltar</button>
             </div>
+            <div className="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+                <div className="d-flex gap-2 flex-wrap">
+                    {sortOptions.map(({ label, field, order }) => (
+                        <button
+                            key={field}
+                            className={`btn btn-sm ${sortField === field ? 'btn-primary' : 'btn-outline-primary'}`}
+                            onClick={() => {
+                                setSortField(field);
+                                setSortOrder(order);
+                                setCurrentPage(1);
+                            }}
+                        >
+                            {label}
+                        </button>
+                    ))}
+                </div>
 
+                <div className="d-flex justify-content-end align-items-center mt-3">
+                    <button
+                        className="btn btn-outline-primary mx-1"
+                        disabled={currentPage === 1}
+                        onClick={() => setCurrentPage((prev) => prev - 1)}
+                    >
+                        Prev
+                    </button>
+
+                    {[...Array(totalPages)].map((_, i) => (
+                        <button
+                            key={i}
+                            className={`btn mx-1 ${currentPage === i + 1 ? 'btn-primary' : 'btn-outline-primary'}`}
+                            onClick={() => setCurrentPage(i + 1)}
+                        >
+                            {i + 1}
+                        </button>
+                    ))}
+
+                    <button
+                        className="btn btn-outline-primary mx-1"
+                        disabled={currentPage === totalPages}
+                        onClick={() => setCurrentPage((prev) => prev + 1)}
+                    >
+                        Next
+                    </button>
+                </div>
+            </div>
             <table className="table table-bordered table-striped table-hover">
                 <thead className="thead-dark">
                     <tr>

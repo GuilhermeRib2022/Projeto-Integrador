@@ -13,10 +13,10 @@ const Querys = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [sortField, setSortField] = useState("QueryTime");
+  const [sortOrder, setSortOrder] = useState("desc"); 
 
   const itemsPerPage = 10;
-
-
   const pageNeighbors = 2;
 
 
@@ -51,13 +51,43 @@ const Querys = () => {
     q.VideoID.toString().includes(search)
   );
 
+  const sortedData = [...filteredData].sort((a, b) => {
+    const valA = a[sortField] ?? 0;
+    const valB = b[sortField] ?? 0;
+
+    if (sortField === "counter") {
+      // Ordenar por counter primeiro
+      if (valB !== valA) return valB - valA;
+
+      // Segundo critério: Embedding
+      if (a.Embedding && !b.Embedding) return -1;
+      if (!a.Embedding && b.Embedding) return 1;
+      return 0;
+    }
+
+    if (typeof valA === 'string') {
+      return sortOrder === 'asc'
+        ? valA.localeCompare(valB)
+        : valB.localeCompare(valA);
+    }
+
+    return sortOrder === 'asc'
+      ? valA - valB
+      : valB - valA;
+  });
+
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentData = filteredData.slice(indexOfFirstItem, indexOfLastItem);
+  const currentData = sortedData.slice(indexOfFirstItem, indexOfLastItem);
   const totalPages = Math.ceil(filteredData.length / itemsPerPage);
   const startPage = Math.max(1, currentPage - pageNeighbors);
   const endPage = Math.min(totalPages, currentPage + pageNeighbors);
   const pagesToShow = [];
+  const sortOptions = [
+  { label: "ID", field: "ID", order: "asc" },
+  { label: "Mais Recentes", field: "QueryTime", order: "desc" },
+  { label: "Vezes Perguntado", field: "counter", order: "desc" },
+];
   for (let i = startPage; i <= endPage; i++) {
     pagesToShow.push(i);
   }
@@ -76,34 +106,52 @@ const Querys = () => {
           />
         </div>
       </div>
+
       <hr />
-      <div className="table-container">
-        <div className="d-flex justify-content-end align-items-center mt-3">
-          <button
-            className="btn btn-outline-primary mx-1"
-            disabled={currentPage === 1}
-            onClick={() => setCurrentPage(prev => prev - 1)}
-          >
-            Prev
-          </button>
-
-          {pagesToShow.map((page) => (
+      <div className="gap-2 mb-3d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+        <div className="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+          <div className="d-flex gap-2 flex-wrap">
+            {sortOptions.map(({ label, field, order }) => (
+              <button
+                key={field}
+                className={`btn btn-sm ${sortField === field ? 'btn-primary' : 'btn-outline-primary'}`}
+                onClick={() => {
+                  setSortField(field);
+                  setSortOrder(order);
+                  setCurrentPage(1);
+                }}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+          <div className="d-flex align-items-center">
             <button
-              key={page}
-              className={`btn mx-1 ${currentPage === page ? 'btn-primary' : 'btn-outline-primary'}`}
-              onClick={() => setCurrentPage(page)}
+              className="btn btn-outline-primary mx-1"
+              disabled={currentPage === 1}
+              onClick={() => setCurrentPage(prev => prev - 1)}
             >
-              {page}
+              Prev
             </button>
-          ))}
 
-          <button
-            className="btn btn-outline-primary mx-1"
-            disabled={currentPage === endPage}
-            onClick={() => setCurrentPage(prev => prev + 1)}
-          >
-            Next
-          </button>
+            {pagesToShow.map((page) => (
+              <button
+                key={page}
+                className={`btn mx-1 ${currentPage === page ? 'btn-primary' : 'btn-outline-primary'}`}
+                onClick={() => setCurrentPage(page)}
+              >
+                {page}
+              </button>
+            ))}
+
+            <button
+              className="btn btn-outline-primary mx-1"
+              disabled={currentPage === endPage}
+              onClick={() => setCurrentPage(prev => prev + 1)}
+            >
+              Next
+            </button>
+          </div>
         </div>
         <table className="table table-responsive table-hover table-striped">
           <thead>
@@ -115,6 +163,7 @@ const Querys = () => {
               <th>Resposta</th>
               <th>Data da Pergunta</th>
               <th>Tempo do Vídeo</th>
+              <th>Vezes Perguntado</th>
             </tr>
           </thead>
           <tbody>
@@ -131,7 +180,7 @@ const Querys = () => {
                     {q.Titulo || q.VideoID}
                   </Link>
                 </td>
-                <td>
+                < td>
                   <textarea
                     readOnly
                     value={q.Pergunta || ''}
@@ -149,6 +198,7 @@ const Querys = () => {
                 </td>
                 <td>{new Date(q.QueryTime).toLocaleString()}</td>
                 <td>{q.VideoTime?.toFixed(2) ?? '0.00'}s</td>
+                <td>{q.Embedding ? q.counter : "--"}</td>
               </tr>
             ))}
           </tbody>
