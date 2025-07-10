@@ -2,7 +2,7 @@ import pool from "../database.js";
 
 export const Video = {
 
-
+    //VISUALIZAR VIDEO
     async visualizar(videoID) {
         const [result] = await pool.query(
             'UPDATE video SET views = views + 1 WHERE ID = ?',
@@ -14,15 +14,15 @@ export const Video = {
         return result;
     },
 
-
-    async publicarVideo(disciplinaID, utilizadorID, titulo, descricao, videoPath, thumbnail, duracao) {
-        const sql = `INSERT INTO Video (DisciplinaID, UtilizadorID, Titulo, Descricao, VideoPath, Thumbnail, Duracao) VALUES (?, ?, ?, ?, ?, ?, ?)`;
-        const values = [disciplinaID, utilizadorID, titulo, descricao || null, videoPath, thumbnail || null, duracao];
+    //PUBLICAR VIDEOS
+    async publicarVideo(disciplinaID, utilizadorID, titulo, descricao, videoPath, thumbnail, duracao, fonte, FontePath,  textoFonte) {
+        const sql = `INSERT INTO Video (DisciplinaID, UtilizadorID, Titulo, Descricao, VideoPath, Thumbnail, Duracao, TextoFonte) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
+        const values = [disciplinaID, utilizadorID, titulo, descricao || null, videoPath, thumbnail || null, duracao, FontePath || null, textoFonte || null];
         const [result] = await pool.query(sql, values);
         return result.insertId;
     },
 
-
+    //OBTER VIDEOS DE UTILIZADOR
     async getVideosUser(UtilizadorID) {
         try {
             const [rows] = await pool.query(`
@@ -45,6 +45,7 @@ WHERE v.UtilizadorID = ?`, [UtilizadorID])
 LEFT JOIN disciplina ON disciplina.ID = v.DisciplinaID
 LEFT JOIN utilizador ON utilizador.ID = v.UtilizadorID
 LEFT JOIN (SELECT videoID, AVG(Nota) AS AvgNota FROM review GROUP BY videoID) AS AVG_reviews ON AVG_reviews.videoID = v.ID
+WHERE estado = "ativo"
 ORDER BY v.ID DESC`)
             return rows
         } catch (error) {
@@ -60,7 +61,7 @@ ORDER BY v.ID DESC`)
 LEFT JOIN disciplina ON disciplina.ID = v.DisciplinaID
 LEFT JOIN utilizador ON utilizador.ID = v.UtilizadorID
 LEFT JOIN (SELECT videoID, AVG(Nota) AS AvgNota FROM review GROUP BY videoID) AS AVG_reviews ON AVG_reviews.videoID = v.ID
-WHERE v.ID = ?`, [id])
+WHERE v.ID = ? AND v.estado = "ativo"`, [id])
             return rows[0] || null
         } catch (error) {
             throw new Error(`Failed to fetch video with ID ${id}: ${error.message}`)
@@ -105,7 +106,7 @@ WHERE v.ID = ?`, [id])
             if (!searchTerm || typeof searchTerm !== 'string') {
                 throw new Error('Pesquisa inválida');
             }
-            const [rows] = await pool.query('SELECT * FROM video WHERE titulo LIKE ?', [`%${searchTerm}%`]);
+            const [rows] = await pool.query('SELECT * FROM video WHERE titulo LIKE ? AND estado = "ativo"', [`%${searchTerm}%`]);
             return rows;
 
         } catch (error) {
@@ -124,7 +125,7 @@ WHERE v.ID = ?`, [id])
 LEFT JOIN disciplina ON disciplina.ID = v.DisciplinaID
 LEFT JOIN utilizador ON utilizador.ID = v.UtilizadorID
 LEFT JOIN (SELECT videoID, AVG(Nota) AS AvgNota FROM review GROUP BY videoID) AS AVG_reviews ON AVG_reviews.videoID = v.ID
-WHERE v.Titulo LIKE ? `, [`%${searchTerm}%`]);
+WHERE v.Titulo LIKE ?  AND v.estado = "ativo"`, [`%${searchTerm}%`]);
             return rows;
 
         } catch (error) {
@@ -143,7 +144,7 @@ WHERE v.Titulo LIKE ? `, [`%${searchTerm}%`]);
 LEFT JOIN disciplina ON disciplina.ID = v.DisciplinaID
 LEFT JOIN utilizador ON utilizador.ID = v.UtilizadorID
 LEFT JOIN (SELECT videoID, AVG(Nota) AS AvgNota FROM review GROUP BY videoID) AS AVG_reviews ON AVG_reviews.videoID = v.ID
-WHERE Disciplina.nome LIKE ? `, [`%${searchTerm}%`]);
+WHERE Disciplina.nome LIKE ? AND v.estado = "ativo"`, [`%${searchTerm}%`]);
             return rows;
 
         } catch (error) {
@@ -161,7 +162,7 @@ WHERE Disciplina.nome LIKE ? `, [`%${searchTerm}%`]);
 LEFT JOIN disciplina ON disciplina.ID = v.DisciplinaID
 LEFT JOIN utilizador ON utilizador.ID = v.UtilizadorID
 LEFT JOIN (SELECT videoID, AVG(Nota) AS AvgNota FROM review GROUP BY videoID) AS AVG_reviews ON AVG_reviews.videoID = v.ID
-WHERE Disciplina.nome LIKE ? `, [`${searchTerm}`]);
+WHERE Disciplina.nome LIKE ? AND v.estado = "ativo"`, [`${searchTerm}`]);
             return rows;
 
         } catch (error) {
@@ -180,7 +181,7 @@ WHERE Disciplina.nome LIKE ? `, [`${searchTerm}`]);
 LEFT JOIN disciplina ON disciplina.ID = v.DisciplinaID
 LEFT JOIN utilizador ON utilizador.ID = v.UtilizadorID
 LEFT JOIN (SELECT videoID, AVG(Nota) AS AvgNota FROM review GROUP BY videoID) AS AVG_reviews ON AVG_reviews.videoID = v.ID
-WHERE v.Titulo LIKE ? AND disciplina.nome LIKE ?`, [`%${searchTerm}%`, `%${disciplina}%`]);
+WHERE v.Titulo LIKE ? AND disciplina.nome LIKE ? AND v.estado = "ativo"`, [`%${searchTerm}%`, `%${disciplina}%`]);
             return rows;
 
         } catch (error) {
@@ -198,7 +199,7 @@ WHERE v.Titulo LIKE ? AND disciplina.nome LIKE ?`, [`%${searchTerm}%`, `%${disci
             if (!disciplinaID || isNaN(disciplinaID)) {
                 throw new Error('Valid discipline ID is required');
             }
-            const [rows] = await pool.query('SELECT * FROM video WHERE titulo LIKE ? AND disciplinaID = ?', [`%${searchTerm}%`, disciplinaID]);
+            const [rows] = await pool.query('SELECT * FROM video WHERE titulo LIKE ? AND disciplinaID = ? AND estado = "ativo"', [`%${searchTerm}%`, disciplinaID]);
             return rows;
         } catch (error) {
             throw new Error(`Failed to search videos by discipline: ${error.message}`);
@@ -214,7 +215,8 @@ WHERE v.Titulo LIKE ? AND disciplina.nome LIKE ?`, [`%${searchTerm}%`, `%${disci
 LEFT JOIN disciplina ON disciplina.ID = v.DisciplinaID
 LEFT JOIN utilizador ON utilizador.ID = v.UtilizadorID
 LEFT JOIN (SELECT videoID, AVG(Nota) AS AvgNota FROM review GROUP BY videoID) AS AVG_reviews ON AVG_reviews.videoID = v.ID
-ORDER BY v.Views DESC LIMIT 8`)
+WHERE v.estado = "ativo"
+ORDER BY v.Views DESC LIMIT 8 `)
             return rows
         } catch (error) {
             throw new Error(`Failed to fetch videos: ${error.message}`)
@@ -228,6 +230,7 @@ ORDER BY v.Views DESC LIMIT 8`)
 LEFT JOIN disciplina ON disciplina.ID = v.DisciplinaID
 LEFT JOIN utilizador ON utilizador.ID = v.UtilizadorID
 LEFT JOIN (SELECT videoID, AVG(Nota) AS AvgNota FROM review GROUP BY videoID) AS AVG_reviews ON AVG_reviews.videoID = v.ID
+WHERE v.estado = "ativo"
 ORDER BY Nota DESC LIMIT 8`)
             return rows
         } catch (error) {
@@ -243,6 +246,7 @@ ORDER BY Nota DESC LIMIT 8`)
 LEFT JOIN disciplina ON disciplina.ID = v.DisciplinaID
 LEFT JOIN utilizador ON utilizador.ID = v.UtilizadorID
 LEFT JOIN (SELECT videoID, AVG(Nota) AS AvgNota FROM review GROUP BY videoID) AS AVG_reviews ON AVG_reviews.videoID = v.ID
+WHERE v.estado = "ativo"
 ORDER BY v.DataPublicacao DESC LIMIT 8`)
             return rows
         } catch (error) {
@@ -284,7 +288,7 @@ ORDER BY v.DataPublicacao DESC LIMIT 8`)
 
 
     //EDITAR O VIDEO
-    async editarVideo(videoID, utilizador, { titulo, descricao, disciplina, thumbnail }) {
+    async editarVideo(videoID, utilizador, { titulo, descricao, disciplina, thumbnail, fonte, textoFonte  }) {
         try {
             // Buscar o vídeo pelo ID
             const [videos] = await pool.query('SELECT * FROM video WHERE ID = ?', [videoID]);
@@ -318,6 +322,17 @@ ORDER BY v.DataPublicacao DESC LIMIT 8`)
                 campos.push('Thumbnail = ?');
                 valores.push(thumbnail);
             }
+
+            if (fonte) {
+                campos.push('FontePath = ?');
+                valores.push(fonte);
+            }
+
+            if (textoFonte) {
+                campos.push('TextoFonte = ?');
+                valores.push(textoFonte);
+            }
+
 
             if (campos.length === 0) {
                 throw new Error('Nenhuma alteração fornecida');
@@ -358,6 +373,15 @@ ORDER BY v.DataPublicacao DESC LIMIT 8`)
         return videoRows[0];
     },
 
+    //Desativa um video
+    async desativar(id) {
+        await pool.query('UPDATE video SET Estado = "inativo" WHERE ID = ?', [id]);
+    },
+
+    //Ativa um video
+    async ativar(id) {
+        await pool.query('UPDATE video SET Estado = "ativo" WHERE ID = ?', [id]);
+    },
 
 }
 

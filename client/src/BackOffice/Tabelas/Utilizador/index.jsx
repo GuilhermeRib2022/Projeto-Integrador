@@ -11,8 +11,8 @@ const Utilizador = () => {
   const [loading, setLoading] = useState(true); //Esperar dados carregarem
   const [error, setError] = useState(null); //Obter Erro
   const [search, setSearch] = useState(""); //Pesquisa Atual
-    const [sortField, setSortField] = useState("QueryTime");
-    const [sortOrder, setSortOrder] = useState("desc");
+  const [sortField, setSortField] = useState("QueryTime");
+  const [sortOrder, setSortOrder] = useState("desc");
   const [currentPage, setCurrentPage] = useState(1); //Página Atual
 
 

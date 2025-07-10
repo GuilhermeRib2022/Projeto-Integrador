@@ -4,22 +4,14 @@ import { useNavigate } from 'react-router-dom';
 import { BASE_URL } from '../../../../components/url';
 import './style.css';
 
-const parseJwt = (token) => {
-    try {
-        return JSON.parse(atob(token.split('.')[1]));
-    } catch {
-        return null;
-    }
-};
-
 const ListarVideo = () => {
+    const [data, setData] = useState([]);
     const [videos, setVideos] = useState([]);
     const navigate = useNavigate();
     const [searchTerm, setSearchTerm] = useState('');
 
     useEffect(() => {
         const fetchVideos = async () => {
-            console.log("Chamando API de vídeos...");
             try {
                 const token = localStorage.getItem("token");
                 if (!token) {
@@ -29,7 +21,6 @@ const ListarVideo = () => {
                 const response = await axios.get(`${BASE_URL}/video/user`, {
                     headers: { Authorization: `Bearer ${token}` }
                 });
-                console.log("Resposta da API:", response.data);
                 setVideos(response.data);
             } catch (error) {
                 console.error("Erro ao carregar vídeos:", error);
@@ -38,6 +29,36 @@ const ListarVideo = () => {
 
         fetchVideos();
     }, []);
+    
+
+        const toggleEstado = async (id, currentEstado) => {
+    const novoEstado = currentEstado === 'ativo' ? 'inativo' : 'ativo';
+
+    try {
+      if (novoEstado === 'inativo') {
+        await axios.delete(`${BASE_URL}/video/${id}/desativar`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+          },
+        });
+      } else {
+        await axios.patch(`${BASE_URL}/video/${id}/ativar`, { }, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+          },
+        });
+      }
+
+      setVideos(prevVideos  =>
+        prevVideos.map(video =>
+          video.ID === id ? { ...video, Estado: novoEstado } : video
+        )
+      );
+    } catch (err) {
+      console.error("Erro ao alterar estado:", err);
+      alert("Erro ao alterar estado.");
+    }
+  };
 
     const filteredVideos = videos.filter(video =>
         video.Titulo.toLowerCase().includes(searchTerm.toLowerCase())
@@ -65,6 +86,7 @@ const ListarVideo = () => {
                         <th>Visualizações</th>
                         <th>Data</th>
                         <th>Descrição</th>
+                        <th>Estado</th>
                         <th>Ações</th>
                     </tr>
                 </thead>
@@ -106,6 +128,15 @@ const ListarVideo = () => {
                                     style={{ width: '100%', resize: 'none', border: 'none', backgroundColor: 'transparent', color: '#333', fontFamily: 'inherit' }}
                                     onClick={(e) => e.stopPropagation()} // evita que o clique no textarea dispare o onClick da linha
                                 />
+                            </td>
+                            <td className="text-center align-middle">
+                                <button
+                                    className={`btn btn-sm ${video.Estado === 'ativo' ? 'btn-success' : 'btn-danger'}`}
+                                    onClick={() => toggleEstado(video.ID, video.Estado)}
+                                    style={{ width: '90px' }}
+                                >
+                                    {video.Estado}
+                                </button>
                             </td>
                             <td>
                                 <button

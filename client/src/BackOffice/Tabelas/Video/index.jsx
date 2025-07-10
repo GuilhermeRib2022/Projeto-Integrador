@@ -37,6 +37,36 @@ const Videos = () => {
   if (loading) return <p>A carregar vídeos...</p>;
   if (error) return <p>{error}</p>;
 
+    const toggleEstado = async (id, currentEstado) => {
+    const novoEstado = currentEstado === 'ativo' ? 'inativo' : 'ativo';
+
+    try {
+      if (novoEstado === 'inativo') {
+        await axios.delete(`${BASE_URL}/video/${id}/desativar`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+          },
+        });
+      } else {
+        await axios.patch(`${BASE_URL}/video/${id}/ativar`, { }, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+          },
+        });
+      }
+
+      setData(prevData =>
+        prevData.map(item =>
+          item.ID === id ? { ...item, Estado: novoEstado } : item
+        )
+      );
+    } catch (err) {
+      console.error("Erro ao alterar estado:", err);
+      alert("Erro ao alterar estado.");
+    }
+  };
+  
+
   const filteredData = data.filter((video) =>
     video.Titulo?.toLowerCase().includes(search.toLowerCase()) ||
     video.Descricao?.toLowerCase().includes(search.toLowerCase()) ||
@@ -156,6 +186,7 @@ const sortedData = [...filteredData].sort((a, b) => {
               <th>Visualizações</th>
               <th>Data de Criação</th>
               <th>Última edição</th>
+              <th>Estado</th>
               <th>Ações</th>
             </tr>
           </thead>
@@ -199,6 +230,15 @@ const sortedData = [...filteredData].sort((a, b) => {
                 <td>{video.Views || video.Visualizacoes || 0}</td>
                 <td>{new Date(video.DataPublicacao).toLocaleString()}</td>
                 <td>{new Date(video.DataAlteracao).toLocaleString()}</td>
+                <td className="text-center align-middle">
+                  <button
+                    className={`btn btn-sm ${video.Estado === 'ativo' ? 'btn-success' : 'btn-danger'}`}
+                    onClick={() => toggleEstado(video.ID, video.Estado)}
+                    style={{ width: '90px' }}
+                  >
+                    {video.Estado}
+                  </button>
+                </td>
                 <td>
                   {video.ID ? (
                     <Link to={`/admin/video/edit/${video.ID}`} className="btn btn-outline-secondary btn-sm">Editar</Link>

@@ -1,6 +1,7 @@
 import pool from "../database.js";
 import axios from 'axios';
 import contemPalavraOfensiva from "../services/contemPalavraOfensiva.js";
+import { exec } from "child_process";
 
 //CALCULAR SIMILARIDADE COSENO ENTRE DOIS VETORES
 function cosineSimilarity(vecA, vecB) {
@@ -22,7 +23,7 @@ async function getEmbeddingOllama(text) {
 // #################################### //
 // FUNÇÃO PRINCIPAL DE PROCESSAR PROMPT //
 // #################################### // 
-async function processWithLLM(question, messages, videoTitle, videoDescription, videoId) {
+async function processWithLLM(question, messages, videoTitle, videoDescription, videoId, fonte) {
   const MODEL = 'qwen2.5:14b';
   const OLLAMA_URL = 'http://localhost:11434/api/generate';
 
@@ -66,7 +67,7 @@ async function processWithLLM(question, messages, videoTitle, videoDescription, 
 
   //3.1 Buscar na base de dados todos os embeddings de um video
   const [rows] = await pool.query(
-    `SELECT Pergunta, Resposta, Embedding FROM QueryLLM WHERE VideoID = ?`,
+    `SELECT Pergunta, Resposta, Embedding FROM QueryLLM WHERE VideoID = ? AND Embedding IS NOT NULL`,
     [videoId]
   );
 
@@ -74,7 +75,7 @@ async function processWithLLM(question, messages, videoTitle, videoDescription, 
   let melhorSimilaridade = -1; //Definir a similaridade como -1 (precisa de 0.85 para ser considerada)
   let respostaMaisProxima = null; //Definir a resposta mais próxima como nulo
   let perguntaMaisProxima = null; //Definir a pergunta da resposta mais próxima
-  const LIMIAR = 0.85; // Define o limiar para considerar similaridade suficiente
+  const LIMIAR = 0.88; // Define o limiar para considerar similaridade suficiente
 
   for (const row of rows) {
     if (!row.Embedding) continue; // Pula se não há embedding
@@ -120,20 +121,16 @@ async function processWithLLM(question, messages, videoTitle, videoDescription, 
   }
 
   // 5. CASO CONTRÁRIO, GERA UMA NOVA RESPOSTA COM O LLM
-  const buildPromptFromMessages = (msgs) => {
-    const systemPrompt =
-      `És um assistente técnico que responde com informações objetivas e factuais. Não sejas evasivo. Responde em português de Portugal, de forma clara, precisa e curta (máximo 256 caracteres).\n` +
-      `O vídeo que o utilizador está a ver tem o seguinte título: "${videoTitle}".(Menciona apenas se o utilizador mencionar) \n` +
-      `Descrição do vídeo: "${videoDescription}".(Menciona apenas se o utilizador mencionar) \n` +
-      `nunca, mas nunca saia do contexto do título ou da descrição, avise o aluno se sair muito do contexto do vídeo ou título ou descrição, isto é importante.\n`;
 
-    const dialog = msgs
-      .map(msg => `${msg.role === 'user' ? 'Utilizador' : 'Assistente'}: ${msg.content}`)
-      .join('\n');
-    return systemPrompt + dialog + '\nAssistente:';
-  };
+  const systemPrompt =
+    `Texto-fonte do vídeo, que contém detalhes adicionais: """${fonte}"""\n` +
+    `O vídeo que o utilizador está a ver tem o seguinte título: "${videoTitle}".(Menciona apenas se o utilizador mencionar) \n` +
+    `Descrição do vídeo: "${videoDescription}".(Menciona apenas se o utilizador mencionar) \n` +
+    `És um assistente técnico que responde com informações objetivas e factuais. Não sejas evasivo. Responde em português de Portugal, de forma clara, precisa e curta (máximo 256 caracteres), não ultrapasses este limite.\n` +
+    `nunca, mas nunca saia do contexto do título ou da descrição, avise o aluno se sair muito do contexto do vídeo ou título ou descrição, isto é importante, utilize uma mensagem genérica que pode ser usada em qualquer situação.\n` +
+    `responde de forma clara e curta.\n`;
 
-  const prompt = buildPromptFromMessages(messages);
+  const prompt = systemPrompt + `Utilizador: ${question}\nAssistente:`;
 
   try {
     const response = await axios.post(OLLAMA_URL, {
@@ -167,7 +164,70 @@ async function processWithLLM(question, messages, videoTitle, videoDescription, 
 }
 
 
+// Função para extrair frame usando FFmpeg
+function extractFrame(videoPath, videoTime, framePath) {
+  return new Promise((resolve, reject) => {
+    const ffmpegPath = 'C:\\ffmpeg\\ffmpeg.exe';
+    const cmd = `"${ffmpegPath}" -ss ${videoTime} -i "${videoPath}" -frames:v 1 -q:v 2 "${framePath}" -y`;
+    exec(cmd, (err) => {
+      if (err) return reject(err);
+      resolve();
+    });
+  });
+}
 
+
+// #################################### //
+// FUNÇÃO PRINCIPAL DE PROCESSAR IMAGEM //
+// #################################### // 
+
+
+async function imageWithLLM(question, videoId, videoTitle, videoDescription, fonte, videoTime) {
+  const MODEL = 'qwen2.5vl:7b';
+  const OLLAMA_URL = 'http://localhost:11434/api/generate';
+  const IMAGE_URL = `http://localhost:9595/uploads/frames/frame-${videoId}-${videoTime}.jpg`;
+
+  try {
+
+      //2. VERIFICA SE A PERGUNTA É EXATAMENTE IGUAL A ALGUMA JÁ GUARDADA
+
+    // 1. Obtem a imagem em dados binários através da URL (incluindo localhost se o servidor estiver no ar)
+    const imageResponse = await axios.get(IMAGE_URL, { responseType: 'arraybuffer'});
+    //Transforma um arraybuffer num buffer e dpeois para uma string em base64, que permite trabalhar com a imagem
+    const imageBase64 = Buffer.from(imageResponse.data).toString('base64');
+
+    // 2. Prompt (sem a imagem)
+    const prompt =
+      `O vídeo que o utilizador está a ver tem o seguinte título: "${videoTitle}".(Menciona apenas se o utilizador mencionar) \n` +
+      `Descrição do vídeo: "${videoDescription}".(Menciona apenas se o utilizador mencionar) \n` +
+      `[frame extraído do segundo ${videoTime}] \n` +
+      `Pergunta do utilizador: ${question} \n` +
+      `Responde de forma clara, curta, objetiva e em português de Portugal. \n`.trim();
+
+    // 3. Envia a imagem e o prompt para o modelo
+    const response = await axios.post(OLLAMA_URL, {
+      model: MODEL,
+      prompt,
+      stream: false,
+      images: [imageBase64],
+      temperature: 0.8,
+      max_tokens: 64,
+    });
+
+    return {
+      role: 'assistant',
+      content: response.data.response,
+      isNew: true,
+      embedding: null,
+    };
+  } catch (err) {
+    console.error('Erro ao gerar resposta visual:', err.message);
+    return {
+      role: 'assistant',
+      content: 'Erro ao processar o frame do vídeo.',
+    };
+  }
+}
 
 
 export const Query = {
@@ -201,8 +261,9 @@ export const Query = {
     return result.insertId;
   },
 
-  processWithLLM
-
+  processWithLLM,
+  imageWithLLM
+  
 }
 
 /* FUNÇAO 3.0

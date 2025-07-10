@@ -15,6 +15,11 @@ const EditarVideo = () => {
   const [thumbnailAtual, setThumbnailAtual] = useState(null);
   const [thumbnailFile, setThumbnailFile] = useState(null);
   const [thumbnailPreviewUrl, setThumbnailPreviewUrl] = useState(null);
+
+  const [fonteAtual, setFonteAtual] = useState(null);
+  const [fonteFile, setFonteFile] = useState(null);
+  const [fontePreviewUrl, setFontePreviewUrl] = useState(null);
+
   const [disciplinas, setDisciplinas] = useState([]);
   const [mensagem, setMensagem] = useState('');
   const [erro, setErro] = useState('');
@@ -33,6 +38,7 @@ const EditarVideo = () => {
         setDescricao(video.Descricao);
         setDisciplina(video.DisciplinaID);
         setThumbnailAtual(video.Thumbnail);
+        setFonteAtual(video.FontePath);
 
         const resDisc = await axios.get(`${BASE_URL}/disciplina`, {
           headers: { Authorization: `Bearer ${token}` },
@@ -57,7 +63,17 @@ const EditarVideo = () => {
     }
   }, [thumbnailFile]);
 
-  const handleFileChange = (e) => {
+  useEffect(() => {
+    if (fonteFile) {
+      const url = URL.createObjectURL(fonteFile);
+      setFontePreviewUrl(url);
+      return () => URL.revokeObjectURL(url);
+    } else {
+      setFontePreviewUrl(null);
+    }
+  }, [fonteFile]);
+
+  const handleFileChangeThumbnail = (e) => {
     const file = e.target.files[0];
     setMensagem('');
     setErro('');
@@ -74,6 +90,24 @@ const EditarVideo = () => {
     setThumbnailFile(file);
   };
 
+  const handleFileChangeFonte = (e) => {
+    const file = e.target.files[0];
+    setMensagem('');
+    setErro('');
+
+    // Ajuste os tipos permitidos para o arquivo fonte, por exemplo PDF ou TXT:
+    const tiposPermitidosFonte = ['application/pdf', 'text/plain'];
+    const tamanhoMaxFonte = 50 * 1024 * 1024; // 50MB max, por exemplo
+
+    if (file && (!tiposPermitidosFonte.includes(file.type) || file.size > tamanhoMaxFonte)) {
+      setErro('Arquivo fonte inválido (tipo ou tamanho incorreto).');
+      setFonteFile(null);
+      return;
+    }
+
+    setFonteFile(file);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setErro('');
@@ -83,8 +117,13 @@ const EditarVideo = () => {
     formData.append('titulo', titulo);
     formData.append('descricao', descricao);
     formData.append('disciplina', disciplina);
+
     if (thumbnailFile) {
       formData.append('thumbnail', thumbnailFile);
+    }
+
+    if (fonteFile) {
+      formData.append('fonte', fonteFile);
     }
 
     try {
@@ -133,7 +172,7 @@ const EditarVideo = () => {
             onChange={(e) => setDescricao(e.target.value)}
             required
             maxLength="360"
-          ></textarea>
+          />
         </div>
 
         <div className="mb-3">
@@ -154,14 +193,35 @@ const EditarVideo = () => {
         </div>
 
         <div className="mb-3">
-          <label className="form-label">Thumbnail (opcional)</label>
+          <label className="form-label">Fonte (arquivo opcional)</label>
           <input
             type="file"
             className="form-control"
-            accept="image/jpeg,image/png,image/gif,image/webp"
-            onChange={handleFileChange}
+            accept=".pdf,.txt"
+            onChange={handleFileChangeFonte}
           />
+        {(fonteAtual || fontePreviewUrl) && (
+          <div className="mt-2">
+            <small>Arquivo atual: </small>
+            {fonteAtual && !fontePreviewUrl && (
+              <a
+                href={`${BASE_URL}/uploads/fonte/${fonteAtual}`}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {fonteAtual}
+              </a>
+            )}
+            {fontePreviewUrl && (
+              <a href={fontePreviewUrl} target="_blank" rel="noopener noreferrer">
+                Ver arquivo selecionado
+              </a>
+            )}
+          </div>
+        )}
+
         </div>
+
 
         {(thumbnailPreviewUrl || thumbnailAtual) && (
           <div className="mb-3">
@@ -170,7 +230,7 @@ const EditarVideo = () => {
               src={thumbnailPreviewUrl || `${BASE_URL}/uploads/thumbnails/${thumbnailAtual}`}
               alt="Thumbnail"
               className="img-thumbnail"
-              style={{ maxWidth: '300px',aspectRatio: '16 / 9' }}
+              style={{ maxWidth: '300px', aspectRatio: '16 / 9' }}
             />
           </div>
         )}
@@ -180,6 +240,5 @@ const EditarVideo = () => {
     </div>
   );
 };
-
 
 export default EditarVideo;

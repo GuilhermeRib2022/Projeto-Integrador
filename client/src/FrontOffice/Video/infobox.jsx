@@ -134,6 +134,21 @@ function VideoInfoBox({ video }) {
                             onClick={(e) => e.stopPropagation()}
                         />
                     </div>
+
+                    {video.FontePath && (
+                        <div className="fonte-section" style={{ marginTop: '10px' }}>
+                            Transferir fonte do vídeo:{` `}
+                            <a
+                                href={`${BASE_URL}/uploads/fonte/${video.FontePath}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                style={{ color: '#007bff', textDecoration: 'underline' }}
+                                onClick={(e) => e.stopPropagation()}
+                            >
+                                {video.FontePath}
+                            </a>
+                        </div>
+                    )}
                 </div>
             )}
         </div>

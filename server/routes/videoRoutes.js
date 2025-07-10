@@ -3,12 +3,77 @@ import {Video} from '../models/videoModels.js'
 import authenticateToken from '../services/Autenticacao.js';
 import express from 'express';
 import upload from '../services/upload.js';
+import { PdfReader } from "pdfreader";
+import { fileURLToPath } from 'url';
+import fs from "fs";
 import getVideoDuration from '../services/getVideoDuration.js';
 import path from 'path';
 import multer from 'multer';
 
 const router = Router();
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
+//OBTER TEXTO DE UM PDF
+async function extrairTextoPdf(caminhoPdf) {
+  return new Promise((resolve, reject) => {
+    let textoCompleto = "";
+
+    new PdfReader().parseFileItems(caminhoPdf, (err, item) => {
+      if (err) {
+        reject(err);
+      } else if (!item) {
+        resolve(textoCompleto);
+      } else if (item.text) {
+        textoCompleto += item.text + " ";
+      }
+    });
+  });
+}
+
+//ROTA PARA PUBLICAR VIDEO
+router.post('/publicar', authenticateToken, (req, res, next) => {
+  upload.fields([ { name: 'video', maxCount: 1 }, { name: 'thumbnail', maxCount: 1 }, { name: 'fonte', maxCount: 1 } ])(req, res, function (err) {
+    if (err instanceof multer.MulterError) {
+      return res.status(400).json({ message: `Erro no upload: ${err.message}` });
+    } else if (err) {
+      return res.status(400).json({ message: `Erro no ficheiro: ${err.message}` });
+    }
+    next();
+  });
+},
+async (req, res) => {
+  try {
+    const { titulo, descricao, disciplina } = req.body;
+    const utilizadorID = req.user.id;
+    const video = req.files['video']?.[0]?.filename;
+    const thumbnail = req.files['thumbnail']?.[0]?.filename || null;
+    const fonte = req.files['fonte']?.[0]?.filename || null;
+
+    if (!titulo || !disciplina || !video) {
+      return res.status(400).json({ message: 'Campos obrigatórios em falta' });
+    }
+
+    const fullPath = path.join('uploads/videos', video);
+    const duracao = await getVideoDuration(fullPath);
+
+    let textoFonte = null;
+    if (fonte) {
+      const fontePath = path.join('uploads/fonte', fonte);
+      textoFonte = await extrairTextoPdf(fontePath);
+    }
+
+    const result = await Video.publicarVideo(disciplina, utilizadorID, titulo, descricao, video, thumbnail, duracao, fonte, textoFonte);
+
+    res.status(201).json({ message: 'Vídeo publicado com sucesso', videoID: result });
+  } catch (err) {
+    console.error('Erro ao publicar vídeo:', err);
+    res.status(500).json({ message: 'Erro interno ao publicar vídeo' });
+  }
+});
+
+
+/*
 //Rota para publicar um vídeo
 router.post('/publicar',   authenticateToken, (req, res, next) => {upload.fields([ { name: 'video', maxCount: 1 }, { name: 'thumbnail', maxCount: 1 } ])(req, res, function (err) {
       if (err instanceof multer.MulterError) {
@@ -42,6 +107,7 @@ router.post('/publicar',   authenticateToken, (req, res, next) => {upload.fields
     }
   }
 );
+*/
 
 //Obter estatísticas de vídeo
 router.get('/estatisticas/:id', async (req, res) => {
@@ -61,7 +127,7 @@ router.get('/estatisticas/:id', async (req, res) => {
 });
 
 router.put('/editar/:id', authenticateToken, (req, res, next) => {
-  upload.fields([{ name: 'thumbnail', maxCount: 1 }])(req, res, function (err) {
+  upload.fields([{ name: 'thumbnail', maxCount: 1 },{ name: 'fonte', maxCount: 1 }])(req, res, function (err) {
     if (err instanceof multer.MulterError) {
       return res.status(400).json({ message: `Erro no upload: ${err.message}` });
     } else if (err) {
@@ -76,8 +142,15 @@ router.put('/editar/:id', authenticateToken, (req, res, next) => {
 
     const { titulo, descricao, disciplina } = req.body;
     const thumbnail = req.files?.['thumbnail']?.[0]?.filename;
+    const fonte = req.files?.['fonte']?.[0]?.filename; 
+    let textoFonte = null;
 
-    await Video.editarVideo(videoID, utilizador, { titulo, descricao, disciplina, thumbnail});
+    if (fonte) {
+      const caminhoCompletoFonte = path.join(__dirname, '..', 'uploads', 'fonte', fonte);
+      textoFonte = await extrairTextoPdf(caminhoCompletoFonte);
+    }
+
+    await Video.editarVideo(videoID, utilizador, { titulo, descricao, disciplina, thumbnail, fonte, textoFonte });
 
     res.status(200).json({ message: 'Vídeo atualizado com sucesso!' });
   } catch (err) {
@@ -236,6 +309,20 @@ router.get("/utilizador/:id", async (req, res) => {
     const videos = await Video.getVideosUser(UtilizadorID)
     res.send(videos)
 })
+
+//ATIVAR UM VIDEO
+router.patch('/:id/ativar', async (req, res) => {
+  const id = req.params.id;
+  const result = await Video.ativar(id); // ativar video
+  res.json(result);
+});
+
+//DESATIVAR UM VIDEO
+router.delete('/:id/desativar', async (req, res) => {
+  const id = req.params.id;
+  const result = await Video.desativar(id); // desativar video
+  res.json(result);
+});
 
 
 export default router;

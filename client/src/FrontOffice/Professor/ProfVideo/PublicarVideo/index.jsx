@@ -10,6 +10,7 @@ const PublicarVideo = () => {
   const [disciplina, setDisciplina] = useState('');
   const [videoFile, setVideoFile] = useState(null);
   const [thumbnailFile, setThumbnailFile] = useState(null);
+  const [fonteFile, setFonteFile] = useState(null); // Estado para o PDF
   const [disciplinas, setDisciplinas] = useState([]);
   const [mensagem, setMensagem] = useState('');
   const [erro, setErro] = useState('');
@@ -43,6 +44,9 @@ const PublicarVideo = () => {
     formData.append('video', videoFile);
     if (thumbnailFile) {
       formData.append('thumbnail', thumbnailFile);
+    }
+    if (fonteFile) {
+      formData.append('fonte', fonteFile);  // adiciona o PDF aqui
     }
     formData.append('titulo', titulo);
     formData.append('descricao', descricao);
@@ -102,7 +106,9 @@ const PublicarVideo = () => {
           onChange={(e) => setDisciplina(e.target.value)}
           required
         >
-          <option className="option-disciplina" value="">-- Selecione uma disciplina --</option>
+          <option className="option-disciplina" value="">
+            -- Selecione uma disciplina --
+          </option>
           {disciplinas.map((d) => (
             <option className="option-disciplina" key={d.ID} value={d.ID}>
               {d.Nome}
@@ -125,7 +131,16 @@ const PublicarVideo = () => {
           onChange={(e) => setThumbnailFile(e.target.files[0])}
         />
 
-        <button className="btn btn-danger" type="submit">Publicar</button>
+        <label>Ficheiro da Fonte (PDF)</label>
+        <input
+          type="file"
+          accept="application/pdf"
+          onChange={(e) => setFonteFile(e.target.files[0])}
+        />
+
+        <button className="btn btn-danger" type="submit">
+          Publicar
+        </button>
       </form>
     </div>
   );
