@@ -9,7 +9,7 @@ import './style.css'
 const SearchDisciplina = () => {
   const [videos, setVideos] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [sortField, setSortField] = useState("DataPublicacao");
+  const [sortField, setSortField] = useState("FatorCrescimento");
   const [sortOrder, setSortOrder] = useState("desc");
   const navigate = useNavigate();
 

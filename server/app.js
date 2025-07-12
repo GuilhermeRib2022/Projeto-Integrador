@@ -55,72 +55,12 @@ app.get('/estatisticas/sistema', (req, res) => {
   res.json(stats);
 });
 
-app.get('/uploads/videos/:filename', (req, res) => {
-  const filePath = path.join(__dirname, 'uploads/videos', req.params.filename);
-
-  fs.stat(filePath, (err, stats) => {
-    if (err || !stats.isFile()) {
-      return res.sendStatus(404);
-    }
-
-    const range = req.headers.range;
-    const contentType = 'video/mp4';
-
-    if (!range) {
-      res.writeHead(200, {
-        'Content-Type': contentType,
-        'Content-Length': stats.size,
-      });
-      fs.createReadStream(filePath).pipe(res);
-    } else {
-      const parts = range.replace(/bytes=/, "").split("-");
-      const start = parseInt(parts[0], 10);
-      const end = parts[1] ? parseInt(parts[1], 10) : stats.size - 1;
-      const chunkSize = (end - start) + 1;
-
-      const file = fs.createReadStream(filePath, { start, end });
-
-      res.writeHead(206, {
-        'Content-Range': `bytes ${start}-${end}/${stats.size}`,
-        'Accept-Ranges': 'bytes',
-        'Content-Length': chunkSize,
-        'Content-Type': contentType,
-      });
-
-      file.pipe(res);
-    }
-  });
-});
-
-//Obter vídeos e fotos de perfil
+//Obter vídeos, fotos de perfil e outros ficheiros.
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 app.get("/ping", (req, res) => {
     res.json("pong")
 });
-
-app.post('/api/chat', async (req, res) => {
-  const { messages } = req.body;
-  const lastMessage = messages?.[messages.length - 1]?.content || '';
-
-  try {
-    const response = await axios.post('http://localhost:11434/api/generate', {
-      model: 'llama3.2',
-      prompt: lastMessage,
-      stream: false
-    });
-
-    res.json({
-      role: 'assistant',
-      content: response.data.response
-    });
-  } catch (error) {
-    console.error('Erro ao comunicar com o Ollama:', error.message);
-    res.status(500).json({ error: 'Erro no servidor de LLM' });
-  }
-});
-
-
 
 app.listen(PORT, () => {
     console.log("Server is running on port " + PORT);

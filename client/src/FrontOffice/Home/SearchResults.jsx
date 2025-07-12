@@ -11,29 +11,22 @@ import './style.css'
 const SearchResults = () => {
     const [videos, setVideos] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [sortField, setSortField] = useState("DataPublicacao");
+    const [sortField, setSortField] = useState("FatorCrescimento");
     const [sortOrder, setSortOrder] = useState("desc");
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 15;
+
     const navigate = useNavigate();
-
-
-
     const [searchParams] = useSearchParams();
     const texto = searchParams.get('texto') || '';
     const disciplina = searchParams.get('disciplina') || '';
 
     function getContrastingTextColor(hex) {
-        // Remove "#" if present
         const color = hex.replace('#', '');
-
-        // Parse r, g, b values
         const r = parseInt(color.substr(0, 2), 16);
         const g = parseInt(color.substr(2, 2), 16);
         const b = parseInt(color.substr(4, 2), 16);
-
-        // Calculate luminance (simple brightness formula)
         const brightness = (r * 299 + g * 587 + b * 114) / 1000;
-
-        // Return black for light backgrounds, white for dark ones
         return brightness > 128 ? '#000000' : '#FFFFFF';
     }
 
@@ -65,30 +58,49 @@ const SearchResults = () => {
 
     if (loading) return <p>Carregando...</p>;
 
-    const sortedVideos = [...videos].sort((a, b) => {
-        const valA = a[sortField];
-        const valB = b[sortField];
+const sortedVideos = [...videos].sort((a, b) => {
+    const valA = a[sortField];
+    const valB = b[sortField];
 
-        if (valA == null && valB == null) return 0;
-        if (valA == null) return sortOrder === 'asc' ? 1 : -1;
-        if (valB == null) return sortOrder === 'asc' ? -1 : 1;
+    const numA = parseFloat(valA);
+    const numB = parseFloat(valB);
 
-        if (!isNaN(valA) && !isNaN(valB)) {
-            return sortOrder === 'asc' ? valA - valB : valB - valA;
-        }
+    const isNumA = !isNaN(numA);
+    const isNumB = !isNaN(numB);
 
+    // Se estiver ordenando por número
+    if (sortField === 'Nota' || sortField === 'FatorCrescimento' || sortField === 'Views') {
+        if (!isNumA && !isNumB) return 0;
+        if (!isNumA) return 1; // sempre empurra A para o fim
+        if (!isNumB) return -1; // sempre empurra B para o fim
+        return sortOrder === 'asc' ? numA - numB : numB - numA;
+    }
+
+    // Se for data
+    if (sortField === 'DataPublicacao') {
         const dateA = new Date(valA);
         const dateB = new Date(valB);
-        if (!isNaN(dateA.getTime()) && !isNaN(dateB.getTime())) {
-            return sortOrder === 'asc' ? dateA - dateB : dateB - dateA;
-        }
 
-        
+        const isValidDateA = !isNaN(dateA.getTime());
+        const isValidDateB = !isNaN(dateB.getTime());
 
-        const strA = String(valA);
-        const strB = String(valB);
-        return sortOrder === 'asc' ? strA.localeCompare(strB) : strB.localeCompare(strA);
-    });
+        if (!isValidDateA && !isValidDateB) return 0;
+        if (!isValidDateA) return sortOrder === 'asc' ? 1 : -1;
+        if (!isValidDateB) return sortOrder === 'asc' ? -1 : 1;
+
+        return sortOrder === 'asc' ? dateA - dateB : dateB - dateA;
+    }
+
+    // Por padrão, ordena como string
+    const strA = String(valA);
+    const strB = String(valB);
+    return sortOrder === 'asc' ? strA.localeCompare(strB) : strB.localeCompare(strA);
+});
+
+    const indexOfLast = currentPage * itemsPerPage;
+    const indexOfFirst = indexOfLast - itemsPerPage;
+    const paginatedVideos = sortedVideos.slice(indexOfFirst, indexOfLast);
+    const totalPages = Math.ceil(sortedVideos.length / itemsPerPage);
 
 
     return (
@@ -96,8 +108,6 @@ const SearchResults = () => {
             <div className="video-top">
                 <SearchForm />
             </div>
-
-            {loading && <p>Carregando...</p>}
 
             {!loading && videos.length === 0 && (
                 <div className="search-header">
@@ -110,56 +120,133 @@ const SearchResults = () => {
                 <>
                     <div className="search-header">
                         <h1>Resultados para "{texto || disciplina}"</h1>
-
                         <button className="btn btn-primary" onClick={() => navigate(-1)}> Voltar </button>
                     </div>
-                    <div className="d-flex flex-wrap gap-2 mb-3">
-                        {[
-                            { label: "Relevante", field: "FatorCrescimento", order: "desc" },
-                            { label: "Mais Recentes", field: "DataPublicacao", order: "desc" },
-                            { label: "Melhor Avaliados", field: "Nota", order: "desc" },
-                            { label: "Mais Vistos", field: "Views", order: "desc" },
-                        ].map(({ label, field, order }) => (
+
+                    {/* Paginação */}
+
+
+                    {/* Sorting and Pagination Header */}
+                    <div className="d-flex justify-content-between align-items-center flex-wrap mb-3">
+                        {/* Sorting Buttons */}
+                        <div className="d-flex flex-wrap gap-2">
+                            {[
+                                { label: "Relevante", field: "FatorCrescimento", order: "desc" },
+                                { label: "Mais Recentes", field: "DataPublicacao", order: "desc" },
+                                { label: "Melhor Avaliados", field: "Nota", order: "desc" },
+                                { label: "Mais Vistos", field: "Views", order: "desc" },
+                            ].map(({ label, field, order }) => (
+                                <button
+                                    key={field}
+                                    className={`btn btn-sm ${sortField === field && sortOrder === order ? 'btn-primary' : 'btn-outline-primary'}`}
+                                    onClick={() => {
+                                        setSortField(field);
+                                        setSortOrder(order);
+                                    }}
+                                >
+                                    {label}
+                                </button>
+                            ))}
+                        </div>
+
+                        {/* Pagination Buttons */}
+                        <div className="d-flex align-items-center ms-auto mt-2 mt-sm-0">
                             <button
-                                key={field}
-                                className={`btn btn-sm ${sortField === field && sortOrder === order ? 'btn-primary' : 'btn-outline-primary'}`}
-                                onClick={() => {
-                                    setSortField(field);
-                                    setSortOrder(order);
-                                }}
+                                className="btn btn-outline-primary mx-1"
+                                disabled={currentPage === 1}
+                                onClick={() => setCurrentPage(prev => prev - 1)}
                             >
-                                {label}
+                                Prev
                             </button>
-                        ))}
+
+                            {[...Array(totalPages)].map((_, i) => (
+                                <button
+                                    key={i}
+                                    className={`btn mx-1 ${currentPage === i + 1 ? 'btn-primary' : 'btn-outline-primary'}`}
+                                    onClick={() => setCurrentPage(i + 1)}
+                                >
+                                    {i + 1}
+                                </button>
+                            ))}
+
+                            <button
+                                className="btn btn-outline-primary mx-1"
+                                disabled={currentPage === totalPages}
+                                onClick={() => setCurrentPage(prev => prev + 1)}
+                            >
+                                Next
+                            </button>
+                        </div>
                     </div>
+
+                    {/* Lista de vídeos */}
                     <div className="video-list">
-                        {sortedVideos.map((video, index) => (
-                            <div className="video-card" key={index}>
+                        {paginatedVideos.map((video, index) => (
+                            <div className="video-card col-12 col-sm-6 col-md-4 col-lg-3" key={index}>
                                 <div className="video-header" style={{ backgroundColor: video.Cor || '#d0e3ff' }}>
-                                    <span style={{ color: getContrastingTextColor(video.Cor), cursor: 'pointer' }} className={video.disciplina} onClick={() => navigate(`/pesquisar/disciplina?disciplina=${encodeURIComponent(video.Disciplina)}`)}><strong>{video.Disciplina}</strong></span>
-                                    <span style={{ color: getContrastingTextColor(video.Cor) }} className={video.rating}>⭐ {Math.round(parseFloat(video.Nota) * 10)}%</span>
+                                    <span
+                                        style={{ color: getContrastingTextColor(video.Cor), cursor: 'pointer' }}
+                                        onClick={() => navigate(`/pesquisar/disciplina?disciplina=${encodeURIComponent(video.Disciplina)}`)}
+                                    >
+                                        <strong>{video.Disciplina}</strong>
+                                    </span>
+                                    <span style={{ color: getContrastingTextColor(video.Cor) }}>
+                                        ⭐ {isNaN(parseFloat(video.Nota))
+                                            ? 'Sem avaliação'
+                                            : `${Math.round(parseFloat(video.Nota) * 10)}%`}
+                                    </span>
                                 </div>
 
                                 <div className="video-thumbnail">
                                     <img
                                         src={`${BASE_URL}/uploads/thumbnails/${video.Thumbnail}`}
                                         alt="thumbnail"
+                                        onClick={() => navigate(`/video/${(video.ID)}`)}
                                         onError={(e) => { e.target.src = '/placeholder.png'; }}
                                     />
                                     <span className="duration">{formatDuration(video.Duracao)}</span>
                                 </div>
 
                                 <div className="video-info">
-                                    <Link to={`/video/${video.ID}`} className="video-card" key={index}>
+                                    <Link to={`/video/${video.ID}`}>
                                         <h4 className="title">{video.Titulo}</h4>
                                     </Link>
-
                                     <p className="meta">
                                         {formatViews(video.Views)} visualizações • {formatDate(video.DataPublicacao)}
                                     </p>
                                 </div>
                             </div>
                         ))}
+                    </div>
+
+
+                    {/* Pagination Buttons below the video list, aligned right */}
+                    <div className="d-flex justify-content-end mt-3">
+                        <button
+                            className="btn btn-outline-primary mx-1"
+                            disabled={currentPage === 1}
+                            onClick={() => setCurrentPage(prev => prev - 1)}
+                        >
+                            Prev
+                        </button>
+
+                        {[...Array(totalPages)].map((_, i) => (
+                            <button
+                                key={i}
+                                className={`btn mx-1 ${currentPage === i + 1 ? 'btn-primary' : 'btn-outline-primary'}`}
+                                onClick={() => setCurrentPage(i + 1)}
+                            >
+                                {i + 1}
+                            </button>
+                        ))}
+
+                        <button
+                            className="btn btn-outline-primary mx-1"
+                            disabled={currentPage === totalPages}
+                            onClick={() => setCurrentPage(prev => prev + 1)}
+                        >
+                            Next
+                        </button>
                     </div>
                 </>
             )}

@@ -62,7 +62,7 @@ export const Disciplina = {
 
     //ASSOCIAR DISCIPLINA
     async associarDisciplina(DisciplinaID, UtilizadorID) {
-        const [result] = await pool.query('INSERT INTO disciplinaUtilizador (UtilizadorID, DisciplinaID, Tipo) VALUES (?, ?, ?)', [UtilizadorID, DisciplinaID, "Aluno"]);
+        const [result] = await pool.query('INSERT INTO disciplinaUtilizador (UtilizadorID, DisciplinaID) VALUES (?, ?)', [UtilizadorID, DisciplinaID]);
         const id = result.insertId;
         return Disciplina.getDisciplina(id);
     },

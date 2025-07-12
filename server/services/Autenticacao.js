@@ -1,6 +1,5 @@
 
-import verificarJWT from './verificarJWT.js'; // Import the function to verify access tokens
- // Keep this secret and secure
+import verificarJWT from './verificarJWT.js'; 
 
 export default function authenticateToken(req, res, next) {
     const authHeader = req.headers['authorization'];

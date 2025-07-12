@@ -50,7 +50,7 @@
 main {
   flex: 1 0 auto;     
   max-width: 1600px;   
-  min-width: 1600px;     
+  
   margin: 0 auto;   
   box-sizing: border-box; 
 }
@@ -95,3 +95,8 @@ footer {
   text-align: center;
 }
 
+@media (max-width: 768px) {
+  main{
+    transform: translateX(-10em);
+  }
+}

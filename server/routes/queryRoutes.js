@@ -2,7 +2,7 @@ import path from 'path';
 import fs from 'fs';
 import { exec } from 'child_process';
 import { promisify } from 'util';
-import util from 'util';
+import verificarCargo from '../services/verificarCargo.js';
 import { Router } from 'express';
 import { Query } from '../models/queryModels.js';
 import { Video } from '../models/videoModels.js'
@@ -27,6 +27,33 @@ router.get('/', authenticateToken, async (req, res) => {
   }
 });
 
+// Apagar uma query
+router.delete('/:id', authenticateToken, verificarCargo(3), async (req, res) => {
+  const queryId = req.params.id;
+  const userId = req.user?.id;
+  // Verifica se o utilizador está autenticado
+  if (!userId) { 
+    return res.status(401).json({ error: 'Utilizador não autenticado' });
+  }
+  try {
+    // Verifica se a query existe
+    const query = await Query.getQuery(queryId);
+    if (!query) {
+      return res.status(404).json({ error: 'Query não encontrada' });
+    }
+
+    // Apaga a query
+    await Query.deleteQuery(queryId);
+    res.json({ message: 'Query apagada com sucesso' });
+  } catch (error) {
+    console.error('Erro ao apagar query:', error);
+    res.status(500).json({ error: 'Erro ao apagar query' });
+  }
+});
+
+//
+//CHATBOT TEXTO
+//
 router.post('/chat', authenticateToken, async (req, res) => {
   const { messages, videoId, question, videoTime } = req.body;
 
@@ -60,7 +87,9 @@ router.post('/chat', authenticateToken, async (req, res) => {
 });
 
 
-
+//
+//CHATBOT IMAGEM
+//
 router.post('/chatimage', authenticateToken, async (req, res) => {
   const { videoId, question, videoTime } = req.body;
   const userId = req.user?.id;

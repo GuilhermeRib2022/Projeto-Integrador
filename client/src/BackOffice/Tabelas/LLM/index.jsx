@@ -14,7 +14,7 @@ const Querys = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [sortField, setSortField] = useState("QueryTime");
-  const [sortOrder, setSortOrder] = useState("desc"); 
+  const [sortOrder, setSortOrder] = useState("desc");
 
   const itemsPerPage = 10;
   const pageNeighbors = 2;
@@ -38,6 +38,23 @@ const Querys = () => {
         setLoading(false);
       });
   }, []);
+
+  const handleDelete = async (id) => {
+    if (window.confirm("Tem certeza que deseja apagar esta query?")) {
+      try {
+        await axios.delete(`${BASE_URL}/query/${id}`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+          },
+        });
+        setData((prevData) => prevData.filter((item) => item.ID !== id));
+      } catch (error) {
+        console.error("Erro ao apagar query:", error);
+        alert("Erro ao apagar query.");
+      }
+    }
+  };
+
 
   if (loading) return <p>A carregar queries...</p>;
   if (error) return <p>{error}</p>;
@@ -84,10 +101,10 @@ const Querys = () => {
   const endPage = Math.min(totalPages, currentPage + pageNeighbors);
   const pagesToShow = [];
   const sortOptions = [
-  { label: "ID", field: "ID", order: "asc" },
-  { label: "Mais Recentes", field: "QueryTime", order: "desc" },
-  { label: "Vezes Perguntado", field: "counter", order: "desc" },
-];
+    { label: "ID", field: "ID", order: "asc" },
+    { label: "Mais Recentes", field: "QueryTime", order: "desc" },
+    { label: "Vezes Perguntado", field: "counter", order: "desc" },
+  ];
   for (let i = startPage; i <= endPage; i++) {
     pagesToShow.push(i);
   }
@@ -164,6 +181,7 @@ const Querys = () => {
               <th>Data da Pergunta</th>
               <th>Tempo do Vídeo</th>
               <th>Vezes Perguntado</th>
+              <th>Ações</th>
             </tr>
           </thead>
           <tbody>
@@ -199,6 +217,14 @@ const Querys = () => {
                 <td>{new Date(q.QueryTime).toLocaleString()}</td>
                 <td>{q.VideoTime?.toFixed(2) ?? '0.00'}s</td>
                 <td>{q.Embedding ? q.counter : "--"}</td>
+                <td>
+                  <button
+                    className="btn btn-sm btn-danger"
+                    onClick={() => handleDelete(q.ID)}
+                  >
+                    Apagar
+                  </button>
+                </td>
               </tr>
             ))}
           </tbody>

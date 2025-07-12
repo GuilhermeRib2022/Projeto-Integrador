@@ -4,6 +4,7 @@ import { NavLink } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
 import { FiInfo, FiBook } from 'react-icons/fi';
 import axios from 'axios';
+import { isMobile } from 'react-device-detect';
 import { BASE_URL } from '../url';
 import VideosIcon from '../../assets/Videos.svg?react';
 import StatsIcon from '../../assets/Stats.svg?react';

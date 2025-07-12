@@ -92,3 +92,22 @@ text-decoration: underline;
   max-width: 800px;
 }
 
+.home-desktop {
+  padding: 30px;
+}
+
+.home-mobile {
+  padding: 10px;
+  font-size: 0.95rem;
+}
+
+.video-top {
+  display: flex;
+  flex-direction: column;
+}
+
+@media (max-width: 768px) {
+  .video-top {
+    align-items: center;
+  }
+}

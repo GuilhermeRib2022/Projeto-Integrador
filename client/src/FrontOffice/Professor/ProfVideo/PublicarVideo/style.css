@@ -7,6 +7,12 @@
   box-shadow: 0 0 15px rgba(0,0,0,0.1);
 }
 
+.publicar-video{
+    background:rgba(235, 235, 235, 0.658);
+  border-radius: 25px;
+  padding:20px;
+}
+
 .publicar-video-container h2 {
   text-align: center;
   margin-bottom: 20px;
@@ -70,4 +76,12 @@
 
 .option-disciplina {
   color: #000000;
+}
+
+.btn-publicar{
+  font-size: 26px;
+}
+
+.inputing{
+  width: 30%;
 }

@@ -1,7 +1,9 @@
 import pool from "../database.js";
 import axios from 'axios';
 import contemPalavraOfensiva from "../services/contemPalavraOfensiva.js";
-import { exec } from "child_process";
+import { FaissStore } from "@langchain/community/vectorstores/faiss";
+import { OllamaEmbeddings } from "@langchain/ollama";
+import { Document } from "@langchain/core/documents";
 
 //CALCULAR SIMILARIDADE COSENO ENTRE DOIS VETORES
 function cosineSimilarity(vecA, vecB) {
@@ -9,6 +11,16 @@ function cosineSimilarity(vecA, vecB) {
   const magA = Math.sqrt(vecA.reduce((acc, val) => acc + val * val, 0));
   const magB = Math.sqrt(vecB.reduce((acc, val) => acc + val * val, 0));
   return dotProduct / (magA * magB);
+}
+
+export default function normalizeText(text) {
+  return text
+    .toLowerCase()                       // Coloca tudo em lowercase
+    .normalize("NFD")                    // separa acentos
+    .replace(/[\u0300-\u036f]/g, "")     // remove acentos
+    .replace(/[^\w\s]/g, '')             // remove pontuação
+    .replace(/\s+/g, ' ')                // remove espaços duplicados
+    .trim();
 }
 
 //OBTER EMBEDDING DA PERGUNTA ATUAL
@@ -28,42 +40,50 @@ async function processWithLLM(question, messages, videoTitle, videoDescription, 
   const OLLAMA_URL = 'http://localhost:11434/api/generate';
 
   //1. VERIFICA PALAVRAS OFENSIVAS
-  const ultimaMsg = messages[messages.length - 1];
-  if (ultimaMsg.role === 'user' && contemPalavraOfensiva(ultimaMsg.content)) {
+  const ultimaMsg = question
+  if (contemPalavraOfensiva(question)) {
     return {
       role: 'assistant',
       content: 'Por favor, mantém a linguagem respeitosa. Reformula a tua pergunta sem palavrões.'
     };
   }
 
-  //2. VERIFICA SE A PERGUNTA É EXATAMENTE IGUAL A ALGUMA JÁ GUARDADA
-  const [exactMatchRows] = await pool.query(
-    `SELECT Resposta FROM QueryLLM WHERE VideoID = ? AND Pergunta = ?`,
-    [videoId, question]
+  // 2. VERIFICA SE A PERGUNTA É EXATAMENTE IGUAL (NORMALIZADA) A ALGUMA JÁ GUARDADA
+  const questionNormalized = normalizeText(question);
+
+  const [allRows] = await pool.query(
+    `SELECT Pergunta, Resposta FROM QueryLLM WHERE VideoID = ?`,
+    [videoId]
   );
 
-  if (exactMatchRows.length > 0) {
+  let respostaDuplicada = null;
+  let perguntaOriginalCorrespondente = null;
 
+  for (const row of allRows) {
+    const DBquestionNormalized = normalizeText(row.Pergunta);
+    if (DBquestionNormalized === questionNormalized) {
+      respostaDuplicada = row.Resposta;
+      perguntaOriginalCorrespondente = row.Pergunta;
+      break;
+    }
+  }
+
+  if (respostaDuplicada) {
     await pool.query(
-      `UPDATE QueryLLM SET counter = counter + 1 WHERE VideoID = ? AND Pergunta = ?`,
-      [videoId, question]
+      `UPDATE QueryLLM SET counter = counter + 1 WHERE VideoID = ? AND Pergunta = ? AND Embedding IS NOT NULL`,
+      [videoId, perguntaOriginalCorrespondente] // usar a pergunta original
     );
 
     return {
       role: 'assistant',
-      content: exactMatchRows[0].Resposta,
+      content: respostaDuplicada,
       isNew: false,
     };
   }
 
   //3. GERAR EMBEDDING DA PERGUNTA ATUAL
-  const questionNormalized = question
-  .toLowerCase() //Coloca tudo em lowercase
-  .replace(/[^\w\s]/g, '')  // Remove pontuação
-  .replace(/\s+/g, ' ')     // Remove espaços duplos
-  .trim();
 
-  const questionEmbedding = await getEmbeddingOllama(questionNormalized );
+  const questionEmbedding = await getEmbeddingOllama(questionNormalized);
 
   //3.1 Buscar na base de dados todos os embeddings de um video
   const [rows] = await pool.query(
@@ -75,34 +95,35 @@ async function processWithLLM(question, messages, videoTitle, videoDescription, 
   let melhorSimilaridade = -1; //Definir a similaridade como -1 (precisa de 0.85 para ser considerada)
   let respostaMaisProxima = null; //Definir a resposta mais próxima como nulo
   let perguntaMaisProxima = null; //Definir a pergunta da resposta mais próxima
-  const LIMIAR = 0.88; // Define o limiar para considerar similaridade suficiente
+  const LIMIAR = 0.93; // Define o limiar para considerar similaridade suficiente
 
-  for (const row of rows) {
-    if (!row.Embedding) continue; // Pula se não há embedding
+  if (question.length > 8) { // Verifica se a pergunta é suficientemente longa
+    for (const row of rows) {
+      if (!row.Embedding) continue; // Pula se não há embedding
 
-    let embeddingDb;
-    try {
-      embeddingDb = JSON.parse(row.Embedding);
-      if (!Array.isArray(embeddingDb)) continue; // Pula se não for array válido
-    } catch (e) {
-      console.warn('Embedding inválido:', row.Embedding);
-      continue;
-    }
+      let embeddingDb;
+      try {
+        embeddingDb = JSON.parse(row.Embedding);
+        if (!Array.isArray(embeddingDb)) continue; // Pula se não for array válido
+      } catch (e) {
+        console.warn('Embedding inválido:', row.Embedding);
+        continue;
+      }
 
-    const sim = cosineSimilarity(questionEmbedding, embeddingDb);
+      const sim = cosineSimilarity(questionEmbedding, embeddingDb);
 
-    //console.log(`🔍 Comparando com: "${row.Pergunta}"`);
-    //console.log(`📏 Similaridade: ${sim.toFixed(4)}`);
+      //console.log(`🔍 Comparando com: "${row.Pergunta}"`);
+      //console.log(`📏 Similaridade: ${sim.toFixed(4)}`);
 
-    //Verifica se o novo embedding é mais próximo do melhor embedding, se for, substitui.
-    if (sim > melhorSimilaridade) {
-      melhorSimilaridade = sim;
-      respostaMaisProxima = row.Resposta;
-      perguntaMaisProxima = row.Pergunta;
-      //console.log(`✅ Nova melhor similaridade: ${melhorSimilaridade.toFixed(4)}`);
+      //Verifica se o novo embedding é mais próximo do melhor embedding, se for, substitui.
+      if (sim > melhorSimilaridade) {
+        melhorSimilaridade = sim;
+        respostaMaisProxima = row.Resposta;
+        perguntaMaisProxima = row.Pergunta;
+        //console.log(`✅ Nova melhor similaridade: ${melhorSimilaridade.toFixed(4)}`);
+      }
     }
   }
-
   //console.log(`📊 Similaridade final escolhida: ${melhorSimilaridade.toFixed(4)}`);
 
   // 4. SE ENCONTROU UMA SIMILARIDADE ACIMA DO LIMIAR, RETORNA A RESPOSTA GUARDADA
@@ -122,13 +143,19 @@ async function processWithLLM(question, messages, videoTitle, videoDescription, 
 
   // 5. CASO CONTRÁRIO, GERA UMA NOVA RESPOSTA COM O LLM
 
-  const systemPrompt =
-    `Texto-fonte do vídeo, que contém detalhes adicionais: """${fonte}"""\n` +
-    `O vídeo que o utilizador está a ver tem o seguinte título: "${videoTitle}".(Menciona apenas se o utilizador mencionar) \n` +
-    `Descrição do vídeo: "${videoDescription}".(Menciona apenas se o utilizador mencionar) \n` +
-    `És um assistente técnico que responde com informações objetivas e factuais. Não sejas evasivo. Responde em português de Portugal, de forma clara, precisa e curta (máximo 256 caracteres), não ultrapasses este limite.\n` +
-    `nunca, mas nunca saia do contexto do título ou da descrição, avise o aluno se sair muito do contexto do vídeo ou título ou descrição, isto é importante, utilize uma mensagem genérica que pode ser usada em qualquer situação.\n` +
-    `responde de forma clara e curta.\n`;
+const systemPrompt = `
+Texto-fonte do vídeo, que contém detalhes adicionais: """${fonte}"""
+O vídeo que o utilizador está a ver tem o seguinte título: "${videoTitle}". (Menciona apenas se o utilizador mencionar)
+Descrição do vídeo: "${videoDescription}". (Menciona apenas se o utilizador mencionar)
+
+És um assistente técnico que responde com informações objetivas e factuais, sempre em português de Portugal, de forma clara, precisa e curta (máximo 256 caracteres). Nunca ultrapasses este limite.
+
+Nunca saias do contexto do título ou da descrição do vídeo. Se a pergunta estiver fora do contexto, responde apenas com a seguinte mensagem EXACTA, sem mencionar o conteúdo da pergunta nem justificar:
+
+"Esta pergunta está fora do âmbito do vídeo atual. Por favor, mantém as questões relacionadas com o conteúdo apresentado."
+
+Responde sempre assim, sem variações, e apenas em pt-pt.
+`.trim();
 
   const prompt = systemPrompt + `Utilizador: ${question}\nAssistente:`;
 
@@ -136,10 +163,11 @@ async function processWithLLM(question, messages, videoTitle, videoDescription, 
     const response = await axios.post(OLLAMA_URL, {
       model: MODEL,
       prompt,
+      top_p: 0.9,
       max_tokens: 64,
-      temperature: 0.8,
-      frequency_penalty: 0.7,
-      presence_penalty: 0.7,
+      temperature: 0.6,
+      frequency_penalty: 0.4,
+      presence_penalty: 0.2,
       stream: false
     }, {
       timeout: 150000
@@ -163,18 +191,6 @@ async function processWithLLM(question, messages, videoTitle, videoDescription, 
   }
 }
 
-
-// Função para extrair frame usando FFmpeg
-function extractFrame(videoPath, videoTime, framePath) {
-  return new Promise((resolve, reject) => {
-    const ffmpegPath = 'C:\\ffmpeg\\ffmpeg.exe';
-    const cmd = `"${ffmpegPath}" -ss ${videoTime} -i "${videoPath}" -frames:v 1 -q:v 2 "${framePath}" -y`;
-    exec(cmd, (err) => {
-      if (err) return reject(err);
-      resolve();
-    });
-  });
-}
 
 
 // #################################### //
@@ -202,7 +218,7 @@ async function imageWithLLM(question, videoId, videoTitle, videoDescription, fon
       `Descrição do vídeo: "${videoDescription}".(Menciona apenas se o utilizador mencionar) \n` +
       `[frame extraído do segundo ${videoTime}] \n` +
       `Pergunta do utilizador: ${question} \n` +
-      `Responde de forma clara, curta, objetiva e em português de Portugal. \n`.trim();
+      `Responde  sempre de forma clara, curta, objetiva e em português de Portugal. \n`.trim();
 
     // 3. Envia a imagem e o prompt para o modelo
     const response = await axios.post(OLLAMA_URL, {
@@ -241,12 +257,12 @@ export const Query = {
   },
 
   async getQuery(id) {
-    const [rows] = await pool.query('SELECT * FROM query where ID = ?', [id])
+    const [rows] = await pool.query('SELECT * FROM queryLLM where ID = ?', [id])
     return rows[0]
   },
 
   async deleteQuery(id) {
-    const [rows] = await pool.query('DELETE FROM query where ID = ?', [id])
+    const [rows] = await pool.query('DELETE FROM queryLLM where ID = ?', [id])
     return rows
   },
 

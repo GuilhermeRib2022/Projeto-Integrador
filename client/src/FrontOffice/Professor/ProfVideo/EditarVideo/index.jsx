@@ -154,7 +154,7 @@ const EditarVideo = () => {
 
       <form onSubmit={handleSubmit} encType="multipart/form-data">
         <div className="mb-3">
-          <label className="form-label">Título</label>
+          <label className="form-label"><strong>Título</strong></label>
           <input
             type="text"
             className="form-control"
@@ -165,7 +165,7 @@ const EditarVideo = () => {
         </div>
 
         <div className="mb-3">
-          <label className="form-label">Descrição</label>
+          <label className="form-label"><strong>Descrição</strong></label>
           <textarea
             className="form-control"
             value={descricao}
@@ -176,7 +176,7 @@ const EditarVideo = () => {
         </div>
 
         <div className="mb-3">
-          <label className="form-label">Disciplina</label>
+          <label className="form-label"><strong>Disciplina</strong></label>
           <select
             className="form-select"
             value={disciplina}
@@ -192,8 +192,8 @@ const EditarVideo = () => {
           </select>
         </div>
 
-        <div className="mb-3">
-          <label className="form-label">Fonte (arquivo opcional)</label>
+        <div className="mb-3 inputing">
+          <label className="form-label"><strong>Fonte (opcional)</strong></label>
           <input
             type="file"
             className="form-control"
@@ -201,7 +201,7 @@ const EditarVideo = () => {
             onChange={handleFileChangeFonte}
           />
         {(fonteAtual || fontePreviewUrl) && (
-          <div className="mt-2">
+          <div className="mt-2 inputing">
             <small>Arquivo atual: </small>
             {fonteAtual && !fontePreviewUrl && (
               <a
@@ -222,9 +222,20 @@ const EditarVideo = () => {
 
         </div>
 
+        <div className="mb-3 inputing">
+          <label className="form-label"><strong>Thumbnail (opcional)</strong></label>
+          <input
+            type="file"
+            className="form-control"
+            accept=".png,.jpeg,.jpg,.gif"
+            onChange={handleFileChangeThumbnail}
+          />
+
+        </div>
+
 
         {(thumbnailPreviewUrl || thumbnailAtual) && (
-          <div className="mb-3">
+          <div className="mb-3 inputing">
             <label className="form-label">Pré-visualização:</label><br />
             <img
               src={thumbnailPreviewUrl || `${BASE_URL}/uploads/thumbnails/${thumbnailAtual}`}

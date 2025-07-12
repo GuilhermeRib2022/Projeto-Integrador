@@ -91,6 +91,7 @@ function Comentario({ video }) {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        if (!token) return alert('Necessário iniciar sessão para fazer esta ação.')
         if (!newComment.trim()) return;
         setSubmitting(true);
 

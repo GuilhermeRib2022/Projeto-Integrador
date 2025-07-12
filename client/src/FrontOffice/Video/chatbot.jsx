@@ -10,6 +10,7 @@ const ChatBot = ({videoId, videoTime}) => {
     const [mode, setMode] = useState('text');
     const [loading, setLoading] = useState(false);
     const [canSend, setCanSend] = useState(true);
+    const chatBoxRef = useRef(null);
     const messagesEndRef = useRef(null);
     
 
@@ -19,6 +20,12 @@ const ChatBot = ({videoId, videoTime}) => {
             { role: 'assistant', content: 'Olá, como posso ajudar?' }
         ]);
     }, []);
+
+useEffect(() => {
+    if (chatBoxRef.current) {
+        chatBoxRef.current.scrollTop = chatBoxRef.current.scrollHeight;
+    }
+}, [messages]);
 
 
     const sendMessage = async () => {
@@ -32,8 +39,10 @@ const ChatBot = ({videoId, videoTime}) => {
         
         try {
             const token = localStorage.getItem('token');
+            if (!token) return alert('Necessário iniciar sessão para fazer esta ação.')
             let res;
 
+            if(token){
             if (mode === "text") {
                 res = await axios.post(`${BASE_URL}/query/chat`, {
                     messages: updatedMessages,
@@ -71,6 +80,7 @@ const ChatBot = ({videoId, videoTime}) => {
                 ]);
                 */
             }
+            }
         } catch (err) {
             console.error('Erro ao enviar mensagem:', err);
             setMessages((prev) => [
@@ -99,10 +109,10 @@ const ChatBot = ({videoId, videoTime}) => {
                     <span className="slider"></span>
                 </label>
                 <span style={{ marginLeft: '10px' }}>
-                    {mode === 'text' ? 'Modo Texto' : 'Modo Imagem (Pergunte apenas sobre a imagem)'}
+                    {mode === 'text' ? 'Modo Texto' : 'Modo Imagem'}
                 </span>
             </div>
-            <div className="chat-box">
+            <div className="chat-box" ref={chatBoxRef}>
                 {messages.map((msg, i) => (
                     <div key={i} className={`message ${msg.role}`}>
                         <strong>{msg.role === 'user' ? 'Você' : 'Bot'}:</strong> {msg.content}
@@ -111,7 +121,6 @@ const ChatBot = ({videoId, videoTime}) => {
                 {loading && <div className="message assistant">...</div>}
                 <div ref={messagesEndRef} />
             </div>
-
             <div className="input-container">
                 <input
                     type="text"

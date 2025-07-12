@@ -45,7 +45,7 @@ WHERE v.UtilizadorID = ?`, [UtilizadorID])
 LEFT JOIN disciplina ON disciplina.ID = v.DisciplinaID
 LEFT JOIN utilizador ON utilizador.ID = v.UtilizadorID
 LEFT JOIN (SELECT videoID, AVG(Nota) AS AvgNota FROM review GROUP BY videoID) AS AVG_reviews ON AVG_reviews.videoID = v.ID
-WHERE estado = "ativo"
+WHERE v.estado = "ativo"
 ORDER BY v.ID DESC`)
             return rows
         } catch (error) {

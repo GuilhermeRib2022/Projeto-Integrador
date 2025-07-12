@@ -291,3 +291,18 @@ hr {
   margin-right: -8px; 
 }
 
+@media screen and (max-width: 768px) {
+  .sidebar {
+    width: 60px;
+  }
+
+  .sidebar .link-text,
+  .sidebar .disciplina-name,
+  .sidebar-footer span {
+    display: none;
+  }
+
+  .sidebar .disciplina-color {
+    font-size: 0.75rem;
+  }
+}

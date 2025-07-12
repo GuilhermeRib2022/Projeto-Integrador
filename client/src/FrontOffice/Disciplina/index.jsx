@@ -101,11 +101,11 @@ const Disciplinas = () => {
 
   return (
     <div>
-            <div className="fixd d-flex justify-content-between align-items-center mb-3">
-                <h1>📚 Disciplinas</h1>
-                <div className="form-outline flex-grow-1 mx-3" data-mdb-input-init>
-                    <input type="text" className="form-control" placeholder="Pesquisar disciplina..." value={searchTerm} onChange={(e) => {setSearchTerm(e.target.value); setCurrentPage(1);} } />
-                </div>
+      <div className="fixd d-flex justify-content-between align-items-center mb-3">
+        <h1>📚 Disciplinas</h1>
+        <div className="form-outline flex-grow-1 mx-3" data-mdb-input-init>
+          <input type="text" className="form-control" placeholder="Pesquisar disciplina..." value={searchTerm} onChange={(e) => { setSearchTerm(e.target.value); setCurrentPage(1); }} />
+        </div>
 
       </div>
 
@@ -128,14 +128,14 @@ const Disciplinas = () => {
           </button>
         ))}
 
-          <button
-            className="btn btn-outline-primary mx-1"
-            disabled={currentPage === totalPages}
-            onClick={() => setCurrentPage(prev => prev + 1)}
-          >
-            Next
-          </button>
-        </div>
+        <button
+          className="btn btn-outline-primary mx-1"
+          disabled={currentPage === totalPages}
+          onClick={() => setCurrentPage(prev => prev + 1)}
+        >
+          Next
+        </button>
+      </div>
       <div className="disciplinas-grid">
         {currentDisciplinas.map((disciplina, index) => {
           const bgColor = disciplina.Cor || '#000000';
@@ -153,15 +153,15 @@ const Disciplinas = () => {
               key={index}
               className="disciplina-card-link"
             >
-              
+
               <div
                 className="disciplina-card"
                 style={{ background: cardBg, color: textColor }}
               >
-                
+
                 <h3>{disciplina.Nome}</h3>
                 <p style={{ background: descBg }}>{disciplina.Descricao}</p>
-                
+
                 {!isInscrito && (
                   <button
                     className="subscribe-button"
