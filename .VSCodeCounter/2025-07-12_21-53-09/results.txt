@@ -1,0 +1,69 @@
+Date : 2025-07-12 21:53:09
+Directory : c:\Users\guilh\OneDrive\Documentos\Trylearn\server
+Total : 36 files,  12830 codes, 525 comments, 721 blanks, all 14076 lines
+
+Languages
++------------+------------+------------+------------+------------+------------+
+| language   | files      | code       | comment    | blank      | total      |
++------------+------------+------------+------------+------------+------------+
+| JSON       |          3 |      8,726 |          0 |          2 |      8,728 |
+| JavaScript |         32 |      2,854 |        525 |        718 |      4,097 |
+| XML        |          1 |      1,250 |          0 |          1 |      1,251 |
++------------+------------+------------+------------+------------+------------+
+
+Directories
++---------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| path                                                                                              | files      | code       | comment    | blank      | total      |
++---------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| .                                                                                                 |         36 |     12,830 |        525 |        721 |     14,076 |
+| . (Files)                                                                                         |          5 |      8,771 |          2 |         15 |      8,788 |
+| models                                                                                            |         10 |      1,285 |        298 |        275 |      1,858 |
+| routes                                                                                            |          8 |        954 |        200 |        236 |      1,390 |
+| services                                                                                          |          7 |        114 |          2 |         34 |        150 |
+| tests                                                                                             |          5 |        456 |         23 |        160 |        639 |
+| uploads                                                                                           |          1 |      1,250 |          0 |          1 |      1,251 |
+| uploads\thumbnails                                                                                |          1 |      1,250 |          0 |          1 |      1,251 |
++---------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+
+Files
++---------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| filename                                                                                          | language   | code       | comment    | blank      | total      |
++---------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| c:\Users\guilh\OneDrive\Documentos\Trylearn\server\app.js                                         | JavaScript |         55 |          2 |         10 |         67 |
+| c:\Users\guilh\OneDrive\Documentos\Trylearn\server\database.js                                    | JavaScript |          8 |          0 |          2 |         10 |
+| c:\Users\guilh\OneDrive\Documentos\Trylearn\server\jest.config.js                                 | JavaScript |          4 |          0 |          1 |          5 |
+| c:\Users\guilh\OneDrive\Documentos\Trylearn\server\models\anotacaoModels.js                       | JavaScript |         35 |         30 |         15 |         80 |
+| c:\Users\guilh\OneDrive\Documentos\Trylearn\server\models\cargoModels.js                          | JavaScript |         31 |         30 |         14 |         75 |
+| c:\Users\guilh\OneDrive\Documentos\Trylearn\server\models\comentarioModels.js                     | JavaScript |         58 |          8 |         19 |         85 |
+| c:\Users\guilh\OneDrive\Documentos\Trylearn\server\models\disciplinaModels.js                     | JavaScript |         87 |          9 |         17 |        113 |
+| c:\Users\guilh\OneDrive\Documentos\Trylearn\server\models\estatisticasAdminModels.js              | JavaScript |        151 |          3 |         36 |        190 |
+| c:\Users\guilh\OneDrive\Documentos\Trylearn\server\models\estatisticasModels.js                   | JavaScript |        168 |          3 |         19 |        190 |
+| c:\Users\guilh\OneDrive\Documentos\Trylearn\server\models\queryModels.js                          | JavaScript |        204 |        181 |         54 |        439 |
+| c:\Users\guilh\OneDrive\Documentos\Trylearn\server\models\reviewModels.js                         | JavaScript |         36 |          6 |          9 |         51 |
+| c:\Users\guilh\OneDrive\Documentos\Trylearn\server\models\utilizadorModels.js                     | JavaScript |        208 |          4 |         34 |        246 |
+| c:\Users\guilh\OneDrive\Documentos\Trylearn\server\models\videoModels.js                          | JavaScript |        307 |         24 |         58 |        389 |
+| c:\Users\guilh\OneDrive\Documentos\Trylearn\server\package-lock.json                              | JSON       |      8,672 |          0 |          1 |      8,673 |
+| c:\Users\guilh\OneDrive\Documentos\Trylearn\server\package.json                                   | JSON       |         32 |          0 |          1 |         33 |
+| c:\Users\guilh\OneDrive\Documentos\Trylearn\server\routes\anotacaoRoutes.js                       | JavaScript |         67 |         37 |         14 |        118 |
+| c:\Users\guilh\OneDrive\Documentos\Trylearn\server\routes\cargoRoutes.js                          | JavaScript |         39 |          6 |         10 |         55 |
+| c:\Users\guilh\OneDrive\Documentos\Trylearn\server\routes\comentarioRoutes.js                     | JavaScript |        115 |         14 |         32 |        161 |
+| c:\Users\guilh\OneDrive\Documentos\Trylearn\server\routes\disciplinaRoutes.js                     | JavaScript |        141 |         18 |         41 |        200 |
+| c:\Users\guilh\OneDrive\Documentos\Trylearn\server\routes\queryRoutes.js                          | JavaScript |         89 |         47 |         25 |        161 |
+| c:\Users\guilh\OneDrive\Documentos\Trylearn\server\routes\reviewRoutes.js                         | JavaScript |         67 |          6 |         14 |         87 |
+| c:\Users\guilh\OneDrive\Documentos\Trylearn\server\routes\utilizadorRoutes.js                     | JavaScript |        209 |         17 |         52 |        278 |
+| c:\Users\guilh\OneDrive\Documentos\Trylearn\server\routes\videoRoutes.js                          | JavaScript |        227 |         55 |         48 |        330 |
+| c:\Users\guilh\OneDrive\Documentos\Trylearn\server\services\Autenticacao.js                       | JavaScript |         14 |          0 |          9 |         23 |
+| c:\Users\guilh\OneDrive\Documentos\Trylearn\server\services\contemPalavraOfensiva.js              | JavaScript |          9 |          0 |          3 |         12 |
+| c:\Users\guilh\OneDrive\Documentos\Trylearn\server\services\getVideoDuration.js                   | JavaScript |         23 |          0 |          7 |         30 |
+| c:\Users\guilh\OneDrive\Documentos\Trylearn\server\services\palavrasproibidas.json                | JSON       |         22 |          0 |          0 |         22 |
+| c:\Users\guilh\OneDrive\Documentos\Trylearn\server\services\upload.js                             | JavaScript |         25 |          2 |          9 |         36 |
+| c:\Users\guilh\OneDrive\Documentos\Trylearn\server\services\verificarCargo.js                     | JavaScript |         10 |          0 |          3 |         13 |
+| c:\Users\guilh\OneDrive\Documentos\Trylearn\server\services\verificarJWT.js                       | JavaScript |         11 |          0 |          3 |         14 |
+| c:\Users\guilh\OneDrive\Documentos\Trylearn\server\tests\anotacao.test.js                         | JavaScript |         59 |          2 |         16 |         77 |
+| c:\Users\guilh\OneDrive\Documentos\Trylearn\server\tests\comentario.test.js                       | JavaScript |         67 |          2 |         25 |         94 |
+| c:\Users\guilh\OneDrive\Documentos\Trylearn\server\tests\disciplina.test.js                       | JavaScript |        109 |         10 |         41 |        160 |
+| c:\Users\guilh\OneDrive\Documentos\Trylearn\server\tests\review.test.js                           | JavaScript |        124 |          5 |         45 |        174 |
+| c:\Users\guilh\OneDrive\Documentos\Trylearn\server\tests\utilizador.testaaa.js                    | JavaScript |         97 |          4 |         33 |        134 |
+| c:\Users\guilh\OneDrive\Documentos\Trylearn\server\uploads\thumbnails\1751745887001-thumbnail.svg | XML        |      1,250 |          0 |          1 |      1,251 |
+| Total                                                                                             |            |     12,830 |        525 |        721 |     14,076 |
++---------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+

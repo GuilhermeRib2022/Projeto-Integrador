@@ -214,12 +214,13 @@ export const Utilizador = {
 
     //Desativa um utilizador
     async desativar(id) {
-        await pool.query('UPDATE utilizador SET Estado = "inativo" WHERE ID = ?', [id]);
+        const [result] = await pool.query('UPDATE utilizador SET Estado = "inativo" WHERE ID = ?', [id]);
+        return result.affectedRows;
     },
-
     //Ativa um utilizador
     async ativar(id) {
-        await pool.query('UPDATE utilizador SET Estado = "ativo" WHERE ID = ?', [id]);
+        const result = await pool.query('UPDATE utilizador SET Estado = "ativo" WHERE ID = ?', [id]);
+        return result.affectedRows;
     },
 
     async getEstatisticasUtilizador() {

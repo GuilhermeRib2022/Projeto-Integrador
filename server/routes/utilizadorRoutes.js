@@ -177,7 +177,7 @@ router.post('/logar', async (req, res) => {
 
     const token = jwt.sign({ id: utilizador.ID, nome: utilizador.Nome, cargo: utilizador.CargoID }, process.env.JWT_SECRET, { expiresIn: '1h' }); //Criar um token de autenticação com validade de 1 hora (planear colocar cargos)
 
-    res.status(200).send({ message: "Logged in successfully", token });
+    res.status(200).send({ message: "Logado com sucesso", token });
 });
 
 router.use((err, req, res, next) => {

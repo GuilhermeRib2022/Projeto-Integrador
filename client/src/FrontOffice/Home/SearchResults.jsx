@@ -123,7 +123,7 @@ const sortedVideos = [...videos].sort((a, b) => {
                         <button className="btn btn-primary" onClick={() => navigate(-1)}> Voltar </button>
                     </div>
 
-                    {/* Paginação */}
+                    <hr className="barreira"></hr>
 
 
                     {/* Sorting and Pagination Header */}

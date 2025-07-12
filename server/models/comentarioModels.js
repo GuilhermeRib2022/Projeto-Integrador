@@ -64,7 +64,7 @@ export const Comentario = {
 
     //ATUALIZAR COMENTÁRIO POR VIDEOID & UTILIZADORID
     async editComentario(ID, VideoID, utilizadorID, Texto) {
-        const current = await this.getComentariosVideo(VideoID)
+        const current = await this.getComentario(ID)
 
         const updatedVideoID = VideoID ?? current.VideoID;
         const updatedUtilizadorID = utilizadorID ?? current.UtilizadorID;
@@ -76,7 +76,8 @@ export const Comentario = {
             throw new Error(`No comentario found with ID ${ID}`);
         }
 
-        return this.getComentariosVideo(VideoID);
+        return this.getComentario(ID);
+
     },
 
 }

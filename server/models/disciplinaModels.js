@@ -64,14 +64,14 @@ export const Disciplina = {
     async associarDisciplina(DisciplinaID, UtilizadorID) {
         const [result] = await pool.query('INSERT INTO disciplinaUtilizador (UtilizadorID, DisciplinaID) VALUES (?, ?)', [UtilizadorID, DisciplinaID]);
         const id = result.insertId;
-        return Disciplina.getDisciplina(id);
+        return Disciplina.getDisciplina(DisciplinaID);
     },
 
     //DESASSOCIAR DISCIPLINA
     async desassociarDisciplina(DisciplinaID, UtilizadorID) {
         const [result] = await pool.query('DELETE FROM disciplinaUtilizador WHERE UtilizadorID = ? AND DisciplinaID = ?', [UtilizadorID, DisciplinaID]);
         const id = result.insertId;
-        return Disciplina.getDisciplina(id);
+        return Disciplina.getDisciplina(DisciplinaID);
     },
 
     //OBTER DISCIPLINAS DE UTILIZADOR

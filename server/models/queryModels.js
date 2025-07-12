@@ -1,9 +1,6 @@
 import pool from "../database.js";
 import axios from 'axios';
 import contemPalavraOfensiva from "../services/contemPalavraOfensiva.js";
-import { FaissStore } from "@langchain/community/vectorstores/faiss";
-import { OllamaEmbeddings } from "@langchain/ollama";
-import { Document } from "@langchain/core/documents";
 
 //CALCULAR SIMILARIDADE COSENO ENTRE DOIS VETORES
 function cosineSimilarity(vecA, vecB) {
@@ -143,7 +140,7 @@ async function processWithLLM(question, messages, videoTitle, videoDescription, 
 
   // 5. CASO CONTRÁRIO, GERA UMA NOVA RESPOSTA COM O LLM
 
-const systemPrompt = `
+  const systemPrompt = `
 Texto-fonte do vídeo, que contém detalhes adicionais: """${fonte}"""
 O vídeo que o utilizador está a ver tem o seguinte título: "${videoTitle}". (Menciona apenas se o utilizador mencionar)
 Descrição do vídeo: "${videoDescription}". (Menciona apenas se o utilizador mencionar)
@@ -205,10 +202,10 @@ async function imageWithLLM(question, videoId, videoTitle, videoDescription, fon
 
   try {
 
-      //2. VERIFICA SE A PERGUNTA É EXATAMENTE IGUAL A ALGUMA JÁ GUARDADA
+    //2. VERIFICA SE A PERGUNTA É EXATAMENTE IGUAL A ALGUMA JÁ GUARDADA
 
     // 1. Obtem a imagem em dados binários através da URL (incluindo localhost se o servidor estiver no ar)
-    const imageResponse = await axios.get(IMAGE_URL, { responseType: 'arraybuffer'});
+    const imageResponse = await axios.get(IMAGE_URL, { responseType: 'arraybuffer' });
     //Transforma um arraybuffer num buffer e dpeois para uma string em base64, que permite trabalhar com a imagem
     const imageBase64 = Buffer.from(imageResponse.data).toString('base64');
 
@@ -279,7 +276,7 @@ export const Query = {
 
   processWithLLM,
   imageWithLLM
-  
+
 }
 
 /* FUNÇAO 3.0

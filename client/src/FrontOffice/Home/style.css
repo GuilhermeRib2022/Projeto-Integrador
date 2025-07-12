@@ -111,3 +111,7 @@ text-decoration: underline;
     align-items: center;
   }
 }
+
+.barreira{
+  border: 2px solid black;
+}

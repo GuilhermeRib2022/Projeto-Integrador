@@ -62,30 +62,28 @@ const SearchDisciplina = () => {
   if (loading) return <p>Carregando...</p>;
   if (!videos.length) return <h1>Nenhum vídeo encontrado para "{disciplina}"</h1>;
 
-      const sortedVideos = [...videos].sort((a, b) => {
-        const valA = a[sortField];
-        const valB = b[sortField];
+  const sortedVideos = [...videos].sort((a, b) => {
+    const valA = a[sortField];
+    const valB = b[sortField];
 
-        if (valA == null && valB == null) return 0;
-        if (valA == null) return sortOrder === 'asc' ? 1 : -1;
-        if (valB == null) return sortOrder === 'asc' ? -1 : 1;
+    if (valA == null && valB == null) return 0;
+    if (valA == null) return sortOrder === 'asc' ? 1 : -1;
+    if (valB == null) return sortOrder === 'asc' ? -1 : 1;
 
-        if (!isNaN(valA) && !isNaN(valB)) {
-            return sortOrder === 'asc' ? valA - valB : valB - valA;
-        }
+    if (!isNaN(valA) && !isNaN(valB)) {
+      return sortOrder === 'asc' ? valA - valB : valB - valA;
+    }
 
-        const dateA = new Date(valA);
-        const dateB = new Date(valB);
-        if (!isNaN(dateA.getTime()) && !isNaN(dateB.getTime())) {
-            return sortOrder === 'asc' ? dateA - dateB : dateB - dateA;
-        }
+    const dateA = new Date(valA);
+    const dateB = new Date(valB);
+    if (!isNaN(dateA.getTime()) && !isNaN(dateB.getTime())) {
+      return sortOrder === 'asc' ? dateA - dateB : dateB - dateA;
+    }
 
-        
-
-        const strA = String(valA);
-        const strB = String(valB);
-        return sortOrder === 'asc' ? strA.localeCompare(strB) : strB.localeCompare(strA);
-    });
+    const strA = String(valA);
+    const strB = String(valB);
+    return sortOrder === 'asc' ? strA.localeCompare(strB) : strB.localeCompare(strA);
+  });
 
 
   return (
@@ -94,25 +92,26 @@ const SearchDisciplina = () => {
         <h1>Resultados para "{disciplina}"</h1>
         <button className="btn btn-primary " onClick={() => navigate(-1)}> Voltar </button>
       </div>
-                          <div className="d-flex flex-wrap gap-2 mb-3">
-                        {[
-                            { label: "Relevante", field: "FatorCrescimento", order: "desc" },
-                            { label: "Mais Recentes", field: "DataPublicacao", order: "desc" },
-                            { label: "Melhor Avaliados", field: "Nota", order: "desc" },
-                            { label: "Mais Vistos", field: "Views", order: "desc" },
-                        ].map(({ label, field, order }) => (
-                            <button
-                                key={field}
-                                className={`btn btn-sm ${sortField === field && sortOrder === order ? 'btn-primary' : 'btn-outline-primary'}`}
-                                onClick={() => {
-                                    setSortField(field);
-                                    setSortOrder(order);
-                                }}
-                            >
-                                {label}
-                            </button>
-                        ))}
-                    </div>
+      <hr className="barreira"></hr>
+      <div className="d-flex flex-wrap gap-2 mb-3">
+        {[
+          { label: "Relevante", field: "FatorCrescimento", order: "desc" },
+          { label: "Mais Recentes", field: "DataPublicacao", order: "desc" },
+          { label: "Melhor Avaliados", field: "Nota", order: "desc" },
+          { label: "Mais Vistos", field: "Views", order: "desc" },
+        ].map(({ label, field, order }) => (
+          <button
+            key={field}
+            className={`btn btn-sm ${sortField === field && sortOrder === order ? 'btn-primary' : 'btn-outline-primary'}`}
+            onClick={() => {
+              setSortField(field);
+              setSortOrder(order);
+            }}
+          >
+            {label}
+          </button>
+        ))}
+      </div>
       <div className="video-list">
 
         {sortedVideos.map((video, index) => (
