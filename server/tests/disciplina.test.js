@@ -118,6 +118,7 @@ test('createDisciplina cria nova disciplina', async () => {
     expect(result).toEqual({ affectedRows: 1 });
   });
 
+  //SUBSCRIÇAO A DISCIPLINA
     test('associarDisciplina associa utilizador a disciplina', async () => {
         pool.query.mockResolvedValueOnce([{ affectedRows: 1 }]); // insert
         pool.query.mockResolvedValueOnce([[{ ID: 3, Nome: 'Disciplina Dummy' }]]); // select com ID correto
@@ -138,6 +139,7 @@ test('createDisciplina cria nova disciplina', async () => {
         expect(result).toEqual({ ID: 3, Nome: 'Disciplina Dummy' });
     });
 
+    //ANULAR SUBSCRIÇAO DE DISCIPLINA
     test('desassociarDisciplina desassocia utilizador da disciplina', async () => {
         pool.query.mockResolvedValueOnce([{ affectedRows: 1 }]); // delete
         pool.query.mockResolvedValueOnce([[{ ID: 3, Nome: 'Disciplina Dummy' }]]); // select

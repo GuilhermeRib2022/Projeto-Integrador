@@ -104,10 +104,30 @@ const EditPerfil = () => {
             }, 250);
         } catch (error) {
             console.error(error);
-            setMensagem(error.response?.data?.message || 'Erro ao atualizar perfil.');
+            if (error.response && error.response.data && error.response.data.message) {
+                setMensagem(error.response.data.message);
+            } else if (error.response) {
+                switch (error.response.status) {
+                    case 400:
+                        setMensagem("Parâmetros inválidos. Verifique os dados.");
+                        break;
+                    case 401:
+                        setMensagem("Nome de utilizador, email ou senha incorretos.");
+                        break;
+                    case 404:
+                        setMensagem("Utilizador não encontrado.");
+                        break;
+                    case 500:
+                        setMensagem("Erro no servidor. Tente novamente mais tarde.");
+                        break;
+                    default:
+                        setMensagem("Erro inesperado. Tente novamente.");
+                }
+            } else {
+                setMensagem("Erro inesperado. Tente novamente.");
+            }
             setErro(true);
-        }
-    };
+        }}
 
     if (loading) return <div>Carregando...</div>;
 

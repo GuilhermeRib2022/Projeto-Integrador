@@ -10,6 +10,7 @@ import './style.css';
 const token = localStorage.getItem('token');
 
 const Home = () => {
+  const [maisRelevantes, setMaisRelevantes] = useState([]);
   const [maisVistos, setMaisVistos] = useState([]);
   const [melhorReview, setMelhorReview] = useState([]);
   const [recentes, setRecentes] = useState([]);
@@ -21,6 +22,7 @@ const Home = () => {
       headers: { Authorization: `Bearer ${token}` }
     })
     .then(res => {
+      setMaisRelevantes(res.data.maisRelevante);
       setMaisVistos(res.data.maisVistos);
       setMelhorReview(res.data.melhorAvaliados);
       setRecentes(res.data.recentes);
@@ -37,7 +39,9 @@ const Home = () => {
         <SearchForm />
       </div>
 
-      <VideoSection title="📈 Vídeos mais vistos" videos={maisVistos} />
+      <VideoSection title="📈 Vídeos mais relevantes" videos={maisRelevantes} />
+      <hr />
+      <VideoSection title="🥇 Vídeos mais vistos" videos={maisVistos} />
       <hr />
       <VideoSection title="⭐ Melhor avaliados" videos={melhorReview} />
       <hr />

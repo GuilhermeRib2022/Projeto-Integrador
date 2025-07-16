@@ -126,9 +126,7 @@ const sortedVideos = [...videos].sort((a, b) => {
                     <hr className="barreira"></hr>
 
 
-                    {/* Sorting and Pagination Header */}
                     <div className="d-flex justify-content-between align-items-center flex-wrap mb-3">
-                        {/* Sorting Buttons */}
                         <div className="d-flex flex-wrap gap-2">
                             {[
                                 { label: "Relevante", field: "FatorCrescimento", order: "desc" },
@@ -149,7 +147,6 @@ const sortedVideos = [...videos].sort((a, b) => {
                             ))}
                         </div>
 
-                        {/* Pagination Buttons */}
                         <div className="d-flex align-items-center ms-auto mt-2 mt-sm-0">
                             <button
                                 className="btn btn-outline-primary mx-1"
@@ -179,7 +176,6 @@ const sortedVideos = [...videos].sort((a, b) => {
                         </div>
                     </div>
 
-                    {/* Lista de vídeos */}
                     <div className="video-list">
                         {paginatedVideos.map((video, index) => (
                             <div className="video-card col-12 col-sm-6 col-md-4 col-lg-3" key={index}>
@@ -190,11 +186,7 @@ const sortedVideos = [...videos].sort((a, b) => {
                                     >
                                         <strong>{video.Disciplina}</strong>
                                     </span>
-                                    <span style={{ color: getContrastingTextColor(video.Cor) }}>
-                                        ⭐ {isNaN(parseFloat(video.Nota))
-                                            ? 'Sem avaliação'
-                                            : `${Math.round(parseFloat(video.Nota) * 10)}%`}
-                                    </span>
+                                     <span style={{color: getContrastingTextColor(video.Cor)}}>⭐ {video.Nota? Math.round(parseFloat(video.Nota) * 10)+"%" : ""}</span>
                                 </div>
 
                                 <div className="video-thumbnail">
@@ -219,8 +211,6 @@ const sortedVideos = [...videos].sort((a, b) => {
                         ))}
                     </div>
 
-
-                    {/* Pagination Buttons below the video list, aligned right */}
                     <div className="d-flex justify-content-end mt-3">
                         <button
                             className="btn btn-outline-primary mx-1"

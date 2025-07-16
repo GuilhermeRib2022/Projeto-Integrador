@@ -31,7 +31,9 @@ function Register() {
             })
             .catch(err => {
                 console.error(err);
-                if (err.response.status === 400) {
+                if (err.response && err.response.data && err.response.data.message) {
+                    setError(err.response.data.message);
+                } else if (err.response.status === 400) {
                     setError("Parâmetros inválidos. Verifique os dados.");
                 } else if (err.response.status === 401) {
                     setError("Nome de utilizador, email ou senha incorretos.");
@@ -68,7 +70,7 @@ function Register() {
                     <div className='mb-3'>
                         <label htmlFor="password"><strong>Password</strong></label>
                         <input type="password" placeholder="Insira Password" name="password"
-                            onChange={e => setValues({ ...values, password: e.target.value })} className='form-control rounded-0' minLength={6} maxLength={32}/>
+                            onChange={e => setValues({ ...values, password: e.target.value })} className='form-control rounded-0' minLength={8} maxLength={32}/>
                     </div>
 
                     {error && <div className="alert alert-danger">{error}</div>}

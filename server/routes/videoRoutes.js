@@ -192,12 +192,14 @@ router.get("/", async (req, res) => {
 //Obter vídeos da página home (Mais vistos, melhor avaliados, mais recentes, 2 disciplinas aleatórias)
 router.get("/home", async (req, res) => {
   try {
+    const maisRelevante = await Video.getVideosRelevante();    
     const maisVistos = await Video.getVideosView();      
     const melhorAvaliados = await Video.getVideosReview();    
     const recentes = await Video.getVideosDate();      
     const Disciplina1 = await Video.getVidoesDisciplina();  
     const Disciplina2 = await Video.getVidoesDisciplina();  
     res.json({
+      maisRelevante,
       maisVistos,
       melhorAvaliados,
       recentes,

@@ -1,0 +1,23 @@
+"filename", "language", "JavaScript JSX", "PostCSS", "HTML", "Markdown", "JavaScript", "JSON", "XML", "comment", "blank", "total"
+"c:\Users\guilh\OneDrive\Documentos\Trylearn\client\README.md", "Markdown", 0, 0, 0, -7, 0, 0, 0, 0, -6, -13
+"c:\Users\guilh\OneDrive\Documentos\Trylearn\client\eslint.config.js", "JavaScript", 0, 0, 0, 0, -32, 0, 0, 0, -2, -34
+"c:\Users\guilh\OneDrive\Documentos\Trylearn\client\index.html", "HTML", 0, 0, -13, 0, 0, 0, 0, 0, -1, -14
+"c:\Users\guilh\OneDrive\Documentos\Trylearn\client\package-lock.json", "JSON", 0, 0, 0, 0, 0, -3805, 0, 0, -1, -3806
+"c:\Users\guilh\OneDrive\Documentos\Trylearn\client\package.json", "JSON", 0, 0, 0, 0, 0, -37, 0, 0, -1, -38
+"c:\Users\guilh\OneDrive\Documentos\Trylearn\client\public\Logo.svg", "XML", 0, 0, 0, 0, 0, 0, -21, 0, -1, -22
+"c:\Users\guilh\OneDrive\Documentos\Trylearn\client\public\Logo2.svg", "XML", 0, 0, 0, 0, 0, 0, -7, 0, -1, -8
+"c:\Users\guilh\OneDrive\Documentos\Trylearn\client\public\Stats.svg", "XML", 0, 0, 0, 0, 0, 0, -3, 0, -1, -4
+"c:\Users\guilh\OneDrive\Documentos\Trylearn\client\public\Videos.svg", "XML", 0, 0, 0, 0, 0, 0, -3, 0, -1, -4
+"c:\Users\guilh\OneDrive\Documentos\Trylearn\client\public\admin.svg", "XML", 0, 0, 0, 0, 0, 0, -3, 0, -1, -4
+"c:\Users\guilh\OneDrive\Documentos\Trylearn\client\public\carrinho.svg", "XML", 0, 0, 0, 0, 0, 0, -3, 0, -1, -4
+"c:\Users\guilh\OneDrive\Documentos\Trylearn\client\public\criar.svg", "XML", 0, 0, 0, 0, 0, 0, -3, 0, -1, -4
+"c:\Users\guilh\OneDrive\Documentos\Trylearn\client\public\favicon.svg", "XML", 0, 0, 0, 0, 0, 0, -4, 0, -1, -5
+"c:\Users\guilh\OneDrive\Documentos\Trylearn\client\public\home.svg", "XML", 0, 0, 0, 0, 0, 0, -3, 0, -1, -4
+"c:\Users\guilh\OneDrive\Documentos\Trylearn\client\public\search.svg", "XML", 0, 0, 0, 0, 0, 0, -3, 0, -1, -4
+"c:\Users\guilh\OneDrive\Documentos\Trylearn\client\public\user.svg", "XML", 0, 0, 0, 0, 0, 0, -4, 0, -1, -5
+"c:\Users\guilh\OneDrive\Documentos\Trylearn\client\public\vite.svg", "XML", 0, 0, 0, 0, 0, 0, -1, 0, 0, -1
+"c:\Users\guilh\OneDrive\Documentos\Trylearn\client\src\FrontOffice\Home\SearchResults.jsx", "JavaScript JSX", 1, 0, 0, 0, 0, 0, 0, -1, 0, 0
+"c:\Users\guilh\OneDrive\Documentos\Trylearn\client\src\FrontOffice\Home\style.css", "PostCSS", 0, 3, 0, 0, 0, 0, 0, 0, 0, 3
+"c:\Users\guilh\OneDrive\Documentos\Trylearn\client\src\FrontOffice\SearchDisciplina\SearchDisciplina.jsx", "JavaScript JSX", 1, 0, 0, 0, 0, 0, 0, 0, -2, -1
+"c:\Users\guilh\OneDrive\Documentos\Trylearn\client\vite.config.js", "JavaScript", 0, 0, 0, 0, -6, 0, 0, -1, -2, -9
+"Total", "-", 2, 3, -13, -7, -38, -3842, -58, -2, -26, -3981

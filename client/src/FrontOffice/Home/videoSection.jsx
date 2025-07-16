@@ -33,7 +33,7 @@ const VideoSection = ({ title, videos }) => {
         <div className={styles.videoCard} key={index}>
           <div className={styles.videoHeader} style={{ backgroundColor: hexToRGBA(video.Cor || '#d0e3ff', 0.85)  }}>
             <span style={{color: getContrastingTextColor(video.Cor), cursor: 'pointer'}} className={styles.disciplina} onClick={() => navigate(`/pesquisar/disciplina?disciplina=${encodeURIComponent(video.Disciplina)}`)}><strong>{video.Disciplina}</strong></span>
-            <span style={{color: getContrastingTextColor(video.Cor)}} className={styles.rating}>⭐ {Math.round(parseFloat(video.Nota) * 10)}%</span>
+            <span style={{color: getContrastingTextColor(video.Cor)}} className={styles.rating}>⭐ {video.Nota? Math.round(parseFloat(video.Nota) * 10)+"%" : ""}</span>
           </div>
           <div className={styles.videoThumbnail}>
             <img

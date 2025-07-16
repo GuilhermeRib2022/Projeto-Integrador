@@ -54,10 +54,29 @@ router.get("/", asyncHandler(async (req, res) => {
     res.send(result)
 }))
 
+//Rota de editar perfil de utilizador
 router.patch("/perfil/edit", authenticateToken, upload.single('fotoPerfil'), asyncHandler(async (req, res) => { 
   const utilizadorID = req.user.id;
   const { nome, email, password, descricao } = req.body;
   const fotoPerfil = req.file ? req.file.filename : null;
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/; //ISO/IEC 27001
+
+    if (!nome || !email ) {
+    return res.status(400).json({ message: "Campos obrigatórios: nome, password, email e cargo" });
+  }
+
+  if (!emailRegex.test(email)) {
+    return res.status(400).json({ message: "Formato de email inválido" });
+  }
+
+  if (password.includes(nome)) {
+    return res.status(400).json({ message: "Evite colocar o seu nome de utilizador como password" });
+  }
+
+  if (!passwordRegex.test(password) && password) {
+    return res.status(400).json({ message: "Password deve ter no mínimo 8 caracteres, com pelo menos uma letra maiúscula, uma minúscula, um número e um caractere especial" });
+  }
 
   try {
     const result = await Utilizador.editarConta({nome, email, password, descricao,fotoPerfil, utilizadorID});
@@ -99,10 +118,25 @@ router.get("/:id", authenticateToken, async (req, res) => {
 //Registar Utilizador
 router.post('/registar', async (req, res) => {
   const { nome, password, email} = req.body;
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/; //ISO/IEC 27001
 
   if (!nome || !password || !email ) {
     return res.status(400).json({ message: "Campos obrigatórios: nome, password, email e cargo" });
   }
+
+  if (!emailRegex.test(email)) {
+    return res.status(400).json({ message: "Formato de email inválido"});
+  }
+
+  if (password.includes(nome)){
+    return res.status(400).json({ message: "Evite colocar o seu nome de utilizador como password" });
+  }
+
+  if (!passwordRegex.test(password)) {
+    return res.status(400).json({ message: "Password deve ter no mínimo 8 caracteres, com pelo menos uma letra maiúscula, uma minúscula, um número e um caractere especial" });
+  }
+
 
   try {
     const result = await Utilizador.Registar({nome,password,email});
@@ -112,7 +146,6 @@ router.post('/registar', async (req, res) => {
     res.status(500).json({ message: "Erro interno ao criar utilizador" });
   }
 });
-
 
 //Criar utilizador
 router.post('', upload.single('fotoPerfil'), async (req, res) => {
@@ -131,7 +164,6 @@ router.post('', upload.single('fotoPerfil'), async (req, res) => {
     res.status(500).json({ message: "Erro interno ao criar utilizador" });
   }
 });
-
 
 //Rota de eliminação de Utilizador
 router.delete("/:id", async (req, res) => { 
@@ -179,11 +211,6 @@ router.post('/logar', async (req, res) => {
 
     res.status(200).send({ message: "Logado com sucesso", token });
 });
-
-router.use((err, req, res, next) => {
-    console.error(err.stack);
-    res.status(500).send('Something broke!')
-})
 
 //ATIVAR UM UTILIZADOR
 router.patch('/:id/ativar', async (req, res) => {

@@ -62,28 +62,44 @@ const SearchDisciplina = () => {
   if (loading) return <p>Carregando...</p>;
   if (!videos.length) return <h1>Nenhum vídeo encontrado para "{disciplina}"</h1>;
 
-  const sortedVideos = [...videos].sort((a, b) => {
+const sortedVideos = [...videos].sort((a, b) => {
     const valA = a[sortField];
     const valB = b[sortField];
 
-    if (valA == null && valB == null) return 0;
-    if (valA == null) return sortOrder === 'asc' ? 1 : -1;
-    if (valB == null) return sortOrder === 'asc' ? -1 : 1;
+    const numA = parseFloat(valA);
+    const numB = parseFloat(valB);
 
-    if (!isNaN(valA) && !isNaN(valB)) {
-      return sortOrder === 'asc' ? valA - valB : valB - valA;
+    const isNumA = !isNaN(numA);
+    const isNumB = !isNaN(numB);
+
+    // Se estiver ordenando por número
+    if (sortField === 'Nota' || sortField === 'FatorCrescimento' || sortField === 'Views') {
+        if (!isNumA && !isNumB) return 0;
+        if (!isNumA) return 1; // sempre empurra A para o fim
+        if (!isNumB) return -1; // sempre empurra B para o fim
+        return sortOrder === 'asc' ? numA - numB : numB - numA;
     }
 
-    const dateA = new Date(valA);
-    const dateB = new Date(valB);
-    if (!isNaN(dateA.getTime()) && !isNaN(dateB.getTime())) {
-      return sortOrder === 'asc' ? dateA - dateB : dateB - dateA;
+    // Se for data
+    if (sortField === 'DataPublicacao') {
+        const dateA = new Date(valA);
+        const dateB = new Date(valB);
+
+        const isValidDateA = !isNaN(dateA.getTime());
+        const isValidDateB = !isNaN(dateB.getTime());
+
+        if (!isValidDateA && !isValidDateB) return 0;
+        if (!isValidDateA) return sortOrder === 'asc' ? 1 : -1;
+        if (!isValidDateB) return sortOrder === 'asc' ? -1 : 1;
+
+        return sortOrder === 'asc' ? dateA - dateB : dateB - dateA;
     }
 
+    // Por padrão, ordena como string
     const strA = String(valA);
     const strB = String(valB);
     return sortOrder === 'asc' ? strA.localeCompare(strB) : strB.localeCompare(strA);
-  });
+});
 
 
   return (
@@ -119,7 +135,7 @@ const SearchDisciplina = () => {
           <div className="video-card" key={index}>
             <div className="video-header" style={{ backgroundColor: video.Cor || '#d0e3ff' }}>
               <span style={{ color: getContrastingTextColor(video.Cor), cursor: 'pointer' }} className={video.disciplina} onClick={() => navigate(`/pesquisar/disciplina?disciplina=${encodeURIComponent(video.Disciplina)}`)}><strong>{video.Disciplina}</strong></span>
-              <span style={{ color: getContrastingTextColor(video.Cor) }} className={video.rating}>⭐ {Math.round(parseFloat(video.Nota) * 10)}%</span>
+               <span style={{color: getContrastingTextColor(video.Cor)}} className={video.rating}>⭐ {video.Nota? Math.round(parseFloat(video.Nota) * 10)+"%" : ""}</span>
             </div>
 
             <div className="video-thumbnail">

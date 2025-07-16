@@ -15,7 +15,7 @@ export const Video = {
     },
 
     //PUBLICAR VIDEOS
-    async publicarVideo(disciplinaID, utilizadorID, titulo, descricao, videoPath, thumbnail, duracao, fonte, FontePath,  textoFonte) {
+    async publicarVideo(disciplinaID, utilizadorID, titulo, descricao, videoPath, thumbnail, duracao, FontePath, textoFonte) {
         const sql = `INSERT INTO Video (DisciplinaID, UtilizadorID, Titulo, Descricao, VideoPath, Thumbnail, Duracao, TextoFonte) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
         const values = [disciplinaID, utilizadorID, titulo, descricao || null, videoPath, thumbnail || null, duracao, FontePath || null, textoFonte || null];
         const [result] = await pool.query(sql, values);
@@ -206,6 +206,22 @@ WHERE v.Titulo LIKE ? AND disciplina.nome LIKE ? AND v.estado = "ativo"`, [`%${s
         }
     },
 
+    //Obtém todos os vídeos, ordenados por relevância
+        async getVideosRelevante() {
+        try {
+            const [rows] = await pool.query(`
+                SELECT v.*, disciplina.Nome AS Disciplina, disciplina.Cor AS Cor, utilizador.Nome AS Autor, AVG_reviews.AvgNota AS Nota, ((v.Views - v.OldViews) / (v.OldViews + 1)) AS FatorCrescimento FROM video v
+LEFT JOIN disciplina ON disciplina.ID = v.DisciplinaID
+LEFT JOIN utilizador ON utilizador.ID = v.UtilizadorID
+LEFT JOIN (SELECT videoID, AVG(Nota) AS AvgNota FROM review GROUP BY videoID) AS AVG_reviews ON AVG_reviews.videoID = v.ID
+WHERE v.estado = "ativo"
+ORDER BY FatorCrescimento DESC LIMIT 12 `)
+
+            return rows
+        } catch (error) {
+            throw new Error(`Failed to fetch videos: ${error.message}`)
+        }
+    },
 
     //OBTÉM TODOS OS VÍDEOS, ordenados por Visualizações
     async getVideosView() {
@@ -226,12 +242,13 @@ ORDER BY v.Views DESC LIMIT 8 `)
     async getVideosReview() {
         try {
             const [rows] = await pool.query(`
-                SELECT v.*, disciplina.Nome AS Disciplina, disciplina.Cor AS Cor, utilizador.Nome AS Autor, AVG_reviews.AvgNota AS Nota FROM video v
+                SELECT v.*, disciplina.Nome AS Disciplina, disciplina.Cor AS Cor, utilizador.Nome AS Autor, AVG_reviews.AvgNota AS Nota, ((v.Views - v.OldViews) / (v.OldViews + 1)) AS FatorCrescimento FROM video v
 LEFT JOIN disciplina ON disciplina.ID = v.DisciplinaID
 LEFT JOIN utilizador ON utilizador.ID = v.UtilizadorID
 LEFT JOIN (SELECT videoID, AVG(Nota) AS AvgNota FROM review GROUP BY videoID) AS AVG_reviews ON AVG_reviews.videoID = v.ID
 WHERE v.estado = "ativo"
 ORDER BY Nota DESC LIMIT 8`)
+console.log(rows[1].FatorCrescimento)
             return rows
         } catch (error) {
             throw new Error(`Failed to fetch videos: ${error.message}`)

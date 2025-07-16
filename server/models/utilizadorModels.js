@@ -37,7 +37,12 @@ export const Utilizador = {
         }
     },
 
+    
     async Registar({ nome, password, email }) {
+        if (!nome || !password || !email) {
+            throw new Error('Campos obrigatórios: nome, password, email e cargo');
+        }
+
         const hashedPassword = await bcrypt.hash(password, 10);
         const [result] = await pool.query(
             'INSERT INTO Utilizador (nome, email, password, cargoID) VALUES (?, ?, ?, 1)',
@@ -61,7 +66,7 @@ export const Utilizador = {
 
     async deleteUtilizador(id) {
         const [rows] = await pool.query('DELETE FROM Utilizador where ID = ?', [id])
-        return rows
+        return rows.affectedRows;
     },
 
     async editarConta({ nome, email, password, descricao, fotoPerfil, utilizadorID }) {
@@ -131,12 +136,13 @@ export const Utilizador = {
             params.push(utilizadorID);
 
             const [rows] = await pool.query(query, params);
-            return rows;
+            return rows.affectedRows;
         } catch (error) {
             throw new Error(`Erro ao atualizar utilizador: ${error.message}`);
         }
     },
 
+    //Atualiza um utilizador (BackOffice Administrador)
     async updateUtilizador({ id, nome, email, password, cargoID, descricao, fotoPerfil }) {
         try {
             if (!id) {
@@ -190,12 +196,14 @@ export const Utilizador = {
         }
     },
 
+    //Obtém a quantidade de utilizadores
     async countUtilizador() {
         const [rows] = await pool.query('SELECT COUNT(*) AS total_Utilizadores FROM Utilizador')
         return rows[0]
     },
 
-    async getUtilizadorByNickname(nome) { //Verifica se o Utilizador existe 
+    //Verifica se o utilizador existe
+    async getUtilizadorByNickname(nome) {
         try {
             if (!nome || typeof nome !== 'string' || nome.trim() === '') {
                 throw new Error('Invalid name provided');
@@ -208,6 +216,7 @@ export const Utilizador = {
         }
     },
 
+    //Verifica a palavra-passe
     async VerifyPassword(utilizadorPassword, storedPassword) { //Verifica se a password está correta
         return await bcrypt.compare(utilizadorPassword, storedPassword);
     },
@@ -219,7 +228,7 @@ export const Utilizador = {
     },
     //Ativa um utilizador
     async ativar(id) {
-        const result = await pool.query('UPDATE utilizador SET Estado = "ativo" WHERE ID = ?', [id]);
+        const [result] = await pool.query('UPDATE utilizador SET Estado = "ativo" WHERE ID = ?', [id]);
         return result.affectedRows;
     },
 

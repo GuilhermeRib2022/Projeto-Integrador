@@ -64,8 +64,8 @@ describe('Comentario Model', () => {
         const updatedComentario = { ID: 1, Texto: 'Comentário atualizado' };
 
         pool.query
-            .mockResolvedValueOnce([{ affectedRows: 1 }])    // UPDATE
-            .mockResolvedValueOnce([[updatedComentario]]);  // SELECT após UPDATE
+            .mockResolvedValueOnce([{ affectedRows: 1 }])    
+            .mockResolvedValueOnce([[updatedComentario]]);  
 
         const result = await Comentario.editComentarioID(1, 'Comentário atualizado');
 

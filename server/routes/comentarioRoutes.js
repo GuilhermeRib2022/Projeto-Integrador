@@ -84,6 +84,10 @@ router.post("/video/:id", authenticateToken, async (req, res) => { // Rota de cr
         const VideoID = req.params.id; // O ID do vídeo é passado como parâmetro na rota
         const { Texto } = req.body;
 
+        if(Texto.length>128){
+          return res.status(400).send({ message: "Comentários devem ter menos de 128 caractéres" });
+        }
+
         if (!VideoID || !UtilizadorID || !Texto || Texto.length < 1 || typeof Texto !== 'string') {
             console.error('Erro ao criar comentário: Parâmetros inválidos', { VideoID, UtilizadorID, Texto });
             return res.status(400).send({ message: "Comentário Inválido" });
@@ -107,6 +111,10 @@ router.patch("/:id", authenticateToken, async (req, res) => {
     if (!Texto) {
       return res.status(400).send({ message: "O campo Texto é obrigatório para atualização." });
     }
+    
+    if (Texto.length > 128) {
+      return res.status(400).send({ message: "Comentários devem ter menos de 128 caractéres" });
+    }
 
     // Busca o comentário pelo ID (deve retornar um único comentário)
     const comentarioExiste = await Comentario.getComentario(ID);
@@ -128,34 +136,6 @@ router.patch("/:id", authenticateToken, async (req, res) => {
     console.error('Erro ao editar comentário:', error);
     res.status(500).send({ message: "Erro ao editar comentário" });
   }
-});
-
-//ATUALIZAR COMENTÁRIO POR VIDEOID & UTILIZADORID
-router.patch("/video/:id", authenticateToken, async (req, res) => {
-    try {
-        const UtilizadorID = req.user.id;
-        const VideoID = req.params.id;
-        const { Texto, ID } = req.body;
-
-        if (!VideoID && !UtilizadorID && !Texto && !ID) {
-            return res.status(400).send({ message: "Necessário todos os campos para atualizar." });
-        }
-
-        const comentarioExiste = await Comentario.getComentario(ID);
-        if (!comentarioExiste || comentarioExiste.length === 0) {
-            return res.status(404).send({ message: "Comentário não encontrado" });
-        }
-
-        if (comentarioExiste.UtilizadorID !== req.user.id && req.user.cargo !== 'admin') {
-            return res.status(403).send({ message: "Acesso negado. Apenas o autor do comentário pode apagá-lo." });
-        }
-
-        const comentario = await Comentario.editComentario(ID, VideoID, UtilizadorID, Texto);
-        res.status(200).send(comentario);
-    } catch (error) {
-        console.error('Erro ao editar comentário:', error);
-        res.status(500).send({ message: "Erro ao editar anotação" });
-    }
 });
 
 export default router;
