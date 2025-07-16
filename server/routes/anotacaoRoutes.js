@@ -1,13 +1,14 @@
 import { Router } from 'express';
 import {Anotacao} from '../models/anotacaoModels.js';
 import authenticateToken from '../services/Autenticacao.js';
+import verificarCargo from '../services/verificarCargo.js';
 const router = Router();
 
 // Apply authentication to all routes
 router.use(authenticateToken);
 
 
-//OBTER ANOTAÇÃO POR UserID
+//OBTER ANOTAÇÕES POR UserID
 router.get("/user", authenticateToken, async (req, res) => {
     const UtilizadorID = req.user.id;
     try {
@@ -19,13 +20,13 @@ router.get("/user", authenticateToken, async (req, res) => {
 });
 
 //OBTER TODAS AS ANOTAÇÕES
-router.get("/", async (req, res) => {
+router.get("/", verificarCargo(3), async (req, res) => {
     const anotacoes = await Anotacao.getAnotacoes();
     res.send(anotacoes);
 });
 
 //OBTER ANOTAÇÃO POR ID
-router.get("/:id", async (req, res) => {
+router.get("/:id", verificarCargo(3), async (req, res) => {
     const id = req.params.id;
     try {
         const anotacao = await Anotacao.getAnotacaoID(id);
@@ -38,7 +39,7 @@ router.get("/:id", async (req, res) => {
 
 
 //APAGAR ANOTAÇÃO POR ID
-router.delete("/:id", async (req, res) => { // Rota de apagar Anotação
+router.delete("/:id", verificarCargo(3), async (req, res) => { // Rota de apagar Anotação
     const id = req.params.id;
     const success = await Anotacao.deleteAnotacao(id);
     if (success) {

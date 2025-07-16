@@ -49,7 +49,7 @@ router.get("/estatisticas", authenticateToken, verificarCargo(3),async (req, res
 });
 
 //Rota de pesquisa todos os utilizadores
-router.get("/", asyncHandler(async (req, res) => { 
+router.get("/", verificarCargo(3), asyncHandler(async (req, res) => { 
     const result = await Utilizador.getUtilizadores()
     res.send(result)
 }))
@@ -63,14 +63,14 @@ router.patch("/perfil/edit", authenticateToken, upload.single('fotoPerfil'), asy
   const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/; //ISO/IEC 27001
 
     if (!nome || !email ) {
-    return res.status(400).json({ message: "Campos obrigatórios: nome, password, email e cargo" });
+    return res.status(400).json({ message: "Campos obrigatórios: nome, password, email" });
   }
 
   if (!emailRegex.test(email)) {
     return res.status(400).json({ message: "Formato de email inválido" });
   }
 
-  if (password.includes(nome)) {
+  if (password && password.includes(nome)) {
     return res.status(400).json({ message: "Evite colocar o seu nome de utilizador como password" });
   }
 
@@ -122,7 +122,11 @@ router.post('/registar', async (req, res) => {
   const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/; //ISO/IEC 27001
 
   if (!nome || !password || !email ) {
-    return res.status(400).json({ message: "Campos obrigatórios: nome, password, email e cargo" });
+    return res.status(400).json({ message: "Campos obrigatórios: nome, password, email" });
+  }
+
+  if (nome.length < 4) {
+    return res.status(400).json({ message: "Nome precisa de possuir 4 ou mais caractéres" });
   }
 
   if (!emailRegex.test(email)) {
@@ -148,12 +152,16 @@ router.post('/registar', async (req, res) => {
 });
 
 //Criar utilizador
-router.post('', upload.single('fotoPerfil'), async (req, res) => {
+router.post('',verificarCargo(3),  upload.single('fotoPerfil'), async (req, res) => {
   const { nome, password, email, cargo, descricao } = req.body;
   const fotoPerfil = req.file ? req.file.filename : null;
 
   if (!nome || !password || !email || !cargo) {
     return res.status(400).json({ message: "Campos obrigatórios: nome, password, email e cargo" });
+  }
+
+  if (nome.length<4) {
+    return res.status(400).json({ message: "Nome precisa de possuir 4 ou mais caractéres" });
   }
 
   try {
@@ -166,7 +174,7 @@ router.post('', upload.single('fotoPerfil'), async (req, res) => {
 });
 
 //Rota de eliminação de Utilizador
-router.delete("/:id", async (req, res) => { 
+router.delete("/:id", verificarCargo(3), async (req, res) => { 
     const id = req.params.id
     const result = await Utilizador.deleteUtilizador(id)
     res.send(result)
@@ -177,6 +185,11 @@ router.patch("/:id", upload.single('fotoPerfil'), async (req, res) => {
   const { id } = req.params;
   const { nome, email, password, cargo, descricao } = req.body;
   const fotoPerfil = req.file ? req.file.filename : null;
+
+  const utilizadorExiste = await Utilizador.getUtilizador(id);
+  if (utilizadorExiste.UtilizadorID !== req.user.id && req.user.cargo !== 'admin') {
+    return res.status(403).send({ message: "Acesso negado. Apenas o autor do vídeo pode alterá-lo." });
+  }
 
   try {
     const result = await Utilizador.updateUtilizador({id,nome,email,password,cargoID: cargo,descricao,fotoPerfil});
@@ -213,22 +226,34 @@ router.post('/logar', async (req, res) => {
 });
 
 //ATIVAR UM UTILIZADOR
-router.patch('/:id/ativar', async (req, res) => {
+router.patch('/:id/ativar', verificarCargo(3), async (req, res) => {
   const id = req.params.id;
+  
+  const utilizadorExiste = await Utilizador.getUtilizador(id);
+  if (utilizadorExiste.UtilizadorID !== req.user.id && req.user.cargo !== 'admin') {
+    return res.status(403).send({ message: "Acesso negado. Apenas o autor do vídeo pode alterá-lo." });
+  }
+
   const employees = await Utilizador.ativar(id); // ativar utilizador
   res.json(employees);
 });
 
 //DESATIVAR UM UTILIZADOR
-router.delete('/:id/desativar', async (req, res) => {
+router.delete('/:id/desativar', verificarCargo(3), async (req, res) => {
   const id = req.params.id;
+
+  const utilizadorExiste = await Utilizador.getUtilizador(id);
+  if (utilizadorExiste.UtilizadorID !== req.user.id && req.user.cargo !== 'admin') {
+    return res.status(403).send({ message: "Acesso negado. Apenas o autor do vídeo pode alterá-lo." });
+  }
+
   const employees = await Utilizador.desativar(id); // desativar utilizador
   res.json(employees);
 });
 
 
 //OBTER ESTATISTICAS GERAIS DO WEBSITE
-router.get('/admin/estatisticas/:id', authenticateToken, async (req, res) => {
+router.get('/admin/estatisticas/:id',  authenticateToken, verificarCargo(3), async (req, res) => {
   try {
     const totalVideos = await EstatisticasAdmin.getTotalVideos();
     const duracaoMediaVideos = await EstatisticasAdmin.getDuracaoMediaVideos();
@@ -260,7 +285,7 @@ router.get('/admin/estatisticas/:id', authenticateToken, async (req, res) => {
 
 
 //OBTER TODAS AS ESTATISTICAS DE UM PROFESSOR
-router.get('/professor/estatisticas/:id', authenticateToken, async (req, res) => {
+router.get('/professor/estatisticas/:id',authenticateToken, verificarCargo(2,3), async (req, res) => {
   try {
     const userId = req.params.id;
 

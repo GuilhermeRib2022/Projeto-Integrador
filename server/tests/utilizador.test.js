@@ -68,7 +68,7 @@ describe('Utilizador Model', () => {
     const dadosIncompletos = { nome: 'Maria', password: 'abc123' }; // Sem email
 
     await expect(Utilizador.Registar(dadosIncompletos)).rejects.toThrow(
-      'Campos obrigatórios: nome, password, email e cargo'
+      'Campos obrigatórios: nome, password, email'
     );
 
     expect(pool.query).not.toHaveBeenCalled();

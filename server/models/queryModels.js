@@ -144,13 +144,9 @@ async function processWithLLM(question, messages, videoTitle, videoDescription, 
 Texto-fonte do vídeo, que contém detalhes adicionais: """${fonte}"""
 O vídeo que o utilizador está a ver tem o seguinte título: "${videoTitle}". (Menciona apenas se o utilizador mencionar)
 Descrição do vídeo: "${videoDescription}". (Menciona apenas se o utilizador mencionar)
-
 És um assistente técnico que responde com informações objetivas e factuais, sempre em português de Portugal, de forma clara, precisa e curta (máximo 256 caracteres). Nunca ultrapasses este limite.
-
 Nunca saias do contexto do título ou da descrição do vídeo. Se a pergunta estiver fora do contexto, responde apenas com a seguinte mensagem EXACTA, sem mencionar o conteúdo da pergunta nem justificar:
-
 "Esta pergunta está fora do âmbito do vídeo atual. Por favor, mantém as questões relacionadas com o conteúdo apresentado."
-
 Responde sempre assim, sem variações, e apenas em pt-pt.
 `.trim();
 
@@ -215,7 +211,13 @@ async function imageWithLLM(question, videoId, videoTitle, videoDescription, fon
       `Descrição do vídeo: "${videoDescription}".(Menciona apenas se o utilizador mencionar) \n` +
       `[frame extraído do segundo ${videoTime}] \n` +
       `Pergunta do utilizador: ${question} \n` +
-      `Responde  sempre de forma clara, curta, objetiva e em português de Portugal. \n`.trim();
+      `És um assistente técnico que responde com informações objetivas e factuais, sempre em português de Portugal, de forma clara, precisa e curta (máximo 256 caracteres). Nunca ultrapasses este limite. \n`+
+
+
+`Se perguntas for sobre sentimentos, opinião, vida pessoal, temas gerais ou contextos externos responde apenas com esta frase EXACTA, sem variações ou justificações:
+"Esta pergunta está fora do âmbito da imagem. Por favor, mantém as questões relacionadas com o conteúdo apresentado."\n`+
+
+`Responde sempre assim, sem variações, e apenas em pt-pt. \n`.trim();
 
     // 3. Envia a imagem e o prompt para o modelo
     const response = await axios.post(OLLAMA_URL, {

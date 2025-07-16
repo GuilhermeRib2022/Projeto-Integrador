@@ -44,7 +44,7 @@ export const Comentario = {
     async createComentario(videoID, utilizadorID, Texto) {
         const [result] = await pool.query('INSERT INTO comentario (VideoID, utilizadorID, Texto) VALUES (?, ?, ?)', [videoID, utilizadorID, Texto]);
         const id = result.insertId;
-        return this.getComentario(id);
+        return this.getComentario(id); 
     },
 
     //EDITAR COMENTÁRIO POR ID DE COMENTÁRIO

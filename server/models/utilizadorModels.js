@@ -40,7 +40,7 @@ export const Utilizador = {
     
     async Registar({ nome, password, email }) {
         if (!nome || !password || !email) {
-            throw new Error('Campos obrigatórios: nome, password, email e cargo');
+            throw new Error('Campos obrigatórios: nome, password, email');
         }
 
         const hashedPassword = await bcrypt.hash(password, 10);

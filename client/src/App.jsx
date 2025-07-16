@@ -33,6 +33,8 @@ import { ThemeProvider } from './services/themeContext';
 import EstatisticaVideo from './FrontOffice/Professor/ProfVideo/EstatisticaVideo';
 import Estatisticas from './FrontOffice/Professor/Estatistica';
 
+import Unauthorized from './components/Unauthorized';
+
 import './App.css'
 
 function AppIn() {
@@ -50,7 +52,7 @@ function AppIn() {
             <ScrollToTop/>
             <Routes>
               <Route path="*" element={<NotFound />} />
-              <Route path="/admin/*" element={<RoleRoute allowedRoles={[2,3]}><Admin /></RoleRoute>} />
+              <Route path="/admin/*" element={<RoleRoute allowedRoles={[3]}><Admin /></RoleRoute>} />
               <Route path="/videos" element={<RoleRoute allowedRoles={[2,3]}><ListarVideo /></RoleRoute>} />
               <Route path="/videos/editar/:id" element={<RoleRoute allowedRoles={[2,3]}><EditarVideo /></RoleRoute>} />
               <Route path="/videos/estatisticas/:id" element={<RoleRoute allowedRoles={[2,3]}><EstatisticaVideo /></RoleRoute>} />
@@ -68,8 +70,7 @@ function AppIn() {
               <Route path="/criar" element={<RoleRoute allowedRoles={[2,3]}><PublicarVideo /></RoleRoute>} />
               <Route path="/anotacoes" element={<ProtectedRoute><Anotacoes /></ProtectedRoute>} />
               <Route path="/" element={<Home />} />
-              
-              
+              <Route path="/unauthorized" element={<Unauthorized />} />
             </Routes>
           </main>
         </div>

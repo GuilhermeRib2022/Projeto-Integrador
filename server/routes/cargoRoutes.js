@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import {Cargo} from '../models/cargoModels.js';
 import authenticateToken from '../services/Autenticacao.js';
+import verificarCargo from '../services/verificarCargo.js';
 const router = Router();
 
 // Apply authentication to all routes
@@ -14,14 +15,14 @@ router.get("/", async (req, res) => {
 });
 
 //Criar Cargo
-router.post("/", async (req, res) => {
+router.post("/", verificarCargo(3), async (req, res) => {
     const {Tipo} = req.body;
     const cargos = await Cargo.adicionarCargo(Tipo);
     res.send(cargos);
 });
 
 //Atualizar Cargo
-router.put("/:id", async (req, res) => {
+router.put("/:id", verificarCargo(3),  async (req, res) => {
     const {Tipo} = req.body;
     const ID = req.params.id;
     const cargos = await Cargo.updateCargo(Tipo,ID);
@@ -41,7 +42,7 @@ router.get("/:id", async (req, res) => {
 });
 
 //APAGAR ANOTAÇÃO POR ID
-router.delete("/:id", async (req, res) => { // Rota de apagar Anotação
+router.delete("/:id", verificarCargo(3), async (req, res) => { // Rota de apagar Anotação
     const id = req.params.id;
     const success = await Cargo.deleteCargo(id);
     if (success) {

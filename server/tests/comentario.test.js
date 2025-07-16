@@ -50,14 +50,23 @@ describe('Comentario Model', () => {
         expect(result).toEqual(fakeRows);
     });
 
-    test('createComentario deve criar um novo comentário', async () => {
-        const fakeResult = { insertId: 1, affectedRows: 1 };
-        pool.query.mockResolvedValue([fakeResult]);
+    test('createComentario deve criar um novo comentário e retornar o criado', async () => {
+        const fakeInsertResult = { insertId: 1, affectedRows: 1 };
+        const fakeComentario = { ID: 1, VideoID: 2, UtilizadorID: 5, Texto: 'Novo comentário' };
+
+        pool.query.mockResolvedValueOnce([fakeInsertResult]); // mock do INSERT
+        jest.spyOn(Comentario, 'getComentario').mockResolvedValueOnce(fakeComentario); // mock do SELECT
 
         const result = await Comentario.createComentario(2, 5, 'Novo comentário');
 
-        expect(pool.query).toHaveBeenCalledWith(expect.stringContaining('INSERT INTO comentario'), [2, 5, 'Novo comentário']);
-        expect(result).toEqual(fakeResult);
+        expect(pool.query).toHaveBeenCalledWith(
+            expect.stringContaining('INSERT INTO comentario'),
+            [2, 5, 'Novo comentário']
+        );
+        expect(Comentario.getComentario).toHaveBeenCalledWith(1);
+        expect(result).toEqual(fakeComentario);
+
+        Comentario.getComentario.mockRestore();
     });
 
     test('editComentarioID deve atualizar um comentário pelo ID', async () => {

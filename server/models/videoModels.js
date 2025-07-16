@@ -248,7 +248,7 @@ LEFT JOIN utilizador ON utilizador.ID = v.UtilizadorID
 LEFT JOIN (SELECT videoID, AVG(Nota) AS AvgNota FROM review GROUP BY videoID) AS AVG_reviews ON AVG_reviews.videoID = v.ID
 WHERE v.estado = "ativo"
 ORDER BY Nota DESC LIMIT 8`)
-console.log(rows[1].FatorCrescimento)
+//console.log(rows[1].FatorCrescimento)
             return rows
         } catch (error) {
             throw new Error(`Failed to fetch videos: ${error.message}`)

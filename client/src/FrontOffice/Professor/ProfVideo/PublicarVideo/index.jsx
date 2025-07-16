@@ -105,6 +105,8 @@ const PublicarVideo = () => {
             value={titulo}
             onChange={(e) => setTitulo(e.target.value)}
             required
+            minLength="4"
+            maxLength="64"
           />
         </div>
 

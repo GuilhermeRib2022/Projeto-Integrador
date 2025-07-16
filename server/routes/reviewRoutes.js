@@ -1,13 +1,14 @@
 import { Router } from 'express';
 import {Review} from '../models/reviewModels.js';
 import authenticateToken from '../services/Autenticacao.js';
+import verificarCargo from '../services/verificarCargo.js';
 import permit from '../services/verificarCargo.js';
 
 const router = Router();
 router.use(authenticateToken); // Verificar se o utilizador está autenticado
 
 //OBTEM TODAS AS REVIEWS
-router.get("/", permit("quam"), async (req, res) => { // Rota de pesquisa de reviews
+router.get("/", verificarCargo(3), async (req, res) => { // Rota de pesquisa de reviews
     const reviews = await Review.getReviews();
     res.send(reviews);
 });

@@ -7,6 +7,7 @@ import { PdfReader } from "pdfreader";
 import { fileURLToPath } from 'url';
 import fs from "fs";
 import getVideoDuration from '../services/getVideoDuration.js';
+import verificarCargo from '../services/verificarCargo.js';
 import path from 'path';
 import multer from 'multer';
 
@@ -32,7 +33,7 @@ async function extrairTextoPdf(caminhoPdf) {
 }
 
 //ROTA PARA PUBLICAR VIDEO
-router.post('/publicar', authenticateToken, (req, res, next) => {
+router.post('/publicar',verificarCargo(2,3), authenticateToken, (req, res, next) => {
   upload.fields([ { name: 'video', maxCount: 1 }, { name: 'thumbnail', maxCount: 1 }, { name: 'fonte', maxCount: 1 } ])(req, res, function (err) {
     if (err instanceof multer.MulterError) {
       return res.status(400).json({ message: `Erro no upload: ${err.message}` });
@@ -53,6 +54,11 @@ async (req, res) => {
     if (!titulo || !disciplina || !video) {
       return res.status(400).json({ message: 'Campos obrigatórios em falta' });
     }
+
+    if (titulo.length > 64 || titulo.length < 4) {
+      return res.status(400).json({ message: 'Tamanho do título deve ficar entre 4 e 64 caractéres.' });
+    }
+
 
     const fullPath = path.join('uploads/videos', video);
     const duracao = await getVideoDuration(fullPath);
@@ -110,7 +116,7 @@ router.post('/publicar',   authenticateToken, (req, res, next) => {upload.fields
 */
 
 //Obter estatísticas de vídeo
-router.get('/estatisticas/:id', async (req, res) => {
+router.get('/estatisticas/:id', verificarCargo(2,3), authenticateToken, async (req, res) => {
   try {
     const { id } = req.params;
     const estatisticas = await Video.getEstatisticasById(id);
@@ -126,7 +132,8 @@ router.get('/estatisticas/:id', async (req, res) => {
   }
 });
 
-router.put('/editar/:id', authenticateToken, (req, res, next) => {
+//ATUALIZAR VíDEO
+router.put('/editar/:id', authenticateToken, verificarCargo(2,3), (req, res, next) => {
   upload.fields([{ name: 'thumbnail', maxCount: 1 },{ name: 'fonte', maxCount: 1 }])(req, res, function (err) {
     if (err instanceof multer.MulterError) {
       return res.status(400).json({ message: `Erro no upload: ${err.message}` });
@@ -144,6 +151,17 @@ router.put('/editar/:id', authenticateToken, (req, res, next) => {
     const thumbnail = req.files?.['thumbnail']?.[0]?.filename;
     const fonte = req.files?.['fonte']?.[0]?.filename; 
     let textoFonte = null;
+
+    const videoExiste = await Video.getVideo(req.params.id);
+    if (videoExiste.UtilizadorID !== req.user.id && req.user.cargo !== 'admin') {
+      return res.status(403).send({ message: "Acesso negado. Apenas o autor do vídeo pode alterá-lo." });
+    }
+
+
+    if (titulo.length > 64 || titulo.length < 4) {
+      return res.status(400).json({ message: 'Tamanho do título deve ficar entre 4 e 64 caractéres.' });
+    }
+
 
     if (fonte) {
       const caminhoCompletoFonte = path.join(__dirname, '..', 'uploads', 'fonte', fonte);
@@ -313,15 +331,27 @@ router.get("/utilizador/:id", async (req, res) => {
 })
 
 //ATIVAR UM VIDEO
-router.patch('/:id/ativar', async (req, res) => {
+router.patch('/:id/ativar', verificarCargo(2,3), async (req, res) => {
   const id = req.params.id;
+
+  const videoExiste = await Video.getVideo(id);
+  if (videoExiste.UtilizadorID !== req.user.id && req.user.cargo !== 'admin') {
+    return res.status(403).send({ message: "Acesso negado. Apenas o autor do vídeo pode alterá-lo." });
+  }
+
   const result = await Video.ativar(id); // ativar video
   res.json(result);
 });
 
 //DESATIVAR UM VIDEO
-router.delete('/:id/desativar', async (req, res) => {
+router.delete('/:id/desativar', verificarCargo(2,3), async (req, res) => {
   const id = req.params.id;
+
+  const videoExiste = await Video.getVideo(id);
+  if (videoExiste.UtilizadorID !== req.user.id && req.user.cargo !== 'admin') {
+    return res.status(403).send({ message: "Acesso negado. Apenas o autor do vídeo pode alterá-lo." });
+  }
+
   const result = await Video.desativar(id); // desativar video
   res.json(result);
 });

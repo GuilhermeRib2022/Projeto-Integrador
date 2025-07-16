@@ -60,7 +60,7 @@ const Anotacoes = () => {
                 className="form-control mb-3"
                 style={{ maxWidth: '400px' }}
             />
-            <table className="tabela-anotacoes">
+            <table className="tabela-anotacoes" >
                 <thead>
                     <tr>
                         <th>Título do Vídeo</th>
@@ -73,11 +73,11 @@ const Anotacoes = () => {
                         <tr
                             key={anotacao.ID}
                             className="linha-clicavel"
-                            onClick={() => handleVideoClick(anotacao.VideoID)}
+                            //onClick={() => handleVideoClick(anotacao.VideoID)}
                             style={{ cursor: 'pointer' }}
                             title="Clique para ver o vídeo"
                         >
-                            <td className="td-video video-title-anotacao" style={{ textDecoration: 'underline', color: '#007bff' }}>
+                            <td className="td-video video-title-anotacao" style={{ textDecoration: 'underline', color: '#007bff' }} onClick={() => handleVideoClick(anotacao.VideoID)}>
                                 <img
                                     src={`${BASE_URL}/uploads/thumbnails/${anotacao.Thumbnail}`}
                                     alt="thumbnail"
@@ -98,7 +98,7 @@ const Anotacoes = () => {
                                     readOnly
                                     value={anotacao.Texto}
                                     rows={4}
-                                    style={{ width: '100%', resize: 'none', border: 'none', backgroundColor: 'transparent', color: '#333', fontFamily: 'inherit' }}
+                                    style={{ width: '100%', resize: 'both', border: 'none', backgroundColor: 'transparent', color: '#333', fontFamily: 'inherit' }}
                                     onClick={(e) => e.stopPropagation()} // evita que o clique no textarea dispare o onClick da linha
                                 />
                             </td>

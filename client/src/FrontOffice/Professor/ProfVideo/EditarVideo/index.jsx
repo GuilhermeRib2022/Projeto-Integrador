@@ -161,6 +161,8 @@ const EditarVideo = () => {
             value={titulo}
             onChange={(e) => setTitulo(e.target.value)}
             required
+            maxLength="64"
+            minLength="4"
           />
         </div>
 

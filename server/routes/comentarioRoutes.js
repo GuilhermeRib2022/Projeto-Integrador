@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { Comentario } from '../models/comentarioModels.js';
 import authenticateToken from '../services/Autenticacao.js';
+import verificarCargo from '../services/verificarCargo.js';
 const router = Router();
 
 function parsePositiveInt(value, defaultValue) {
@@ -9,7 +10,7 @@ function parsePositiveInt(value, defaultValue) {
 }
 
 //OBTER TODAS OS COMENTÁRIOS
-router.get("/", async (req, res) => {
+router.get("/", verificarCargo(3), async (req, res) => {
     const comentarios = await Comentario.getComentarios();
     res.send(comentarios);
 });

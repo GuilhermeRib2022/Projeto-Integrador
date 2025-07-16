@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { Disciplina } from '../models/disciplinaModels.js';
 import authenticateToken from '../services/Autenticacao.js';
+import verificarCargo from '../services/verificarCargo.js';
 const router = Router();
 
 //OBTEM TODAS AS DISCIPLINAS
@@ -21,7 +22,7 @@ router.get("/utilizador", authenticateToken, async (req, res) => {
 });
 
 //OBTER ESTATISTICAS POR DISCIPLINA
-router.get("/estatisticas", async (req, res) => {
+router.get("/estatisticas", verificarCargo(2,3), async (req, res) => {
 
     try {
         const estatisticas = await Disciplina.getEstatisticasDisciplina();
@@ -82,14 +83,14 @@ router.get("", async (req, res) => {
 
 
 //APAGAR DISCIPLINA POR ID
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", verificarCargo(3), async (req, res) => {
     const id = req.params.id
     const disciplinas = await Disciplina.deleteDisciplina(id);
     res.send(disciplinas);
 });
 
 //ADICIONAR DISCIPLINA
-router.post("/", async (req, res) => {
+router.post("/", verificarCargo(3), async (req, res) => {
     const { Nome, Descricao, Cor } = req.body;
     if (!Nome || !Descricao || !Cor) {
         return res.status(400).send({ message: "Nome, Descrição e Cor necessários." });
@@ -107,7 +108,7 @@ router.post("/", async (req, res) => {
 });
 
 //EDITAR DISCIPLINA
-router.patch("/:id", async (req, res) => {
+router.patch("/:id", verificarCargo(3), async (req, res) => {
     const id = req.params.id;
     const { Nome, Descricao, Cor } = req.body;
 
@@ -169,8 +170,8 @@ router.delete("/utilizador/:id", authenticateToken, async (req, res) => {
 
 });
 
-//Desassociar utilizador a disciplina
-router.delete('/:id', authenticateToken, async (req, res) => {
+//Apagar disciplina
+router.delete('/:id',  authenticateToken, verificarCargo(3), async (req, res) => {
   try {
     const id = req.params.id;
 

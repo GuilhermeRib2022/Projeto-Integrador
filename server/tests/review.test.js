@@ -7,167 +7,110 @@ jest.unstable_mockModule('../database.js', () => ({
   },
 }));
 
-// Importa os módulos depois do mock
-const { Comentario } = await import('../models/comentarioModels.js');
+// Importar após o mock
+const { Review } = await import('../models/reviewModels.js');
 const databaseModule = await import('../database.js');
 const pool = databaseModule.default;
 
-describe('Comentario Model', () => {
+describe('Review Model', () => {
   afterEach(() => {
     jest.clearAllMocks();
   });
 
-  test('getComentarios deve retornar todos os comentários', async () => {
+  test('getReviews deve retornar todas as reviews', async () => {
     const fakeRows = [
-      { ID: 1, Texto: 'Comentário 1' },
-      { ID: 2, Texto: 'Comentário 2' },
+      { ID: 1, VideoID: 1, UtilizadorID: 1, nota: 4 },
+      { ID: 2, VideoID: 2, UtilizadorID: 2, nota: 5 },
     ];
     pool.query.mockResolvedValue([fakeRows]);
 
-    const result = await Comentario.getComentarios();
+    const result = await Review.getReviews();
 
-    expect(pool.query).toHaveBeenCalledWith(expect.stringContaining('FROM comentario'));
+    expect(pool.query).toHaveBeenCalledWith(expect.stringContaining('FROM review'));
     expect(result).toEqual(fakeRows);
   });
 
-  test('getComentario deve retornar o comentário com o ID especificado', async () => {
-    const fakeRow = { ID: 1, Texto: 'Comentário específico' };
+  test('getReviewID deve retornar uma review pelo ID', async () => {
+    const fakeRow = { ID: 1, VideoID: 1, UtilizadorID: 1, nota: 4 };
     pool.query.mockResolvedValue([[fakeRow]]);
 
-    const result = await Comentario.getComentario(1);
+    const result = await Review.getReviewID(1);
 
     expect(pool.query).toHaveBeenCalledWith(
-      expect.stringMatching(/SELECT .* FROM comentario .*WHERE ID = \?/i),
+      expect.stringMatching(/SELECT .* FROM review .*WHERE ID = \?/i),
       [1]
     );
     expect(result).toEqual(fakeRow);
   });
 
-  test('getComentario deve lançar erro se comentário não encontrado', async () => {
-    pool.query.mockResolvedValue([[]]);
-
-    await expect(Comentario.getComentario(999)).rejects.toThrow('Comentario with ID 999 not found');
-  });
-
-  test('getComentariosVideo deve retornar comentários paginados de um vídeo', async () => {
-    const fakeRows = [{ ID: 1, VideoID: 2, Texto: 'Comentário 1' }];
+  test('getReviewVideo deve retornar reviews por videoID e calcular média', async () => {
+    const fakeRows = [
+      { ID: 1, VideoID: 2, UtilizadorID: 1, nota: 4 },
+      { ID: 2, VideoID: 2, UtilizadorID: 2, nota: 5 },
+    ];
     pool.query.mockResolvedValue([fakeRows]);
 
-    const result = await Comentario.getComentariosVideo(2, 10, 0);
+    const result = await Review.getReviewVideo(2);
 
     expect(pool.query).toHaveBeenCalledWith(
-      expect.stringContaining('FROM comentario'),
-      [2, 10, 0]
+      expect.stringContaining('FROM review where videoID = ?'),
+      [2]
     );
     expect(result).toEqual(fakeRows);
+
+    // Verifica se a média é calculável corretamente
+    const media = fakeRows.reduce((acc, r) => acc + r.nota, 0) / fakeRows.length;
+    expect(media).toBeCloseTo(4.5);
   });
 
-  test('createComentario deve criar um novo comentário e retornar lista atualizada', async () => {
-    const fakeInsertResult = { insertId: 1, affectedRows: 1 };
-    const fakeCommentsList = [{ ID: 1, VideoID: 2, Texto: 'Novo comentário' }];
+  test('getReview deve retornar uma review por utilizadorID e videoID', async () => {
+    const fakeRow = { ID: 3, VideoID: 2, UtilizadorID: 1, nota: 3 };
+    pool.query.mockResolvedValue([[fakeRow]]);
 
-    pool.query
-      .mockResolvedValueOnce([fakeInsertResult])  // insert
-      .mockResolvedValueOnce([fakeCommentsList]); // getComentariosVideo
-
-    const result = await Comentario.createComentario(2, 5, 'Novo comentário');
-
-    expect(pool.query).toHaveBeenNthCalledWith(
-      1,
-      expect.stringContaining('INSERT INTO comentario'),
-      [2, 5, 'Novo comentário']
-    );
-    expect(pool.query).toHaveBeenNthCalledWith(
-      2,
-      expect.stringContaining('FROM comentario'),
-      [2, 10, 0]
-    );
-    expect(result).toEqual(fakeCommentsList);
-  });
-
-  test('editComentarioID deve atualizar um comentário pelo ID e retornar o atualizado', async () => {
-    const updatedComentario = { ID: 1, Texto: 'Comentário atualizado' };
-
-    pool.query
-      .mockResolvedValueOnce([{ affectedRows: 1 }])    // UPDATE
-      .mockResolvedValueOnce([[updatedComentario]]);  // SELECT após UPDATE
-
-    const result = await Comentario.editComentarioID(1, 'Comentário atualizado');
-
-    expect(pool.query).toHaveBeenNthCalledWith(
-      1,
-      expect.stringContaining('UPDATE comentario SET Texto'),
-      ['Comentário atualizado', 1]
-    );
-
-    expect(pool.query).toHaveBeenNthCalledWith(
-      2,
-      expect.stringMatching(/SELECT .* FROM comentario .*WHERE ID = \?/i),
-      [1]
-    );
-
-    expect(result).toEqual(updatedComentario);
-  });
-
-  test('editComentarioID deve lançar erro se comentário não encontrado para atualização', async () => {
-    pool.query.mockResolvedValue([{ affectedRows: 0 }]);
-
-    await expect(Comentario.editComentarioID(999, 'Texto')).rejects.toThrow('Comentário não encontrado para atualização');
-  });
-
-  test('deleteComentario deve apagar um comentário pelo ID e retornar true', async () => {
-    pool.query.mockResolvedValue([{ affectedRows: 1 }]);
-
-    const result = await Comentario.deleteComentario(3);
+    const result = await Review.getReview(1, 2);
 
     expect(pool.query).toHaveBeenCalledWith(
-      expect.stringMatching(/DELETE FROM comentario .*WHERE ID = \?/i),
-      [3]
+      expect.stringMatching(/SELECT .* FROM review .*utilizadorID = \? AND videoID = \?/i),
+      [1, 2]
+    );
+    expect(result).toEqual(fakeRow);
+  });
+
+  test('adicionarReview deve inserir nova review ou atualizar existente', async () => {
+    const fakeResult = { affectedRows: 1, insertId: 5 };
+    pool.query.mockResolvedValue([fakeResult]);
+
+    const result = await Review.adicionarReview(2, 1, 5);
+
+    expect(pool.query).toHaveBeenCalledWith(
+      expect.stringContaining('INSERT INTO review'),
+      [2, 1, 5]
+    );
+    expect(result).toEqual(fakeResult);
+  });
+
+  test('adicionarReview deve lançar erro se falhar', async () => {
+    pool.query.mockRejectedValue(new Error('Erro DB'));
+
+    await expect(Review.adicionarReview(2, 1, 5)).rejects.toThrow('Falha ao adicionar review: Erro DB');
+  });
+
+  test('deleteReview deve apagar uma review e retornar true se sucesso', async () => {
+    pool.query.mockResolvedValue([{ affectedRows: 1 }]);
+
+    const result = await Review.deleteReview(1, 2);
+
+    expect(pool.query).toHaveBeenCalledWith(
+      expect.stringMatching(/DELETE FROM review .*utilizadorID = \? AND videoID = \?/i),
+      [1, 2]
     );
     expect(result).toBe(true);
   });
 
-  test('deleteComentario deve retornar false se nenhum comentário foi apagado', async () => {
+  test('deleteReview deve retornar false se nenhuma review for apagada', async () => {
     pool.query.mockResolvedValue([{ affectedRows: 0 }]);
 
-    const result = await Comentario.deleteComentario(999);
-
+    const result = await Review.deleteReview(999, 999);
     expect(result).toBe(false);
-  });
-
-  test('editComentario deve atualizar comentário completo e retornar o comentário atualizado', async () => {
-    const currentComentario = { ID: 1, VideoID: 2, UtilizadorID: 5, Texto: 'Texto antigo' };
-    const updatedComentario = { ID: 1, VideoID: 3, UtilizadorID: 6, Texto: 'Texto novo' };
-
-    // Mock getComentario para retornar currentComentario
-    jest.spyOn(Comentario, 'getComentario').mockResolvedValue(currentComentario);
-
-    pool.query.mockResolvedValue([{ affectedRows: 1 }]);
-
-    // Mock getComentario para retornar updatedComentario após update
-    jest.spyOn(Comentario, 'getComentario').mockResolvedValueOnce(currentComentario).mockResolvedValueOnce(updatedComentario);
-
-    const result = await Comentario.editComentario(1, 3, 6, 'Texto novo');
-
-    expect(pool.query).toHaveBeenCalledWith(
-      expect.stringContaining('UPDATE comentario SET VideoID = ?, utilizadorID = ?, Texto = ?, EditTime = NOW() WHERE ID = ?'),
-      [3, 6, 'Texto novo', 1]
-    );
-
-    expect(result).toEqual(updatedComentario);
-
-    // Restaurar mock original
-    Comentario.getComentario.mockRestore();
-  });
-
-  test('editComentario deve lançar erro se nenhum comentário for atualizado', async () => {
-    const currentComentario = { ID: 1, VideoID: 2, UtilizadorID: 5, Texto: 'Texto antigo' };
-
-    jest.spyOn(Comentario, 'getComentario').mockResolvedValue(currentComentario);
-    pool.query.mockResolvedValue([{ affectedRows: 0 }]);
-
-    await expect(Comentario.editComentario(1, 3, 6, 'Texto novo')).rejects.toThrow('No comentario found with ID 1');
-
-    Comentario.getComentario.mockRestore();
   });
 });
