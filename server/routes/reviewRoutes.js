@@ -8,7 +8,7 @@ const router = Router();
 router.use(authenticateToken); // Verificar se o utilizador está autenticado
 
 //OBTEM TODAS AS REVIEWS
-router.get("/", verificarCargo(3), async (req, res) => { // Rota de pesquisa de reviews
+router.get("/", authenticateToken, verificarCargo(3), async (req, res) => { // Rota de pesquisa de reviews
     const reviews = await Review.getReviews();
     res.send(reviews);
 });

@@ -49,7 +49,7 @@ router.get("/estatisticas", authenticateToken, verificarCargo(3),async (req, res
 });
 
 //Rota de pesquisa todos os utilizadores
-router.get("/", verificarCargo(3), asyncHandler(async (req, res) => { 
+router.get("/", authenticateToken, verificarCargo(3), asyncHandler(async (req, res) => { 
     const result = await Utilizador.getUtilizadores()
     res.send(result)
 }))
@@ -152,7 +152,7 @@ router.post('/registar', async (req, res) => {
 });
 
 //Criar utilizador
-router.post('',verificarCargo(3),  upload.single('fotoPerfil'), async (req, res) => {
+router.post('', authenticateToken, verificarCargo(3),  upload.single('fotoPerfil'), async (req, res) => {
   const { nome, password, email, cargo, descricao } = req.body;
   const fotoPerfil = req.file ? req.file.filename : null;
 
@@ -174,20 +174,20 @@ router.post('',verificarCargo(3),  upload.single('fotoPerfil'), async (req, res)
 });
 
 //Rota de eliminação de Utilizador
-router.delete("/:id", verificarCargo(3), async (req, res) => { 
+router.delete("/:id", authenticateToken, verificarCargo(3), async (req, res) => { 
     const id = req.params.id
     const result = await Utilizador.deleteUtilizador(id)
     res.send(result)
 })
 
 //Atualizar utilizador
-router.patch("/:id", upload.single('fotoPerfil'), async (req, res) => {
-  const { id } = req.params;
+router.patch("/:id", authenticateToken, upload.single('fotoPerfil'), async (req, res) => {
+  const id = req.params.id;
   const { nome, email, password, cargo, descricao } = req.body;
   const fotoPerfil = req.file ? req.file.filename : null;
 
   const utilizadorExiste = await Utilizador.getUtilizador(id);
-  if (utilizadorExiste.UtilizadorID !== req.user.id && req.user.cargo !== 'admin') {
+  if (utilizadorExiste.UtilizadorID !== req.user.id && req.user.cargo !== 3) {
     return res.status(403).send({ message: "Acesso negado. Apenas o autor do vídeo pode alterá-lo." });
   }
 
@@ -226,11 +226,11 @@ router.post('/logar', async (req, res) => {
 });
 
 //ATIVAR UM UTILIZADOR
-router.patch('/:id/ativar', verificarCargo(3), async (req, res) => {
+router.patch('/:id/ativar', authenticateToken, verificarCargo(3), async (req, res) => {
   const id = req.params.id;
   
   const utilizadorExiste = await Utilizador.getUtilizador(id);
-  if (utilizadorExiste.UtilizadorID !== req.user.id && req.user.cargo !== 'admin') {
+  if (utilizadorExiste.UtilizadorID !== req.user.id && req.user.cargo !== 3) {
     return res.status(403).send({ message: "Acesso negado. Apenas o autor do vídeo pode alterá-lo." });
   }
 
@@ -239,11 +239,11 @@ router.patch('/:id/ativar', verificarCargo(3), async (req, res) => {
 });
 
 //DESATIVAR UM UTILIZADOR
-router.delete('/:id/desativar', verificarCargo(3), async (req, res) => {
+router.delete('/:id/desativar', authenticateToken, verificarCargo(3), async (req, res) => {
   const id = req.params.id;
 
   const utilizadorExiste = await Utilizador.getUtilizador(id);
-  if (utilizadorExiste.UtilizadorID !== req.user.id && req.user.cargo !== 'admin') {
+  if (utilizadorExiste.UtilizadorID !== req.user.id && req.user.cargo !== 3) {
     return res.status(403).send({ message: "Acesso negado. Apenas o autor do vídeo pode alterá-lo." });
   }
 

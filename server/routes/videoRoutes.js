@@ -33,7 +33,7 @@ async function extrairTextoPdf(caminhoPdf) {
 }
 
 //ROTA PARA PUBLICAR VIDEO
-router.post('/publicar',verificarCargo(2,3), authenticateToken, (req, res, next) => {
+router.post('/publicar',authenticateToken, verificarCargo(2,3), authenticateToken, (req, res, next) => {
   upload.fields([ { name: 'video', maxCount: 1 }, { name: 'thumbnail', maxCount: 1 }, { name: 'fonte', maxCount: 1 } ])(req, res, function (err) {
     if (err instanceof multer.MulterError) {
       return res.status(400).json({ message: `Erro no upload: ${err.message}` });
@@ -116,7 +116,7 @@ router.post('/publicar',   authenticateToken, (req, res, next) => {upload.fields
 */
 
 //Obter estatísticas de vídeo
-router.get('/estatisticas/:id', verificarCargo(2,3), authenticateToken, async (req, res) => {
+router.get('/estatisticas/:id', authenticateToken, verificarCargo(2,3), async (req, res) => {
   try {
     const { id } = req.params;
     const estatisticas = await Video.getEstatisticasById(id);
@@ -133,8 +133,11 @@ router.get('/estatisticas/:id', verificarCargo(2,3), authenticateToken, async (r
 });
 
 //ATUALIZAR VíDEO
-router.put('/editar/:id', authenticateToken, verificarCargo(2,3), (req, res, next) => {
-  upload.fields([{ name: 'thumbnail', maxCount: 1 },{ name: 'fonte', maxCount: 1 }])(req, res, function (err) {
+router.put('/editar/:id', authenticateToken, verificarCargo(2, 3), (req, res, next) => {
+  upload.fields([
+    { name: 'thumbnail', maxCount: 1 },
+    { name: 'fonte', maxCount: 1 }
+  ])(req, res, function (err) {
     if (err instanceof multer.MulterError) {
       return res.status(400).json({ message: `Erro no upload: ${err.message}` });
     } else if (err) {
@@ -145,35 +148,47 @@ router.put('/editar/:id', authenticateToken, verificarCargo(2,3), (req, res, nex
 }, async (req, res) => {
   try {
     const videoID = req.params.id;
-    const utilizador = { id: req.user.id, cargoID: req.user.cargo};
+    const utilizador = { id: req.user.id, cargoID: req.user.cargo };
 
     const { titulo, descricao, disciplina } = req.body;
-    const thumbnail = req.files?.['thumbnail']?.[0]?.filename;
-    const fonte = req.files?.['fonte']?.[0]?.filename; 
+    const thumbnail = req.files?.['thumbnail']?.[0]?.filename || null;
+    const fonte = req.files?.['fonte']?.[0]?.filename || null;
+
     let textoFonte = null;
 
-    const videoExiste = await Video.getVideo(req.params.id);
-    if (videoExiste.UtilizadorID !== req.user.id && req.user.cargo !== 'admin') {
-      return res.status(403).send({ message: "Acesso negado. Apenas o autor do vídeo pode alterá-lo." });
+    const videoExiste = await Video.getVideo(videoID);
+    if (!videoExiste) {
+      return res.status(404).json({ message: 'Vídeo não encontrado' });
     }
 
+    if (videoExiste.UtilizadorID !== req.user.id && req.user.cargo !== 3) {
+      return res.status(403).json({ message: "Acesso negado. Apenas o autor do vídeo ou um admin pode editá-lo." });
+    }
 
-    if (titulo.length > 64 || titulo.length < 4) {
+    if (!titulo || titulo.length < 4 || titulo.length > 64) {
       return res.status(400).json({ message: 'Tamanho do título deve ficar entre 4 e 64 caractéres.' });
     }
 
-
+    // Extrai o texto do novo PDF fonte, se enviado
     if (fonte) {
       const caminhoCompletoFonte = path.join(__dirname, '..', 'uploads', 'fonte', fonte);
       textoFonte = await extrairTextoPdf(caminhoCompletoFonte);
     }
 
-    await Video.editarVideo(videoID, utilizador, { titulo, descricao, disciplina, thumbnail, fonte, textoFonte });
+    // Atualizar vídeo na base de dados
+    await Video.editarVideo(videoID, utilizador, {
+      titulo,
+      descricao,
+      disciplina,
+      thumbnail,
+      fonte,
+      textoFonte
+    });
 
     res.status(200).json({ message: 'Vídeo atualizado com sucesso!' });
   } catch (err) {
     console.error('Erro ao editar vídeo:', err.message);
-    res.status(500).json({ message: err.message || 'Erro ao editar vídeo' });
+    res.status(500).json({ message: 'Erro interno ao editar vídeo' });
   }
 });
 
@@ -331,11 +346,11 @@ router.get("/utilizador/:id", async (req, res) => {
 })
 
 //ATIVAR UM VIDEO
-router.patch('/:id/ativar', verificarCargo(2,3), async (req, res) => {
+router.patch('/:id/ativar', authenticateToken, verificarCargo(2,3), async (req, res) => {
   const id = req.params.id;
 
   const videoExiste = await Video.getVideo(id);
-  if (videoExiste.UtilizadorID !== req.user.id && req.user.cargo !== 'admin') {
+  if (videoExiste.UtilizadorID !== req.user.id && req.user.cargo !== 3) {
     return res.status(403).send({ message: "Acesso negado. Apenas o autor do vídeo pode alterá-lo." });
   }
 
@@ -344,11 +359,11 @@ router.patch('/:id/ativar', verificarCargo(2,3), async (req, res) => {
 });
 
 //DESATIVAR UM VIDEO
-router.delete('/:id/desativar', verificarCargo(2,3), async (req, res) => {
+router.delete('/:id/desativar', authenticateToken, verificarCargo(2,3), async (req, res) => {
   const id = req.params.id;
 
   const videoExiste = await Video.getVideo(id);
-  if (videoExiste.UtilizadorID !== req.user.id && req.user.cargo !== 'admin') {
+  if (videoExiste.UtilizadorID !== req.user.id && req.user.cargo !== 3) {
     return res.status(403).send({ message: "Acesso negado. Apenas o autor do vídeo pode alterá-lo." });
   }
 

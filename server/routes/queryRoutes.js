@@ -55,6 +55,7 @@ router.delete('/:id', authenticateToken, verificarCargo(3), async (req, res) => 
 //CHATBOT TEXTO
 //
 router.post('/chat', authenticateToken, async (req, res) => {
+  console.time('Tempo de resposta da LLM');
   const { messages, videoId, question, videoTime } = req.body;
 
   //Obtém o ID do utilizador autenticado
@@ -82,6 +83,8 @@ router.post('/chat', authenticateToken, async (req, res) => {
   }
 
 
+  console.timeEnd('Tempo de resposta da LLM'); // ⏱ imprime no console
+
   // Retorna a resposta da LLM
   res.json({ role: 'assistant', content: respostaLLM.content });
 });
@@ -91,6 +94,7 @@ router.post('/chat', authenticateToken, async (req, res) => {
 //CHATBOT IMAGEM
 //
 router.post('/chatimage', authenticateToken, async (req, res) => {
+  console.time('Tempo de resposta da LLM');
   const { videoId, question, videoTime } = req.body;
   const userId = req.user?.id;
   const VIDEO_DIR = path.resolve('uploads/videos');
@@ -120,6 +124,7 @@ router.post('/chatimage', authenticateToken, async (req, res) => {
       await Query.create({ VideoID: videoId, UtilizadorID: userId, Pergunta: question, Resposta: respostaLLM.content, VideoTime: videoTime });
     }
 
+      console.timeEnd('Tempo de resposta da LLM'); // ⏱ imprime no console
     res.json({ role: 'assistant', content: respostaLLM.content });
 
   } catch (err) {

@@ -10,7 +10,7 @@ function parsePositiveInt(value, defaultValue) {
 }
 
 //OBTER TODAS OS COMENTÁRIOS
-router.get("/", verificarCargo(3), async (req, res) => {
+router.get("/", authenticateToken, verificarCargo(3), async (req, res) => {
     const comentarios = await Comentario.getComentarios();
     res.send(comentarios);
 });
@@ -47,7 +47,7 @@ router.delete("/:id", authenticateToken, async (req, res) => { // Apagar um come
         }
 
         //Verifica se o utilizador é dono do comentário ou é administrador
-        if (comentarioExiste.UtilizadorID !== req.user.id && req.user.cargo !== 'admin') {
+        if (comentarioExiste.UtilizadorID !== req.user.id && req.user.cargo !== 3) {
             return res.status(403).send({ message: "Acesso negado. Apenas o autor do comentário pode apagá-lo." });
         }
 
@@ -125,7 +125,7 @@ router.patch("/:id", authenticateToken, async (req, res) => {
     }
 
     // Verifica permissão: só autor ou admin pode editar
-    if (comentarioExiste.UtilizadorID !== req.user.id && req.user.cargo !== 'admin') {
+    if (comentarioExiste.UtilizadorID !== req.user.id && req.user.cargo !== 3) {
       return res.status(403).send({ message: "Acesso negado. Apenas o autor ou admin podem editar este comentário." });
     }
 

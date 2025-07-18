@@ -20,13 +20,13 @@ router.get("/user", authenticateToken, async (req, res) => {
 });
 
 //OBTER TODAS AS ANOTAÇÕES
-router.get("/", verificarCargo(3), async (req, res) => {
+router.get("/", authenticateToken, verificarCargo(3), async (req, res) => {
     const anotacoes = await Anotacao.getAnotacoes();
     res.send(anotacoes);
 });
 
 //OBTER ANOTAÇÃO POR ID
-router.get("/:id", verificarCargo(3), async (req, res) => {
+router.get("/:id", authenticateToken, verificarCargo(3), async (req, res) => {
     const id = req.params.id;
     try {
         const anotacao = await Anotacao.getAnotacaoID(id);
@@ -39,7 +39,7 @@ router.get("/:id", verificarCargo(3), async (req, res) => {
 
 
 //APAGAR ANOTAÇÃO POR ID
-router.delete("/:id", verificarCargo(3), async (req, res) => { // Rota de apagar Anotação
+router.delete("/:id", authenticateToken, verificarCargo(3), async (req, res) => { // Rota de apagar Anotação
     const id = req.params.id;
     const success = await Anotacao.deleteAnotacao(id);
     if (success) {

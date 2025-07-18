@@ -22,7 +22,7 @@ router.get("/utilizador", authenticateToken, async (req, res) => {
 });
 
 //OBTER ESTATISTICAS POR DISCIPLINA
-router.get("/estatisticas", verificarCargo(2,3), async (req, res) => {
+router.get("/estatisticas", authenticateToken, verificarCargo(3), async (req, res) => {
 
     try {
         const estatisticas = await Disciplina.getEstatisticasDisciplina();
@@ -83,14 +83,14 @@ router.get("", async (req, res) => {
 
 
 //APAGAR DISCIPLINA POR ID
-router.delete("/:id", verificarCargo(3), async (req, res) => {
+router.delete("/:id", authenticateToken, verificarCargo(3), async (req, res) => {
     const id = req.params.id
     const disciplinas = await Disciplina.deleteDisciplina(id);
     res.send(disciplinas);
 });
 
 //ADICIONAR DISCIPLINA
-router.post("/", verificarCargo(3), async (req, res) => {
+router.post("/", authenticateToken, verificarCargo(3), async (req, res) => {
     const { Nome, Descricao, Cor } = req.body;
     if (!Nome || !Descricao || !Cor) {
         return res.status(400).send({ message: "Nome, Descrição e Cor necessários." });
@@ -108,7 +108,7 @@ router.post("/", verificarCargo(3), async (req, res) => {
 });
 
 //EDITAR DISCIPLINA
-router.patch("/:id", verificarCargo(3), async (req, res) => {
+router.patch("/:id", authenticateToken, verificarCargo(3), async (req, res) => {
     const id = req.params.id;
     const { Nome, Descricao, Cor } = req.body;
 
@@ -173,6 +173,7 @@ router.delete("/utilizador/:id", authenticateToken, async (req, res) => {
 //Apagar disciplina
 router.delete('/:id',  authenticateToken, verificarCargo(3), async (req, res) => {
   try {
+    
     const id = req.params.id;
 
     // Verificar se há vídeos relacionados

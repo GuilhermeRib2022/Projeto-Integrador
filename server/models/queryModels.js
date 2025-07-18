@@ -1,6 +1,8 @@
 import pool from "../database.js";
 import axios from 'axios';
 import contemPalavraOfensiva from "../services/contemPalavraOfensiva.js";
+// Llama3.1:8b | Llama3.2:latest | Qwen2.5:14b | "Qwen3:8b"
+const varText = "Llama3.2:latest"
 
 //CALCULAR SIMILARIDADE COSENO ENTRE DOIS VETORES
 function cosineSimilarity(vecA, vecB) {
@@ -23,7 +25,7 @@ export default function normalizeText(text) {
 //OBTER EMBEDDING DA PERGUNTA ATUAL
 async function getEmbeddingOllama(text) {
   const res = await axios.post('http://localhost:11434/api/embed', {
-    model: 'qwen2.5:14b',
+    model: varText,
     input: text
   });
   return res.data.embeddings[0];
@@ -33,7 +35,7 @@ async function getEmbeddingOllama(text) {
 // FUNÇÃO PRINCIPAL DE PROCESSAR PROMPT //
 // #################################### // 
 async function processWithLLM(question, messages, videoTitle, videoDescription, videoId, fonte) {
-  const MODEL = 'qwen2.5:14b';
+  const MODEL = varText;
   const OLLAMA_URL = 'http://localhost:11434/api/generate';
 
   //1. VERIFICA PALAVRAS OFENSIVAS
@@ -92,7 +94,7 @@ async function processWithLLM(question, messages, videoTitle, videoDescription, 
   let melhorSimilaridade = -1; //Definir a similaridade como -1 (precisa de 0.85 para ser considerada)
   let respostaMaisProxima = null; //Definir a resposta mais próxima como nulo
   let perguntaMaisProxima = null; //Definir a pergunta da resposta mais próxima
-  const LIMIAR = 0.93; // Define o limiar para considerar similaridade suficiente
+  const LIMIAR = 0.88; // Define o limiar para considerar similaridade suficiente
 
   if (question.length > 8) { // Verifica se a pergunta é suficientemente longa
     for (const row of rows) {
@@ -141,17 +143,19 @@ async function processWithLLM(question, messages, videoTitle, videoDescription, 
   // 5. CASO CONTRÁRIO, GERA UMA NOVA RESPOSTA COM O LLM
 
   const systemPrompt = `
-Texto-fonte do vídeo, que contém detalhes adicionais: """${fonte}"""
+Texto-fonte do vídeo, que contém os detalhes do vídeo: """${fonte}"""
 O vídeo que o utilizador está a ver tem o seguinte título: "${videoTitle}". (Menciona apenas se o utilizador mencionar)
 Descrição do vídeo: "${videoDescription}". (Menciona apenas se o utilizador mencionar)
-És um assistente técnico que responde com informações objetivas e factuais, sempre em português de Portugal, de forma clara, precisa e curta (máximo 256 caracteres). Nunca ultrapasses este limite.
-Nunca saias do contexto do título ou da descrição do vídeo. Se a pergunta estiver fora do contexto, responde apenas com a seguinte mensagem EXACTA, sem mencionar o conteúdo da pergunta nem justificar:
+És um assistente técnico que responde com informações objetivas e factuais, baseadas na fonte, sempre em português de Portugal, de forma clara, precisa e curta (máximo 256 caracteres). Nunca ultrapasses este limite.
+Nunca saias do contexto do título ou da descrição ou fonte do vídeo. Se a pergunta estiver fora do contexto, responde apenas com a seguinte mensagem EXACTA, sem mencionar o conteúdo da pergunta nem justificar:
 "Esta pergunta está fora do âmbito do vídeo atual. Por favor, mantém as questões relacionadas com o conteúdo apresentado."
-Responde sempre assim, sem variações, e apenas em pt-pt.
+Responde sempre assim, sem variações, e apenas em pt-pt, de forma curta, resumida e objetiva (faça sempre um máximo 256 letras).
 `.trim();
+
 
   const prompt = systemPrompt + `Utilizador: ${question}\nAssistente:`;
 
+  console.log(systemPrompt);
   try {
     const response = await axios.post(OLLAMA_URL, {
       model: MODEL,
@@ -213,11 +217,12 @@ async function imageWithLLM(question, videoId, videoTitle, videoDescription, fon
       `Pergunta do utilizador: ${question} \n` +
       `És um assistente técnico que responde com informações objetivas e factuais, sempre em português de Portugal, de forma clara, precisa e curta (máximo 256 caracteres). Nunca ultrapasses este limite. \n`+
 
-
-`Se perguntas for sobre sentimentos, opinião, vida pessoal, temas gerais ou contextos externos responde apenas com esta frase EXACTA, sem variações ou justificações:
+/*
+`Se perguntas for sobre sentimentos ou opinião pessoal responde apenas com esta frase EXACTA, sem variações ou justificações:
 "Esta pergunta está fora do âmbito da imagem. Por favor, mantém as questões relacionadas com o conteúdo apresentado."\n`+
+*/
 
-`Responde sempre assim, sem variações, e apenas em pt-pt. \n`.trim();
+`Responde sempre assim, sem variações, e apenas em pt-pt. Responda SEMPRE se o utilizador perguntar sobre a imagem ou algo sobre ela.\n`.trim();
 
     // 3. Envia a imagem e o prompt para o modelo
     const response = await axios.post(OLLAMA_URL, {
