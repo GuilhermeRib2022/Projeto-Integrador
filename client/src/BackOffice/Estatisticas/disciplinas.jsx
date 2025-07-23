@@ -57,22 +57,25 @@ const EstatisticasDisciplina = () => {
         disciplina.Nome.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
-    const sortedData = [...filteredData].sort((a, b) => {
-        const valA = a[sortField] ?? 0;
-        const valB = b[sortField] ?? 0;
-        if (typeof valA === 'string' && typeof valB === 'string') {
-            return sortOrder === 'asc'
-                ? valA.localeCompare(valB)
-                : valB.localeCompare(valA);
-        } else {
-            // Se um deles não for string, converta para string (seguro)
-            const strA = String(valA ?? '');
-            const strB = String(valB ?? '');
-            return sortOrder === 'asc'
-                ? strA.localeCompare(strB)
-                : strB.localeCompare(strA);
-        }
-    });
+const sortedData = [...filteredData].sort((a, b) => {
+    let valA = a[sortField];
+    let valB = b[sortField];
+
+    // Se ambos forem números ou strings que representam números, converta para número
+    const isNumeric = !isNaN(valA) && !isNaN(valB);
+
+    if (isNumeric) {
+        valA = Number(valA);
+        valB = Number(valB);
+        return sortOrder === 'asc' ? valA - valB : valB - valA;
+    }
+
+    // Comparação normal de strings
+    return sortOrder === 'asc'
+        ? String(valA).localeCompare(String(valB))
+        : String(valB).localeCompare(String(valA));
+});
+
 
     // Paginação
     const indexOfLastItem = currentPage * itemsPerPage;

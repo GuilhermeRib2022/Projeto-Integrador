@@ -51,7 +51,7 @@ async function processWithLLM(question, messages, videoTitle, videoDescription, 
   const questionNormalized = normalizeText(question);
 
   const [allRows] = await pool.query(
-    `SELECT Pergunta, Resposta FROM QueryLLM WHERE VideoID = ?`,
+    `SELECT Pergunta, Resposta FROM QueryLLM WHERE VideoID = ? AND Embedding IS NOT NULL`,
     [videoId]
   );
 
@@ -94,7 +94,7 @@ async function processWithLLM(question, messages, videoTitle, videoDescription, 
   let melhorSimilaridade = -1; //Definir a similaridade como -1 (precisa de 0.85 para ser considerada)
   let respostaMaisProxima = null; //Definir a resposta mais próxima como nulo
   let perguntaMaisProxima = null; //Definir a pergunta da resposta mais próxima
-  const LIMIAR = 0.88; // Define o limiar para considerar similaridade suficiente
+  const LIMIAR = (MODEL == "Llama3.2:latest")? 0.7 : 0.93; // Define o limiar para considerar similaridade suficiente
 
   if (question.length > 8) { // Verifica se a pergunta é suficientemente longa
     for (const row of rows) {
@@ -119,11 +119,11 @@ async function processWithLLM(question, messages, videoTitle, videoDescription, 
         melhorSimilaridade = sim;
         respostaMaisProxima = row.Resposta;
         perguntaMaisProxima = row.Pergunta;
-        //console.log(`✅ Nova melhor similaridade: ${melhorSimilaridade.toFixed(4)}`);
+        console.log(`✅ Nova melhor similaridade: ${melhorSimilaridade.toFixed(4)}`);
       }
     }
   }
-  //console.log(`📊 Similaridade final escolhida: ${melhorSimilaridade.toFixed(4)}`);
+  console.log(`📊 Similaridade final escolhida: ${melhorSimilaridade.toFixed(4)}`);
 
   // 4. SE ENCONTROU UMA SIMILARIDADE ACIMA DO LIMIAR, RETORNA A RESPOSTA GUARDADA
   if (melhorSimilaridade >= LIMIAR) {
@@ -202,7 +202,14 @@ async function imageWithLLM(question, videoId, videoTitle, videoDescription, fon
 
   try {
 
-    //2. VERIFICA SE A PERGUNTA É EXATAMENTE IGUAL A ALGUMA JÁ GUARDADA
+    //1. VERIFICA PALAVRAS OFENSIVAS
+    const ultimaMsg = question
+    if (contemPalavraOfensiva(question)) {
+      return {
+        role: 'assistant',
+        content: 'Por favor, mantém a linguagem respeitosa. Reformula a tua pergunta sem palavrões.'
+      };
+    }
 
     // 1. Obtem a imagem em dados binários através da URL (incluindo localhost se o servidor estiver no ar)
     const imageResponse = await axios.get(IMAGE_URL, { responseType: 'arraybuffer' });
@@ -232,7 +239,10 @@ async function imageWithLLM(question, videoId, videoTitle, videoDescription, fon
       images: [imageBase64],
       temperature: 0.8,
       max_tokens: 64,
+    }, {
+      timeout: 60000
     });
+
 
     return {
       role: 'assistant',

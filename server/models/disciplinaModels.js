@@ -101,12 +101,20 @@ export const Disciplina = {
 
     async getEstatisticasDisciplina() {
         const [rows] = await pool.query(`
-            SELECT d.ID, d.Nome, d.cor AS Cor, COUNT(v.ID) AS TotalVideos, SUM(v.Views) AS TotalViews, AVG(r.Nota) AS MediaReviews, SUM(CASE WHEN du.UtilizadorID IS NOT NULL THEN 1 ELSE 0 END) AS Inscricoes
-            FROM disciplina d
-            LEFT JOIN video v ON v.DisciplinaID = d.ID
-            LEFT JOIN review r ON r.VideoID = v.ID
-            LEFT JOIN disciplinaUtilizador du ON du.DisciplinaID = d.ID
-            GROUP BY d.ID
+SELECT  d.ID,  d.Nome,  d.cor AS Cor, COALESCE(v.TotalVideos, 0) AS TotalVideos, COALESCE(v.TotalViews, 0) AS TotalViews, AVG(r.Nota) AS MediaReviews, COUNT(DISTINCT du.UtilizadorID) AS Inscricoes
+FROM disciplina d
+LEFT JOIN (
+    SELECT  DisciplinaID, COUNT(*) AS TotalVideos, SUM(Views) AS TotalViews FROM video
+    GROUP BY DisciplinaID
+) v ON v.DisciplinaID = d.ID
+
+LEFT JOIN review r ON r.VideoID IN (
+    SELECT ID FROM video WHERE video.DisciplinaID = d.ID
+)
+
+LEFT JOIN disciplinaUtilizador du ON du.DisciplinaID = d.ID
+
+GROUP BY d.ID, d.Nome, d.cor;
         `);
         return rows;
     }
