@@ -59,7 +59,7 @@ const SearchDisciplina = () => {
 
   }, [texto, disciplina]);
 
-  if (loading) return <p>Carregando...</p>;
+  if (loading) return <p>A carregar...</p>;
   if (!videos.length) return <h1>Nenhum vídeo encontrado para "{disciplina}"</h1>;
 
 const sortedVideos = [...videos].sort((a, b) => {

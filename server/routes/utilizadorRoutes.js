@@ -118,11 +118,12 @@ router.get("/:id", authenticateToken, async (req, res) => {
 //Registar Utilizador
 router.post('/registar', async (req, res) => {
   const { nome, password, email} = req.body;
+
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/; //ISO/IEC 27001
 
   if (!nome || !password || !email ) {
-    return res.status(400).json({ message: "Campos obrigatórios: nome, password, email" });
+    return res.status(400).json({ message: "Campos obrigatórios em falta: nome, password ou email" });
   }
 
   if (nome.length < 4) {
@@ -140,7 +141,6 @@ router.post('/registar', async (req, res) => {
   if (!passwordRegex.test(password)) {
     return res.status(400).json({ message: "Password deve ter no mínimo 8 caracteres, com pelo menos uma letra maiúscula, uma minúscula, um número e um caractere especial" });
   }
-
 
   try {
     const result = await Utilizador.Registar({nome,password,email});

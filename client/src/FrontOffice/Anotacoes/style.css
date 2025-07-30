@@ -43,3 +43,16 @@
   color: #007bff;
   cursor: pointer;
 }
+
+.td-video{
+  background:#f1f1f1
+}
+
+.noteshr{
+  border: 3px solid rgb(36, 36, 36);
+  border-radius: 5px;
+}
+
+.textnote{
+  background-color:rgb(255, 255, 255) !important;
+}

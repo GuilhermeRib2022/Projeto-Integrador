@@ -32,7 +32,7 @@ const VideoEstatisticas = () => {
     fetchEstatisticas();
   }, [id]);
 
-  if (loading) return <div className="carregando">Carregando estatísticas...</div>;
+  if (loading) return <div className="carregando">A carregar estatísticas...</div>;
   if (erro) return <div className="erro">{erro}</div>;
   if (!videoInfo) return null;
 

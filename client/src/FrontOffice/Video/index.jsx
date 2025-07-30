@@ -41,7 +41,7 @@ const Video = ({ collapsed }) => {
     }, [id]);
 
     if (erro) return <p style={{ fontSize: '50px' }}>{erro}</p>;
-    if (!video) return <p>Carregando...</p>;
+    if (!video) return <p>A carregar...</p>;
 
     const videoUrl = `${BASE_URL}/uploads/videos/${video.VideoPath}`;
 

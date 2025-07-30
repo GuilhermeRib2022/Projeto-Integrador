@@ -208,8 +208,7 @@ export const Utilizador = {
             if (!nome || typeof nome !== 'string' || nome.trim() === '') {
                 throw new Error('Invalid name provided');
             }
-
-            const [rows] = await pool.query('SELECT * FROM Utilizador WHERE nome= ? AND Estado = ?', [nome,"ativo"]);
+            const [rows] = await pool.query('SELECT * FROM Utilizador WHERE nome= ? AND Estado = "ativo"', nome);
             return rows[0];
         } catch (error) {
             throw new Error(`Failed to fetch user by nickname: ${error.message}`);

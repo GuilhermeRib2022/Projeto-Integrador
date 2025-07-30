@@ -57,12 +57,28 @@ ORDER BY v.ID DESC`)
     // # TALVEZ O VIDEO INCLUIR A AVALIAÇÃO MÉDIA.
     async getVideo(id) {
         try {
-            const [rows] = await pool.query(`SELECT v.*, disciplina.Nome AS Disciplina, disciplina.Cor AS Cor, utilizador.Nome AS Autor, utilizador.FotoPerfil as FotoPerfil, AVG_reviews.AvgNota AS Nota FROM video v
+            const [rows] = await pool.query(`SELECT v.*, disciplina.Nome AS Disciplina, disciplina.Cor AS Cor, utilizador.ID AS UtilizadorID, utilizador.Nome AS Autor, utilizador.FotoPerfil as FotoPerfil, AVG_reviews.AvgNota AS Nota FROM video v
 LEFT JOIN disciplina ON disciplina.ID = v.DisciplinaID
 LEFT JOIN utilizador ON utilizador.ID = v.UtilizadorID
 LEFT JOIN (SELECT videoID, AVG(Nota) AS AvgNota FROM review GROUP BY videoID) AS AVG_reviews ON AVG_reviews.videoID = v.ID
 WHERE v.ID = ? AND v.estado = "ativo"`, [id])
             return rows[0] || null
+            
+        } catch (error) {
+            throw new Error(`Failed to fetch video with ID ${id}: ${error.message}`)
+        }
+    },
+
+    //OBTÉM VÍDEO POR ID, NÃO IMPORTA O SEU ESTADO.
+        async getVideoAdmin(id) {
+        try {
+            const [rows] = await pool.query(`SELECT v.*, disciplina.Nome AS Disciplina, disciplina.Cor AS Cor, utilizador.ID AS UtilizadorID, utilizador.Nome AS Autor, utilizador.FotoPerfil as FotoPerfil, AVG_reviews.AvgNota AS Nota FROM video v
+LEFT JOIN disciplina ON disciplina.ID = v.DisciplinaID
+LEFT JOIN utilizador ON utilizador.ID = v.UtilizadorID
+LEFT JOIN (SELECT videoID, AVG(Nota) AS AvgNota FROM review GROUP BY videoID) AS AVG_reviews ON AVG_reviews.videoID = v.ID
+WHERE v.ID = ?`, [id])
+            return rows[0] || null
+            
         } catch (error) {
             throw new Error(`Failed to fetch video with ID ${id}: ${error.message}`)
         }

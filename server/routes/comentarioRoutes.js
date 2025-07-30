@@ -125,7 +125,7 @@ router.patch("/:id", authenticateToken, async (req, res) => {
     }
 
     // Verifica permissão: só autor ou admin pode editar
-    if (comentarioExiste.UtilizadorID !== req.user.id && req.user.cargo !== 3) {
+    if ((comentarioExiste.UtilizadorID !== req.user.id && req.user.cargo !== 3)) {
       return res.status(403).send({ message: "Acesso negado. Apenas o autor ou admin podem editar este comentário." });
     }
 

@@ -26,6 +26,8 @@ function Comentario({ video }) {
 
     const token = localStorage.getItem('token');
     const userID = token ? parseJwt(token).id : null;
+    const isAdmin = token ? parseJwt(token).cargo === 3 : false;
+
 
     // Lazy load trigger
     const lastCommentRef = useCallback(node => {
@@ -134,11 +136,12 @@ function Comentario({ video }) {
         const novoTexto = prompt('Editar comentário:', commentToEdit.Texto);
         if (novoTexto && novoTexto.trim()) {
             axios.patch(
-                `${BASE_URL}/comentario/video/${video.ID}`, // usa video.ID na URL
+                `${BASE_URL}/comentario/${commentID}`, // usa video.ID na URL
                 { Texto: novoTexto.trim(), ID: commentID }, // envia comentário ID no corpo
                 { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }
             ).then(() => {
                 setComments(prev => prev.map(c => c.ID === commentID ? { ...c, Texto: novoTexto.trim() } : c));
+                alert('Comentário editado com sucesso!');
             }).catch(() => alert('Erro ao editar comentário.'));
         }
     };
@@ -169,13 +172,6 @@ function Comentario({ video }) {
                             disabled={submitting}
                             required
                         />
-                        <div className="emoji-toolbar">
-                            {showPicker && (
-                                <div className="emoji-picker-wrapper">
-                                    <EmojiPicker onEmojiClick={handleEmojiClick} height={300} />
-                                </div>
-                            )}
-                        </div>
                         <button type="submit" disabled={submitting}>Comentar</button>
                     </form>
 
@@ -210,9 +206,8 @@ function Comentario({ video }) {
                                         </span>
                                     </div>
 
-                                    {comment.UtilizadorID === userID && (
+                                    {(comment.UtilizadorID === userID || isAdmin ) && ( /*|| video.UtilizadorID === userID */
                                         <div className="comentario-actions">
-                                            {/* Botão 3 pontos */}
                                             <button
                                                 className="btn btn-secondary btn-menu"
                                                 onClick={() => setMenuOpenFor(prev => prev === comment.ID ? null : comment.ID)}
@@ -221,7 +216,6 @@ function Comentario({ video }) {
                                                 &#8942;
                                             </button>
 
-                                            {/* Menu dropdown */}
                                             {menuOpenFor === comment.ID && (
                                                 <div className="menu-dropdown">
                                                     <button
@@ -253,7 +247,7 @@ function Comentario({ video }) {
                             </div>
                         </div>
                     ))}
-                    {loading && <p>Carregando mais comentários...</p>}
+                    {loading && <p>A carregar mais comentários...</p>}
                 </>
             )}
         </div>

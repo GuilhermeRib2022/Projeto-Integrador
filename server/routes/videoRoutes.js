@@ -349,7 +349,7 @@ router.get("/utilizador/:id", async (req, res) => {
 router.patch('/:id/ativar', authenticateToken, verificarCargo(2,3), async (req, res) => {
   const id = req.params.id;
 
-  const videoExiste = await Video.getVideo(id);
+  const videoExiste = await Video.getVideoAdmin(id);
   if (videoExiste.UtilizadorID !== req.user.id && req.user.cargo !== 3) {
     return res.status(403).send({ message: "Acesso negado. Apenas o autor do vídeo pode alterá-lo." });
   }
@@ -362,7 +362,7 @@ router.patch('/:id/ativar', authenticateToken, verificarCargo(2,3), async (req, 
 router.delete('/:id/desativar', authenticateToken, verificarCargo(2,3), async (req, res) => {
   const id = req.params.id;
 
-  const videoExiste = await Video.getVideo(id);
+  const videoExiste = await Video.getVideoAdmin(id);
   if (videoExiste.UtilizadorID !== req.user.id && req.user.cargo !== 3) {
     return res.status(403).send({ message: "Acesso negado. Apenas o autor do vídeo pode alterá-lo." });
   }

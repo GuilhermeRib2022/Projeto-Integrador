@@ -50,7 +50,7 @@ function Anotacao({ videoId }) {
         }
     };
 
-    if (loading) return <div className="video-notes">Carregando...</div>;
+    if (loading) return <div className="video-notes">A carregar...</div>;
 
 
     return (
@@ -62,7 +62,7 @@ function Anotacao({ videoId }) {
         </button>
       </div>
             {loading ? (
-                <p>Carregando...</p>
+                <p>A carregar...</p>
             ) : (
                 <>
                     <textarea

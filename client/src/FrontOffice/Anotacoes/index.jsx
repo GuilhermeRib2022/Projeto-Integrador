@@ -37,7 +37,7 @@ const Anotacoes = () => {
         navigate(`/video/${videoID}`);
     };
 
-    if (loading) return <p>Carregando...</p>;
+    if (loading) return <p>A carregar...</p>;
     if (error) return <p>{error}</p>;
     if (anotacoes.length === 0) return <p>Você ainda não tem anotações.</p>;
 
@@ -52,12 +52,13 @@ const Anotacoes = () => {
                 <h1>Minhas Anotações</h1>
                 <button className="btn btn-primary" onClick={() => navigate(-1)}> Voltar </button>
             </div>
+            <hr className="noteshr"></hr>
             <input
                 type="text"
                 placeholder="Pesquisar por título ou anotação..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="form-control mb-3"
+                className="form-control mb-3 "
                 style={{ maxWidth: '400px' }}
             />
             <table className="tabela-anotacoes" >
@@ -68,7 +69,7 @@ const Anotacoes = () => {
                         <th>Data</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody className="table table-striped">
                     {filteredAnotacoes.map((anotacao) => (
                         <tr
                             key={anotacao.ID}
@@ -96,6 +97,7 @@ const Anotacoes = () => {
                             <td>
                                 <textarea
                                     readOnly
+                                    className="textnote"
                                     value={anotacao.Texto}
                                     rows={4}
                                     style={{ width: '100%', resize: 'both', border: 'none', backgroundColor: 'transparent', color: '#333', fontFamily: 'inherit' }}

@@ -56,7 +56,7 @@ const SearchResults = () => {
 
     }, [searchParams]);
 
-    if (loading) return <p>Carregando...</p>;
+    if (loading) return <p>A carregar...</p>;
 
 const sortedVideos = [...videos].sort((a, b) => {
     const valA = a[sortField];

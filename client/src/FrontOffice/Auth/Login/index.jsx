@@ -30,7 +30,7 @@ function Login() {
         .catch(err =>{
             console.error(err);
                 if (err.response.status === 400) {
-                    setError("Parâmetros inválidos ou faltando. Verifique os dados.");
+                    setError("Parâmetros inválidos ou a faltar. Verifique os dados.");
                 } else if (err.response.status === 401) {
                     setError("Nome de utilizador ou senha incorretos.");
                 } else if (err.response.status === 404) {

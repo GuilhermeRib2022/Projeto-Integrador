@@ -68,7 +68,7 @@ main {
 
 .main-expanded {
   margin-left: 280px;
-  width: calc(100% - 240px);
+  /*width: calc(100% - 240px);*/
   transition: margin-left 0.3s ease, width 0.3s ease;
 }
 
@@ -76,7 +76,7 @@ main {
 
 .main-collapsed {
   margin-left: 185px;
-  width: calc(100% - 60px);
+  /*width: calc(100% - 60px);*/
   transition: margin-left 0.3s ease, width 0.3s ease;
 }
 
@@ -99,4 +99,29 @@ footer {
   main{
     transform: translateX(-10em);
   }
+}
+
+
+/* width */
+::-webkit-scrollbar {
+  width: 10px;
+  transition: 1s ease;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #dddaee80;
+  transition: 1s ease;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #59536bcb;
+  transition: 1s ease;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+  transition: 1s ease;
 }

@@ -35,7 +35,7 @@ const ListarVideo = () => {
     const novoEstado = currentEstado === 'ativo' ? 'inativo' : 'ativo';
 
     try {
-      if (novoEstado === 'inativo') {
+      if (novoEstado == 'inativo') {
         await axios.delete(`${BASE_URL}/video/${id}/desativar`, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem('token')}`,

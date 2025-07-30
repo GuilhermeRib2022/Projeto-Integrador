@@ -102,66 +102,65 @@ const Perfil = () => {
     }
   }, [id, perfil?.CargoID]);
 
-  if (loading) return <div>Carregando perfil...</div>;
+  if (loading) return <div>A carregar perfil...</div>;
   if (error) return <div>{error}</div>;
   if (!perfil) return <div>Perfil não encontrado</div>;
 
   return (
     <>
-<div className="perfil-mount">
-  <div className="perfil-container">
-  {perfil.FotoPerfil ? (
-    <img
-      src={`${BASE_URL}/uploads/fotosperfil/${perfil.FotoPerfil}`}
-      alt="pfp"
-    />
-  ) : (
-    <img src="/profile.png" alt="TryLearn" />
-  )}
+      <div className="perfil-mount">
+        <div className="perfil-container">
+          {perfil.FotoPerfil ? (
+            <img
+              src={`${BASE_URL}/uploads/fotosperfil/${perfil.FotoPerfil}`}
+              alt="pfp"
+            />
+          ) : (
+            <img src="/profile.png" alt="TryLearn" />
+          )}
 
-  <div className="perfil-info">
-    <h2>{perfil.nome}</h2>
-    <p className="description">{perfil.Descricao}</p>
-    <p className="date"><strong>Membro desde:</strong> {new Date(perfil.DataCriacao).toLocaleDateString()}</p>
-    {userID === perfil.ID && (
-      <button
-        className="editarperfil-btn"
-        onClick={() => navigate('/perfil/editar')}
-        title="Editar perfil"
-      >
-        &#8942;
-      </button>
-    )}
-  </div>
-</div>
-{(perfil.cargo !== 1) && (
-  <>
-    <strong style={{ fontSize: '20px' }}>Disciplinas</strong>
-    <div className="disciplinas-container">
-      {disciplinas.length > 0 ? (
-        disciplinas.map((disciplina, index) => (
-          <span
-            key={index}
-            className="disciplina-list"
-            style={{
-              backgroundColor: disciplina.Cor || '#ddd',
-              color: getContrastingTextColor(disciplina.Cor),
-            }}
-          >
-            {disciplina.Nome}
-          </span>
-        ))
-      ) : (
-        <p style={{ marginTop: '10px' }}>
-          Este utilizador não tem disciplinas lecionadas.
-        </p>
-      )}
-    </div>
-  </>
-)}
-</div>
-
-
+          <div className="perfil-info">
+            <h2>{perfil.nome}</h2>
+            <br></br>
+            <textarea style={{ width: '500%', resize: 'both', border: 'none', backgroundColor: 'transparent' }} className="description">{perfil.Descricao}</textarea>
+            <p className="date"><strong>Membro desde:</strong> {new Date(perfil.DataCriacao).toLocaleDateString()}</p>
+            {userID === perfil.ID && (
+              <button
+                className="editarperfil-btn"
+                onClick={() => navigate('/perfil/editar')}
+                title="Editar perfil"
+              >
+                &#8942;
+              </button>
+            )}
+          </div>
+        </div>
+        {(perfil.cargo !== 1) && (
+          <>
+            <strong style={{ fontSize: '20px' }}>Disciplinas</strong>
+            <div className="disciplinas-container">
+              {disciplinas.length > 0 ? (
+                disciplinas.map((disciplina, index) => (
+                  <span
+                    key={index}
+                    className="disciplina-list"
+                    style={{
+                      backgroundColor: disciplina.Cor || '#ddd',
+                      color: getContrastingTextColor(disciplina.Cor),
+                    }}
+                  >
+                    {disciplina.Nome}
+                  </span>
+                ))
+              ) : (
+                <p style={{ marginTop: '10px' }}>
+                  Este utilizador não tem disciplinas lecionadas.
+                </p>
+              )}
+            </div>
+          </>
+        )}
+      </div>
 
 
       <div className="perfil-section">
@@ -186,7 +185,7 @@ const Perfil = () => {
                     style={{ color: getContrastingTextColor(video.Cor) }}
                     className="rating"
                   >
-                    ⭐ {Math.round(parseFloat(video.Nota) * 10)}%
+                    ⭐ {video.Nota? Math.round(parseFloat(video.Nota) * 10)+"%" : ""}
                   </span>
                 </div>
 

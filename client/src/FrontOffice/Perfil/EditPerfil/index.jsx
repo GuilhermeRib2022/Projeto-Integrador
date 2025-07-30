@@ -129,7 +129,7 @@ const EditPerfil = () => {
             setErro(true);
         }}
 
-    if (loading) return <div>Carregando...</div>;
+    if (loading) return <div>A carregar...</div>;
 
     return (
         <div className="edit-perfil-container">
